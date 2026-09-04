@@ -11,9 +11,10 @@
 import fs from 'node:fs';
 import {
   ScheduleCreateTransaction, ScheduleSignTransaction, ScheduleInfoQuery,
-  TransferTransaction, Hbar, PrivateKey, AccountId, Timestamp,
+  TransferTransaction, AccountCreateTransaction, Hbar, PrivateKey, AccountId,
+  Timestamp, Client,
 } from '@hashgraph/sdk';
-import { client, operator, assertOperatorKey, HASHSCAN } from '../src/config.js';
+import { client, operator, assertOperatorKey, HASHSCAN, NETWORK } from '../src/config.js';
 
 const a = JSON.parse(fs.readFileSync('.artifacts/d1.json', 'utf8'));
 const POOL = AccountId.fromString(a.poolAccountId);
@@ -71,8 +72,40 @@ async function main() {
   console.log(`  after agent + 2 oracles   : ${two.executed ? 'EXECUTED' : 'pending'}   <- must be EXECUTED`);
   if (two.executed) console.log(`  executed at ${two.executedAt.toDate().toISOString()} — nobody submitted it`);
 
-  const passed = !one.executed && two.executed;
-  console.log(`\n${passed ? 'PASS' : 'FAIL'}: signature-gated self-execution ${passed ? 'works' : 'DOES NOT work'} with a nested KeyList\n`);
+  // ---- C: the security half. A schedule the AGENT never signed must never
+  // execute on oracle signatures alone, however many arrive. Created and paid by
+  // an unrelated account so the agent's key is nowhere near it.
+  console.log('\n=== C: oracles alone, agent branch never satisfied ===');
+  const outsiderKey = PrivateKey.generateECDSA();
+  const outsiderId = (await (await new AccountCreateTransaction()
+    .setKeyWithoutAlias(outsiderKey.publicKey).setInitialBalance(new Hbar(12))
+    .execute(c)).getReceipt(c)).accountId;
+
+  const oc = (NETWORK === 'mainnet' ? Client.forMainnet() : Client.forTestnet())
+    .setOperator(outsiderId, outsiderKey);
+
+  const drain = new TransferTransaction()
+    .addHbarTransfer(POOL, new Hbar(-5))
+    .addHbarTransfer(outsiderId, new Hbar(5));
+  const attack = await (await new ScheduleCreateTransaction()
+    .setScheduledTransaction(drain)
+    .setScheduleMemo('attack: oracle quorum tries to drain the pool')
+    .setExpirationTime(Timestamp.fromDate(new Date(Date.now() + 30 * 60 * 1000)))
+    .setWaitForExpiry(false)
+    .execute(oc)).getReceipt(oc);
+
+  console.log(`schedule ${attack.scheduleId}  ${HASHSCAN('schedule', attack.scheduleId)}`);
+  for (let i = 0; i < 3; i++) {
+    await sign(oc, attack.scheduleId, ORACLES[i]);
+    const st = await pending(oc, attack.scheduleId);
+    console.log(`  after ${i + 1} oracle signature(s)  : ${st.executed ? 'EXECUTED' : 'pending'}`);
+  }
+  const attackBlocked = !(await pending(oc, attack.scheduleId)).executed;
+  console.log(`  all 3 oracles signed and the transfer ${attackBlocked ? 'never executed' : 'EXECUTED'}   <- must never execute`);
+  oc.close();
+
+  const passed = !one.executed && two.executed && attackBlocked;
+  console.log(`\n${passed ? 'PASS' : 'FAIL'}: self-executing payout ${two.executed ? 'works' : 'broken'}; oracle-only drain ${attackBlocked ? 'blocked' : 'SUCCEEDED — DESIGN IS BROKEN'}\n`);
   c.close();
   process.exit(passed ? 0 : 1);
 }
