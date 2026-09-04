@@ -7,11 +7,13 @@
   "scripts": {
     "d1": "node scripts/d1-bootstrap.js",
     "quote": "node scripts/quote.js",
-    "d2": "node scripts/d2-policy.js"
+    "d2": "node scripts/d2-policy.js",
+    "d3": "node scripts/d3-spine.js"
   },
   "dependencies": {
     "@hashgraph/sdk": "^2.62.0",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "hak-scheduled-settlement": "github:jmgomezl/hak-scheduled-settlement"
   },
   "license": "MIT",
   "author": "jmgomezl"

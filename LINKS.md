@@ -15,3 +15,6 @@ it was produced. Network: Hedera **testnet**.
 - policy terms topic `0.0.10368891` seq 1 — https://hashscan.io/testnet/topic/0.0.10368891
 - policy collection `0.0.10368893` serial 1 (non-transferable) — https://hashscan.io/testnet/token/0.0.10368893
 - atomic premium split buyer/pool/broker — https://hashscan.io/testnet/transaction/0.0.7231440@1788556806.548458583
+
+## D3 — 2026-09-04 — the spine
+- payout schedule `0.0.10368927` — pre-signed at purchase, executed on the 2nd oracle signature — https://hashscan.io/testnet/schedule/0.0.10368927
