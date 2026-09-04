@@ -20,7 +20,7 @@ async function main() {
   await assertOperatorKey();
   const c = client();
   const agent = operator();
-  const a = JSON.parse(fs.readFileSync('.artifacts/d1.json', 'utf8'));
+  const a = JSON.parse(fs.readFileSync(`.artifacts/${NETWORK}.json`, 'utf8'));
   const poolId = AccountId.fromString(a.poolAccountId);
   const buyerId = AccountId.fromString(a.d2.buyerId);
   const payout = a.d2.payoutHbar;
@@ -38,7 +38,7 @@ async function main() {
   if (!check.ok) {
     const lpKey = PrivateKey.generateECDSA();
     const lpId = (await (await new AccountCreateTransaction()
-      .setKeyWithoutAlias(lpKey.publicKey).setInitialBalance(new Hbar(payout + 10))
+      .setKeyWithoutAlias(lpKey.publicKey).setInitialBalance(new Hbar(payout + 1))
       .execute(c)).getReceipt(c)).accountId;
     await (await (await new TokenAssociateTransaction().setAccountId(lpId)
       .setTokenIds([TokenId.fromString(a.shareTokenId)]).freezeWith(c)).sign(lpKey)).execute(c);
@@ -85,9 +85,9 @@ async function main() {
   log(`\n${ok ? 'SPINE COMPLETE: quake fires the payout, no human in the loop' : 'GATE FAILED'}\n`);
 
   a.d3 = { scheduleId: sched.scheduleId, executed: two.executed, executedAt: two.executedAt, paidTinybar: paid, gatePassed: ok };
-  fs.writeFileSync('.artifacts/d1.json', JSON.stringify(a, null, 2));
+  fs.writeFileSync(`.artifacts/${NETWORK}.json`, JSON.stringify(a, null, 2));
   fs.appendFileSync('LINKS.md', [
-    `\n## D3 — ${new Date().toISOString().slice(0, 10)} — the spine`,
+    `\n## D3 — ${new Date().toISOString().slice(0, 10)} — ${NETWORK} — the spine`,
     `- payout schedule \`${sched.scheduleId}\` — pre-signed at purchase, executed on the 2nd oracle signature — ${HASHSCAN('schedule', sched.scheduleId)}`,
     '',
   ].join('\n'));

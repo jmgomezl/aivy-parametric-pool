@@ -13,7 +13,7 @@ import { createPolicyCollection, mintPolicy, deliverAndFreeze } from '../src/pol
 import { purchasePolicy } from '../src/policy/purchase.js';
 
 const LOCATION = { name: 'Armenia, Quindio, Colombia', lat: 4.53, lon: -75.68 };
-const PAYOUT_HBAR = 40;   // small-scale stand-in for the $800 cover
+const PAYOUT_HBAR = Number(process.env.PAYOUT_HBAR ?? (process.env.HEDERA_NETWORK === 'mainnet' ? 4 : 40));
 const DAYS = 30;
 const log = (s) => console.log(s);
 
@@ -28,7 +28,7 @@ async function main() {
   await assertOperatorKey();
   const c = client();
   const agent = operator();
-  const d1 = JSON.parse(fs.readFileSync('.artifacts/d1.json', 'utf8'));
+  const d1 = JSON.parse(fs.readFileSync(`.artifacts/${NETWORK}.json`, 'utf8'));
   const poolId = AccountId.fromString(d1.poolAccountId);
   log(`network: ${NETWORK}   pool: ${poolId}\n`);
 
@@ -57,8 +57,9 @@ async function main() {
   log(`   ${HASHSCAN('token', col.tokenId)}`);
 
   // 4. Buyer and an arbitrary broker.
-  const buyer = await newAccount(c, 5);
-  const broker = await newAccount(c, 1);
+  const buyer = await newAccount(c, 1);
+  const broker = await newAccount(c, 0.5);
+  const brokerBefore = (await new AccountBalanceQuery().setAccountId(broker.id).execute(c)).hbars.toTinybars().toNumber();
   log(`\n4. buyer ${buyer.id}   broker ${broker.id}`);
 
   await (await (await new TokenAssociateTransaction()
@@ -81,8 +82,10 @@ async function main() {
   const poolAfter = await new AccountBalanceQuery().setAccountId(poolId).execute(c);
   const brokerBal = await new AccountBalanceQuery().setAccountId(broker.id).execute(c);
   const gained = poolAfter.hbars.toTinybars().toNumber() - poolBefore.hbars.toTinybars().toNumber();
-  const ok = gained === sale.toPoolTinybar && brokerBal.hbars.toTinybars().toNumber() > 1e8;
-  log(`\n7. pool gained ${(gained / 1e8).toFixed(8)} HBAR   broker holds ${brokerBal.hbars.toString()}`);
+  // Both legs of the atomic split must have landed exactly, not approximately.
+  const brokerGained = brokerBal.hbars.toTinybars().toNumber() - brokerBefore;
+  const ok = gained === sale.toPoolTinybar && brokerGained === sale.commissionTinybar;
+  log(`\n7. pool gained ${(gained / 1e8).toFixed(8)} HBAR   broker gained ${(brokerGained / 1e8).toFixed(8)} HBAR`);
   log(ok ? '   GATE PASSED: policy issued, premium split atomically' : '   GATE FAILED');
 
   const art = {
@@ -94,10 +97,10 @@ async function main() {
       buyerPrivateKey: buyer.key.toString(), gatePassed: ok,
     },
   };
-  fs.writeFileSync('.artifacts/d1.json', JSON.stringify(art, null, 2));
+  fs.writeFileSync(`.artifacts/${NETWORK}.json`, JSON.stringify(art, null, 2));
 
   fs.appendFileSync('LINKS.md', [
-    `\n## D2 — ${new Date().toISOString().slice(0, 10)} — policy NFT, terms on HCS, atomic premium`,
+    `\n## D2 — ${new Date().toISOString().slice(0, 10)} — ${NETWORK} — policy NFT, terms on HCS, atomic premium`,
     `- policy terms topic \`${topic.topicId}\` seq ${published.sequenceNumber} — ${HASHSCAN('topic', topic.topicId)}`,
     `- policy collection \`${col.tokenId}\` serial ${minted.serial} (non-transferable) — ${HASHSCAN('token', col.tokenId)}`,
     `- atomic premium split buyer/pool/broker — ${HASHSCAN('transaction', sale.txId)}`,

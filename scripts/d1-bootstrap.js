@@ -9,7 +9,7 @@ import { createPoolAccount, generateOracleKeys } from '../src/pool/createPool.js
 import { createShareToken, associate } from '../src/pool/shares.js';
 import { deposit } from '../src/pool/deposit.js';
 
-const DEPOSIT_HBAR = 20;
+const DEPOSIT_HBAR = Number(process.env.DEPOSIT_HBAR ?? (process.env.HEDERA_NETWORK === 'mainnet' ? 2 : 20));
 
 const log = (s) => console.log(s);
 
@@ -34,7 +34,7 @@ async function main() {
   // 4. An LP account to make the deposit real.
   const lpKey = PrivateKey.generateED25519();
   const lpTx = await new AccountCreateTransaction()
-    .setKeyWithoutAlias(lpKey.publicKey).setInitialBalance(new Hbar(30)).execute(c);
+    .setKeyWithoutAlias(lpKey.publicKey).setInitialBalance(new Hbar(DEPOSIT_HBAR + 1)).execute(c);
   const lpId = (await lpTx.getReceipt(c)).accountId;
   log(`4. lp account   ${lpId}`);
 
@@ -56,7 +56,7 @@ async function main() {
   log(`\n6. pool balance: ${poolBal.hbars.toString()}   lp shares: ${lpShares}`);
 
   const ok = poolBal.hbars.toTinybars().toNumber() === DEPOSIT_HBAR * 1e8 && lpShares === DEPOSIT_HBAR;
-  log(ok ? '   GATE PASSED: 1:1 deposit/mint verified on testnet' : '   GATE FAILED');
+  log(ok ? `   GATE PASSED: 1:1 deposit/mint verified on ${NETWORK}` : '   GATE FAILED');
 
   const artifacts = {
     network: NETWORK, createdAt: new Date().toISOString(), agentId: agent.id.toString(),
@@ -65,16 +65,17 @@ async function main() {
     lpAccountId: lpId.toString(), depositTx: dep.depositTxId, mintTx: dep.mintTxId,
     depositHbar: DEPOSIT_HBAR, sharesIssued: lpShares,
     oraclePublicKeys: oracleKeys.map((k) => k.publicKey.toString()),
-    oraclePrivateKeys: oracleKeys.map((k) => k.toString()), // testnet demo keys only
+    oraclePrivateKeys: oracleKeys.map((k) => k.toString()), // demo keys; gitignored
     gatePassed: ok,
   };
   const dir = path.join(process.cwd(), '.artifacts');
   fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, 'd1.json'), JSON.stringify(artifacts, null, 2));
-  log(`\nartifacts -> .artifacts/d1.json (gitignored: holds testnet oracle keys)`);
+  const artifactPath = path.join(dir, `${NETWORK}.json`);
+  fs.writeFileSync(artifactPath, JSON.stringify(artifacts, null, 2));
+  log(`\nartifacts -> ${artifactPath} (gitignored: holds oracle keys)`);
 
   const links = [
-    `\n## D1 — ${new Date().toISOString().slice(0, 10)} — pool, share token, 1:1 deposit`,
+    `\n## D1 — ${new Date().toISOString().slice(0, 10)} — ${NETWORK} — pool, share token, 1:1 deposit`,
     `- pool account \`${pool.accountId}\` (key = and(agent, 2-of-3 oracles)) — ${HASHSCAN('account', pool.accountId)}`,
     `- share token \`${share.tokenId}\` (ARPS) — ${HASHSCAN('token', share.tokenId)}`,
     `- lp account \`${lpId}\` — ${HASHSCAN('account', lpId)}`,

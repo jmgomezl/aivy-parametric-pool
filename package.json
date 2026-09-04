@@ -8,7 +8,11 @@
     "d1": "node scripts/d1-bootstrap.js",
     "quote": "node scripts/quote.js",
     "d2": "node scripts/d2-policy.js",
-    "d3": "node scripts/d3-spine.js"
+    "d3": "node scripts/d3-spine.js",
+    "d1:main": "dotenv -e .env.mainnet -- node scripts/d1-bootstrap.js",
+    "d2:main": "dotenv -e .env.mainnet -- node scripts/d2-policy.js",
+    "d3:main": "dotenv -e .env.mainnet -- node scripts/d3-spine.js",
+    "verify:main": "dotenv -e .env.mainnet -- node scripts/verify-quorum.js"
   },
   "dependencies": {
     "@hiero-ledger/sdk": "^2.87.0",
@@ -16,5 +20,8 @@
     "hak-scheduled-settlement": "github:jmgomezl/hak-scheduled-settlement"
   },
   "license": "MIT",
-  "author": "jmgomezl"
+  "author": "jmgomezl",
+  "devDependencies": {
+    "dotenv-cli": "^11.0.0"
+  }
 }

@@ -10,3 +10,4 @@ out/
 # mainnet key material — never commit
 .mainnet-key
 .mainnet-evm
+.env.mainnet

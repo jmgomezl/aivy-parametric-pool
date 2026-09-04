@@ -21,10 +21,11 @@ export const MIRROR = `https://${NETWORK}.mirrornode.hedera.com/api/v1`;
 function parseKey(raw, hint) {
   const hex = raw.replace(/^0x/, '');
   const type = hint ?? (hex.startsWith('302e') || hex.startsWith('3030') ? 'DER' : 'ECDSA');
-  const parsers = { DER: PrivateKey.fromStringDer, ECDSA: PrivateKey.fromStringECDSA, ED25519: PrivateKey.fromStringED25519 };
-  const parse = parsers[type.toUpperCase()];
-  if (!parse) throw new Error(`Unknown HEDERA_OPERATOR_KEY_TYPE "${type}" (use DER, ECDSA or ED25519)`);
-  return parse(raw);
+  const method = { DER: 'fromStringDer', ECDSA: 'fromStringECDSA', ED25519: 'fromStringED25519' }[type.toUpperCase()];
+  if (!method) throw new Error(`Unknown HEDERA_OPERATOR_KEY_TYPE "${type}" (use DER, ECDSA or ED25519)`);
+  // Call as a method, not detached: fromStringDer delegates to this.fromStringECDSA
+  // internally, so an unbound reference loses `this` and throws.
+  return PrivateKey[method](raw);
 }
 
 export function operator() {

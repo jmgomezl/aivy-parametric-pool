@@ -16,7 +16,7 @@ import {
 } from '@hiero-ledger/sdk';
 import { client, operator, assertOperatorKey, HASHSCAN, NETWORK } from '../src/config.js';
 
-const a = JSON.parse(fs.readFileSync('.artifacts/d1.json', 'utf8'));
+const a = JSON.parse(fs.readFileSync(`.artifacts/${NETWORK}.json`, 'utf8'));
 const POOL = AccountId.fromString(a.poolAccountId);
 const ORACLES = a.oraclePrivateKeys.map((k) => PrivateKey.fromStringDer(k));
 
