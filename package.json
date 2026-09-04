@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "d1": "node scripts/d1-bootstrap.js",
-    "quote": "node scripts/quote.js"
+    "quote": "node scripts/quote.js",
+    "d2": "node scripts/d2-policy.js"
   },
   "dependencies": {
     "@hashgraph/sdk": "^2.62.0",
