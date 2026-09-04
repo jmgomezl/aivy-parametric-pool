@@ -1,0 +1,17 @@
+{
+  "name": "aivy-parametric-pool",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Parametric risk pool on Hedera: policies settle by oracle-quorum signature accumulation on a pre-signed Scheduled Transaction. No smart contract, no keeper.",
+  "type": "module",
+  "scripts": {
+    "d1": "node scripts/d1-bootstrap.js",
+    "quote": "node scripts/quote.js"
+  },
+  "dependencies": {
+    "@hashgraph/sdk": "^2.62.0",
+    "dotenv": "^16.4.5"
+  },
+  "license": "MIT",
+  "author": "jmgomezl"
+}
