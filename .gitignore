@@ -6,3 +6,7 @@ node_modules/
 .DS_Store
 out/
 .artifacts/
+
+# mainnet key material — never commit
+.mainnet-key
+.mainnet-evm

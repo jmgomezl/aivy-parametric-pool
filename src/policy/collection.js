@@ -7,7 +7,7 @@
 import {
   TokenCreateTransaction, TokenType, TokenSupplyType, TokenMintTransaction,
   TokenFreezeTransaction, TransferTransaction,
-} from '@hashgraph/sdk';
+} from '@hiero-ledger/sdk';
 
 export async function createPolicyCollection(client, treasuryId, agentKey) {
   const res = await new TokenCreateTransaction()

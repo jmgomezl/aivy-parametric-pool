@@ -4,7 +4,7 @@
 // never pay into the pool without receiving shares in the same consensus event.
 // This is the same multi-party atomic primitive the premium split will use later
 // (buyer -> pool + broker in a single transaction).
-import { TransferTransaction, Hbar, TokenMintTransaction } from '@hashgraph/sdk';
+import { TransferTransaction, Hbar, TokenMintTransaction } from '@hiero-ledger/sdk';
 import { SHARE_DECIMALS } from './shares.js';
 
 export const sharesFor = (hbar) => Math.round(hbar * 10 ** SHARE_DECIMALS); // 1:1 at D1

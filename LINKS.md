@@ -18,3 +18,17 @@ it was produced. Network: Hedera **testnet**.
 
 ## D3 — 2026-09-04 — the spine
 - payout schedule `0.0.10368927` — pre-signed at purchase, executed on the 2nd oracle signature — https://hashscan.io/testnet/schedule/0.0.10368927
+
+## D1 — 2026-09-04 — pool, share token, 1:1 deposit
+- pool account `0.0.10369765` (key = and(agent, 2-of-3 oracles)) — https://hashscan.io/testnet/account/0.0.10369765
+- share token `0.0.10369766` (ARPS) — https://hashscan.io/testnet/token/0.0.10369766
+- lp account `0.0.10369767` — https://hashscan.io/testnet/account/0.0.10369767
+- atomic deposit 20 HBAR -> 20 ARPS — https://hashscan.io/testnet/transaction/0.0.7231440@1788561822.969332039
+
+## D2 — 2026-09-04 — policy NFT, terms on HCS, atomic premium
+- policy terms topic `0.0.10369772` seq 1 — https://hashscan.io/testnet/topic/0.0.10369772
+- policy collection `0.0.10369774` serial 1 (non-transferable) — https://hashscan.io/testnet/token/0.0.10369774
+- atomic premium split buyer/pool/broker — https://hashscan.io/testnet/transaction/0.0.7231440@1788561841.385027250
+
+## D3 — 2026-09-04 — the spine
+- payout schedule `0.0.10369783` — pre-signed at purchase, executed on the 2nd oracle signature — https://hashscan.io/testnet/schedule/0.0.10369783

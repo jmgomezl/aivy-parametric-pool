@@ -10,7 +10,7 @@
 // any account, different on every sale, and the three legs settle or fail
 // together — the pool never custodies the commission and the broker cannot be
 // stiffed. This is what makes "anyone can be a broker" actually work.
-import { TransferTransaction, Hbar, AccountId } from '@hashgraph/sdk';
+import { TransferTransaction, Hbar, AccountId } from '@hiero-ledger/sdk';
 
 export const DEFAULT_COMMISSION_BPS = 1500; // 15%
 

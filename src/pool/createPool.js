@@ -1,6 +1,6 @@
 // Creates the risk-pool account whose key is and(agent, 2-of-3 oracles).
-import { AccountCreateTransaction, Hbar, PrivateKey } from '@hashgraph/sdk';
-import { poolAccountKey } from './keys.js';
+import { AccountCreateTransaction, Hbar, PrivateKey } from '@hiero-ledger/sdk';
+import { poolAccountKey, ORACLE_THRESHOLD } from './keys.js';
 
 /** Generate the three oracle keypairs. In production each oracle generates its own. */
 export function generateOracleKeys(n = 3) {
@@ -8,7 +8,7 @@ export function generateOracleKeys(n = 3) {
 }
 
 export async function createPoolAccount(client, agentPublicKey, oraclePublicKeys, initialHbar = 0) {
-  const key = poolAccountKey(agentPublicKey, oraclePublicKeys);
+  const key = poolAccountKey(agentPublicKey, oraclePublicKeys, ORACLE_THRESHOLD);
 
   const tx = await new AccountCreateTransaction()
     .setKeyWithoutAlias(key)

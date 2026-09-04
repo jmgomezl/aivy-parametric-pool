@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import {
   AccountCreateTransaction, TokenAssociateTransaction, Hbar, PrivateKey,
   AccountId, AccountBalanceQuery, TokenId,
-} from '@hashgraph/sdk';
+} from '@hiero-ledger/sdk';
 import { client, operator, assertOperatorKey, HASHSCAN, NETWORK } from '../src/config.js';
 import { canUnderwrite } from '../src/pool/solvency.js';
 import { deposit } from '../src/pool/deposit.js';

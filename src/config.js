@@ -2,7 +2,7 @@
 // fees, holds the share-token supply key, and is one half of the pool account's
 // key. It can never move pool capital on its own — see src/pool/keys.js.
 import 'dotenv/config';
-import { Client, PrivateKey, AccountId } from '@hashgraph/sdk';
+import { Client, PrivateKey, AccountId } from '@hiero-ledger/sdk';
 
 function required(name) {
   const v = process.env[name];

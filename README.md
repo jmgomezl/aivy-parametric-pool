@@ -99,8 +99,14 @@ What is **new**, built during this event:
 
 1. **Signature-gated conditional settlement** — payout as a pre-signed Scheduled
    Transaction whose trigger is oracle-quorum signature accumulation, with the
-   nested `and(agent, k-of-n)` key that makes it safe. Extracted as a reusable
-   Hedera Agent Kit plugin, not left inside the app.
+   nested `and(agent, k-of-n)` key that makes it safe. Extracted as
+   [hak-scheduled-settlement](https://github.com/jmgomezl/hak-scheduled-settlement),
+   a Hedera Agent Kit plugin this repo consumes, rather than left inside the app.
+   Building it surfaced a gap in the kit itself — account creation cannot express
+   a multi-signature key — filed as
+   [hedera-agent-kit-js#1087](https://github.com/hashgraph/hedera-agent-kit-js/issues/1087)
+   and fixed in the open PR
+   [#1088](https://github.com/hashgraph/hedera-agent-kit-js/pull/1088).
 2. **A hazard-priced underwriting agent** — premiums derived live from the USGS
    catalogue for any lat/lon on earth, with published inputs.
 3. **A solvency guard** enforcing `exposure <= capital` as a permanent invariant.

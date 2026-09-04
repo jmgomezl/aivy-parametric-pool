@@ -1,26 +1,56 @@
-// The payout leg, built on the hak-scheduled-settlement plugin.
+// The payout leg.
 //
-// The app deliberately consumes the plugin rather than reimplementing the
-// mechanism: the plugin is the reusable contribution and this is its first
-// consumer. At purchase the agent pre-signs the scheduled transfer, so from then
-// on the only signatures the payout still needs are the oracles'.
-import { createScheduledSettlementPlugin } from 'hak-scheduled-settlement';
-
-const plugin = createScheduledSettlementPlugin();
-const tool = (method) => plugin.tools({}).find((t) => t.method === method);
+// The key structure and the ledger's 62-day ceiling come from the
+// hak-scheduled-settlement plugin, which is where the reusable part of this
+// project lives. The schedule itself is built with the SDK here because this
+// script is not yet a Hedera Agent Kit agent — wiring the plugin's tools into
+// the Aivy canvas agent is the remaining step.
+//
+// At purchase the pool agent pre-signs the scheduled transfer, so from then on
+// the only signatures the payout still needs are the oracles'.
+import {
+  ScheduleCreateTransaction, ScheduleSignTransaction, ScheduleInfoQuery,
+  TransferTransaction, Hbar, Timestamp, ScheduleId, PrivateKey,
+} from '@hiero-ledger/sdk';
+import { MAX_EXPIRY_SECONDS } from 'hak-scheduled-settlement';
 
 export async function schedulePayout(client, { poolId, beneficiaryId, payoutHbar, days, memo }) {
-  return tool('settlement_create').execute(client, {}, {
-    fromAccountId: poolId.toString(),
-    toAccountId: beneficiaryId.toString(),
-    amount: payoutHbar,
-    expirySeconds: Math.min(days * 24 * 3600, 5356800),
-    memo: memo ?? 'parametric payout',
-  });
+  const expirySeconds = Math.min(days * 24 * 3600, MAX_EXPIRY_SECONDS);
+
+  const inner = new TransferTransaction()
+    .addHbarTransfer(poolId, new Hbar(-payoutHbar))
+    .addHbarTransfer(beneficiaryId, new Hbar(payoutHbar));
+
+  const res = await new ScheduleCreateTransaction()
+    .setScheduledTransaction(inner)
+    .setScheduleMemo(memo ?? 'parametric payout')
+    .setExpirationTime(Timestamp.fromDate(new Date(Date.now() + expirySeconds * 1000)))
+    .setWaitForExpiry(false) // fire the instant the quorum completes
+    .execute(client);
+
+  const receipt = await res.getReceipt(client);
+  return {
+    status: 'success',
+    scheduleId: receipt.scheduleId.toString(),
+    transactionId: res.transactionId.toString(),
+    expiresAt: new Date(Date.now() + expirySeconds * 1000).toISOString(),
+  };
 }
 
-export const attest = (client, scheduleId, oraclePrivateKey) =>
-  tool('settlement_attest').execute(client, {}, { scheduleId, attesterPrivateKey: oraclePrivateKey });
+export async function attest(client, scheduleId, oraclePrivateKey) {
+  const id = ScheduleId.fromString(scheduleId);
+  const tx = await (await new ScheduleSignTransaction().setScheduleId(id).freezeWith(client))
+    .sign(PrivateKey.fromStringDer(oraclePrivateKey));
+  const res = await tx.execute(client);
+  await res.getReceipt(client);
 
-export const payoutStatus = (client, scheduleId) =>
-  tool('settlement_status').execute(client, {}, { scheduleId });
+  const info = await new ScheduleInfoQuery().setScheduleId(id).execute(client);
+  const executed = info.executed !== null;
+  return { executed, executedAt: executed ? info.executed.toDate().toISOString() : null };
+}
+
+export async function payoutStatus(client, scheduleId) {
+  const info = await new ScheduleInfoQuery()
+    .setScheduleId(ScheduleId.fromString(scheduleId)).execute(client);
+  return { executed: info.executed !== null };
+}

@@ -8,7 +8,7 @@
 //
 // So insolvency is not something to handle gracefully. It is something to make
 // impossible by refusing to underwrite past capital.
-import { AccountBalanceQuery } from '@hashgraph/sdk';
+import { AccountBalanceQuery } from '@hiero-ledger/sdk';
 
 export async function poolCapitalTinybar(client, poolId) {
   const bal = await new AccountBalanceQuery().setAccountId(poolId).execute(client);

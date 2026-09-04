@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import {
   AccountCreateTransaction, TokenAssociateTransaction, Hbar, PrivateKey,
   AccountId, AccountBalanceQuery, TokenId,
-} from '@hashgraph/sdk';
+} from '@hiero-ledger/sdk';
 import { client, operator, assertOperatorKey, HASHSCAN, NETWORK } from '../src/config.js';
 import { annualRate, quote } from '../src/pricing/hazard.js';
 import { createPolicyTopic, publishTerms, triggerSpec } from '../src/policy/terms.js';

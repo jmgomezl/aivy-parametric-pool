@@ -8,7 +8,7 @@
 import {
   TokenCreateTransaction, TokenType, TokenSupplyType, TokenMintTransaction,
   TransferTransaction, TokenAssociateTransaction,
-} from '@hashgraph/sdk';
+} from '@hiero-ledger/sdk';
 
 export const SHARE_DECIMALS = 8; // matches tinybar, so 1 HBAR deposited = 1 share at 1:1
 

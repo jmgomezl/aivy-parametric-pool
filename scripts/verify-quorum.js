@@ -13,7 +13,7 @@ import {
   ScheduleCreateTransaction, ScheduleSignTransaction, ScheduleInfoQuery,
   TransferTransaction, AccountCreateTransaction, Hbar, PrivateKey, AccountId,
   Timestamp, Client,
-} from '@hashgraph/sdk';
+} from '@hiero-ledger/sdk';
 import { client, operator, assertOperatorKey, HASHSCAN, NETWORK } from '../src/config.js';
 
 const a = JSON.parse(fs.readFileSync('.artifacts/d1.json', 'utf8'));

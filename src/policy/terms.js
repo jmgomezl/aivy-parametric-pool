@@ -5,7 +5,7 @@
 // an HCS message and the NFT carries only a pointer to it. The terms are then
 // immutable, timestamped, publicly readable, and anyone can recompute the premium
 // from the same inputs.
-import { TopicCreateTransaction, TopicMessageSubmitTransaction } from '@hashgraph/sdk';
+import { TopicCreateTransaction, TopicMessageSubmitTransaction } from '@hiero-ledger/sdk';
 
 export async function createPolicyTopic(client, agentKey) {
   const res = await new TopicCreateTransaction()

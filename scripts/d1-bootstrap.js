@@ -3,7 +3,7 @@
 // .artifacts/d1.json and appends them to LINKS.md.
 import fs from 'node:fs';
 import path from 'node:path';
-import { AccountCreateTransaction, Hbar, PrivateKey, AccountBalanceQuery } from '@hashgraph/sdk';
+import { AccountCreateTransaction, Hbar, PrivateKey, AccountBalanceQuery } from '@hiero-ledger/sdk';
 import { client, operator, assertOperatorKey, HASHSCAN, NETWORK } from '../src/config.js';
 import { createPoolAccount, generateOracleKeys } from '../src/pool/createPool.js';
 import { createShareToken, associate } from '../src/pool/shares.js';
