@@ -24,7 +24,8 @@
   "dependencies": {
     "@hiero-ledger/sdk": "^2.87.0",
     "dotenv": "^16.4.5",
-    "hak-scheduled-settlement": "github:jmgomezl/hak-scheduled-settlement"
+    "hak-scheduled-settlement": "github:jmgomezl/hak-scheduled-settlement",
+    "hak-uniswap-plugin": "github:jmgomezl/hak-uniswap-plugin"
   },
   "license": "MIT",
   "author": "jmgomezl",
