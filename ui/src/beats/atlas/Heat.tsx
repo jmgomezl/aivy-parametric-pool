@@ -13,7 +13,7 @@ const S = 2; // device-pixel oversampling
 function drawEvents(ctx: CanvasRenderingContext2D, v: View, minMag: number, fromDay: number, toDay: number) {
   ctx.globalCompositeOperation = 'lighter';
   const ry = kmToPxY(MODEL.referenceRadiusKm, v);
-  const alpha = Math.min(0.5, 0.16 / Math.sqrt(v.k)); // brighter fields at zoom would saturate to white
+  const alpha = Math.min(0.4, 0.12 / Math.sqrt(v.k)); // brighter fields at zoom would saturate to white
   for (const q of QUAKES) {
     if (q.mag < minMag || q.day <= fromDay || q.day > toDay) continue;
     const b = base(q.lon, q.lat);
@@ -38,7 +38,7 @@ function drawEvents(ctx: CanvasRenderingContext2D, v: View, minMag: number, from
     const x = (b.x - v.x) * v.k, y = (b.y - v.y) * v.k;
     if (x < -4 || x > W + 4 || y < -4 || y > H + 4) continue;
     const big = q.mag >= 7.5;
-    ctx.fillStyle = big ? 'rgba(255,240,200,0.95)' : 'rgba(255,225,150,0.6)';
+    ctx.fillStyle = big ? 'rgba(255,240,200,0.85)' : 'rgba(255,225,150,0.45)';
     const r = (big ? 1.6 : 0.9) * Math.sqrt(v.k);
     ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
   }

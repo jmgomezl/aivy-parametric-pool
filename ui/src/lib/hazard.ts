@@ -116,11 +116,8 @@ export const PLACES: Place[] = [
   { name: 'Armenia, Quindío', lat: 4.53, lon: -75.68 },
   { name: 'Tokyo', lat: 35.68, lon: 139.69 },
   { name: 'Istanbul', lat: 41.01, lon: 28.98 },
-  { name: 'Santiago', lat: -33.45, lon: -70.67 },
   { name: 'San Francisco', lat: 37.77, lon: -122.42 },
-  { name: 'Kathmandu', lat: 27.72, lon: 85.32 },
   { name: 'Lisbon', lat: 38.72, lon: -9.14 },
-  { name: 'Mexico City', lat: 19.43, lon: -99.13 },
   { name: 'Berlin', lat: 52.52, lon: 13.4 },
 ];
 

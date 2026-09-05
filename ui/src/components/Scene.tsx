@@ -16,7 +16,7 @@ export function Scene({ n, kicker, title, caption, hud, links, children, note, v
         <div className="flex flex-col gap-[14px]">
           <div className="kicker"><span className="text-fg-1">{String(n).padStart(2, '0')}</span><span className="mx-3 text-fg-3">/</span>{kicker}</div>
           <h1 className="title enter" style={{ fontSize: 60 }}>{title}</h1>
-          {caption ? <p className="lede enter enter-d1 max-w-[62ch]">{caption}</p> : null}
+          {caption ? <p className="lede enter enter-d1 max-w-[72ch]">{caption}</p> : null}
         </div>
       </header>
 

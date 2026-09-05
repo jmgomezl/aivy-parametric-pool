@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Scene } from '../components/Scene';
 import { Big, C, Delta } from '../components/viz';
-import { CATALOGUE, FIRST_YEAR, LAST_YEAR, MAX_DAYS, MODEL, PLACES, around, dayOf, nearest, placeName, price, priceHistory, sourceUrl, type Place, type PriceOpts, type Priced } from '../lib/hazard';
+import { CATALOGUE, FIRST_YEAR, LAST_YEAR, MAX_DAYS, MODEL, PLACES, around, dayOf, placeName, price, priceHistory, sourceUrl, type Place, type PriceOpts, type Priced } from '../lib/hazard';
 import { useLive } from '../lib/mirror';
 import { Heat } from './atlas/Heat';
 import { landPath } from './atlas/land';
@@ -13,7 +13,7 @@ import type { Beat } from './types';
 // Natural Earth's national capitals. `rank` is its label priority (0 = always).
 interface Capital { name: string; country: string; lon: number; lat: number; pop: number; rank: number }
 const CAPITALS: Capital[] = (capitalsData.rows as [string, string, number, number, number, number][]).map(([name, country, lon, lat, pop, rank]) => ({ name, country, lon, lat, pop, rank }));
-const LABEL_PX = 12;
+const LABEL_PX = 11;
 
 /** Which capital labels fit at this zoom: by priority first, then greedily without overlaps. */
 function placeCapitals(view: View): (Capital & { x: number; y: number })[] {
@@ -33,7 +33,6 @@ function placeCapitals(view: View): (Capital & { x: number; y: number })[] {
 }
 
 const MAGS = [6, 6.5, 7];
-const isoDay = (day: number) => new Date(day * 86400000).toISOString().slice(0, 10);
 
 /* --------------------------------------------------------- price history */
 function History({ nearby, opts, markYear }: { nearby: Priced['nearby']; opts: PriceOpts; markYear: number }) {
@@ -49,8 +48,8 @@ function History({ nearby, opts, markYear }: { nearby: Priced['nearby']; opts: P
   return (
     <div className="flex flex-col gap-[6px]">
       <div className="flex items-baseline justify-between">
-        <div className="label whitespace-nowrap">cost by year · {opts.days} d of {opts.payoutHbar} ℏ</div>
-        <div className="label num whitespace-nowrap">{at.year} · {at.premiumHbar.toFixed(4)} ℏ</div>
+        <div className="label whitespace-nowrap">cost by year</div>
+        {markYear < yN ? <div className="label num whitespace-nowrap">{at.year} · {at.premiumHbar.toFixed(4)} ℏ</div> : null}
       </div>
       <svg viewBox={`0 0 ${w} ${h}`} width={w} height={h}>
         <path d={`${d}L${x(yN)} ${h - pad}L${x(y0)} ${h - pad}Z`} fill="rgba(242,243,245,0.05)" />
@@ -115,7 +114,6 @@ function View() {
   const focus = hover ?? pin;
   const priced = useMemo(() => price(focus.lat, focus.lon, opts), [focus.lat, focus.lon, opts]);
   const fullNearby = useMemo(() => around(focus.lat, focus.lon, minMag), [focus.lat, focus.lon, minMag]);
-  const near = useMemo(() => nearest(focus.lat, focus.lon, minMag, toDay), [focus.lat, focus.lon, minMag, toDay]);
   const pinned = useMemo(() => price(pin.lat, pin.lon, opts), [pin.lat, pin.lon, opts]);
   // the same point, priced with the record as it stood one year earlier
   const yearAgo = useMemo(() => price(focus.lat, focus.lon, { ...opts, now: new Date(now.getTime() - 365.25 * 86400000) }), [focus.lat, focus.lon, opts, now]);
@@ -193,7 +191,7 @@ function View() {
       n={0}
       kicker="Atlas"
       title="Anywhere on Earth, priced."
-      caption={<>Every shallow M{minMag}+ earthquake since 1970 lights the field. Point, zoom, scrub the years: the agent's model prices {days} days of {payout} ℏ cover there, from the record alone.</>}
+      caption={<>Point anywhere. The agent prices {days} days of {payout} ℏ cover from 56 years of record.</>}
       hud={
         <div className="flex flex-col gap-[14px]">
           <div className="flex items-end justify-between gap-[12px]">
@@ -208,9 +206,6 @@ function View() {
             <Big label="rate λ · / yr" value={priced.lambda.toFixed(4)} size={32} />
             <Big label={`chance in ${days} days`} value={(priced.probability * 100).toFixed(2)} unit="%" size={32} />
             <Big label={usd !== null && live ? `premium · ≈ $${usd.toFixed(4)}` : 'premium · vs a year earlier'} value={priced.premiumHbar.toFixed(4)} unit="ℏ" tone={priced.count ? 'ok' : 'dim'} size={32} after={<Delta now={priced.premiumHbar} before={yearAgo.premiumHbar} />} />
-          </div>
-          <div className="label num">
-            {near ? <>nearest recorded · M {near.mag.toFixed(1)} · {isoDay(near.day)} · {Math.round(near.km)} km away · {Math.round(near.depthKm)} km deep</> : 'no recorded event yet'}
           </div>
           <div className="grid grid-cols-2 gap-x-[20px]">
             <Slider label="cover" value={payout} min={1} max={50} unit="ℏ" onChange={setPayout} />
@@ -233,14 +228,14 @@ function View() {
         </div>
       }
       verifyLabel="verify"
-      links={[{ kind: 'topic', id: 'query', label: 'recount the pinned point at USGS', href: sourceUrl(pin.lat, pin.lon, minMag) }]}
+      links={[{ kind: 'topic', id: 'query', label: 'recount at USGS', href: sourceUrl(pin.lat, pin.lon, minMag) }]}
       note={
         !live
-          ? <span className="text-pending">record as of {year} · {pinned.count} events counted by then · scrub to {LAST_YEAR} for today's price</span>
+          ? <span className="text-pending">record as of {year} · {pinned.count} events by then</span>
           : liveCount && liveCount.key === liveKey
             ? liveCount.count === null
               ? <span className="text-pending">USGS unavailable · {pinned.count} events from the frozen catalogue</span>
-              : <span className={liveCount.count === pinned.count ? 'text-ok' : 'text-pending'}>USGS live: {liveCount.count} events · {liveCount.count === pinned.count ? 'matches' : `catalogue has ${pinned.count}`} · {CATALOGUE.count.toLocaleString()} events frozen {CATALOGUE.fetchedAt.slice(0, 10)}</span>
+              : <span className={liveCount.count === pinned.count ? 'text-ok' : 'text-pending'}>USGS live: {liveCount.count} events · {liveCount.count === pinned.count ? 'matches' : `catalogue has ${pinned.count}`}</span>
             : <span className="text-fg-3">asking USGS to recount {placeName(pin)}…</span>
       }
     >
@@ -251,9 +246,8 @@ function View() {
         </button>
         <span className="num text-[28px] leading-none text-fg-0 w-[80px]">{year}</span>
         <input type="range" className="slider slider-accent flex-1" min={FIRST_YEAR} max={LAST_YEAR} step={1} value={year} onChange={(e) => { setPlaying(false); setYear(Number(e.target.value)); }} onKeyDown={(e) => e.stopPropagation()} />
-        <button type="button" className={`chip ${showCapitals ? 'chip-on' : ''}`} onClick={(e) => { setShowCapitals((v) => !v); e.currentTarget.blur(); }} title="show or hide the world's capitals">capitals</button>
-        <span className="label w-[250px] text-right">{live ? 'the record today' : `the record as of ${year}`}{view.k > 1.02 ? ` · zoom ×${view.k.toFixed(1)}` : ''}</span>
-        {view.k > 1.02 ? <button type="button" className="chip" onClick={(e) => { setView(HOME); e.currentTarget.blur(); }}>reset view</button> : null}
+        <span className="label w-[200px] text-right">{!live ? `the record as of ${year}` : ''}{view.k > 1.02 ? `${!live ? ' · ' : ''}zoom ×${view.k.toFixed(1)}` : ''}</span>
+        {view.k > 1.02 ? <button type="button" className="chip" onClick={(e) => { setView(HOME); e.currentTarget.blur(); }}>reset</button> : null}
       </div>
 
       {/* map */}
@@ -284,8 +278,8 @@ function View() {
             {/* capitals: click one to pin it */}
             {capitals.map((c) => (
               <g key={`${c.name}-${c.country}`} style={{ cursor: 'pointer' }} onMouseDown={(e) => e.stopPropagation()} onMouseUp={(e) => { e.stopPropagation(); drag.current = null; setPin({ name: c.name, lat: c.lat, lon: c.lon }); }}>
-                <circle cx={c.x} cy={c.y} r={2.2} fill={C.fg1} />
-                <text x={c.x + 7} y={c.y + 4} className="label" fill={C.fg1} fontSize={LABEL_PX} style={{ paintOrder: 'stroke', stroke: 'rgba(10,11,13,0.85)', strokeWidth: 3, strokeLinejoin: 'round' }}>{c.name}</text>
+                <circle cx={c.x} cy={c.y} r={1.8} fill={C.fg2} />
+                <text x={c.x + 6} y={c.y + 4} className="label" fill={C.fg2} fontSize={LABEL_PX} style={{ paintOrder: 'stroke', stroke: 'rgba(10,11,13,0.8)', strokeWidth: 3, strokeLinejoin: 'round' }}>{c.name}</text>
               </g>
             ))}
             <ellipse cx={f.x} cy={f.y} rx={kmToPxX(MODEL.referenceRadiusKm, focus.lat, view)} ry={kmToPxY(MODEL.referenceRadiusKm, view)} fill="rgba(242,243,245,0.04)" stroke={C.fg1} strokeWidth={1} strokeDasharray="3 4" />
@@ -294,8 +288,6 @@ function View() {
             <line x1={f.x} x2={f.x} y1={f.y - 14} y2={f.y + 14} stroke={C.fg0} strokeWidth={1} />
             {hover ? <circle cx={p.x} cy={p.y} r={4} fill={C.ok} /> : null}
             {compare.map((c, i) => { const e = project(c.lon, c.lat, view); return <g key={i}><circle cx={e.x} cy={e.y} r={3.5} fill={C.fg1} /><text x={e.x + 8} y={e.y - 6} className="label" fill={C.fg1} fontSize={12}>{placeName(c)}</text></g>; })}
-            <text x={f.x + 18} y={f.y + 26} className="num" fill={C.fg0} fontSize={14} style={{ paintOrder: 'stroke', stroke: 'rgba(10,11,13,0.85)', strokeWidth: 3 }}>{priced.premiumHbar.toFixed(4)} ℏ</text>
-            <text x={f.x + 18} y={f.y + 43} className="label" fill={C.fg2} fontSize={12} style={{ paintOrder: 'stroke', stroke: 'rgba(10,11,13,0.85)', strokeWidth: 3 }}>{priced.count} events · P {(priced.probability * 100).toFixed(2)} %</text>
           </svg>
         </div>
       </div>
@@ -305,11 +297,12 @@ function View() {
         {PLACES.map((pl) => (
           <button key={pl.name} type="button" onClick={(e) => { setPin(pl); e.currentTarget.blur(); }} className={`chip ${pin.name === pl.name ? 'chip-on' : ''}`}>{pl.name}</button>
         ))}
-        <span className="ml-auto label">trigger</span>
+        <span className="ml-auto" />
+        <button type="button" className={`chip ${showCapitals ? 'chip-on' : ''}`} onClick={(e) => { setShowCapitals((v) => !v); e.currentTarget.blur(); }} title="show or hide the world's capitals">capitals</button>
+        <span className="label ml-[10px]">trigger</span>
         {MAGS.map((m) => (
           <button key={m} type="button" onClick={(e) => { setMinMag(m); e.currentTarget.blur(); }} className={`chip ${minMag === m ? 'chip-on' : ''}`}>M{m}+</button>
         ))}
-        <span className="label ml-[10px] whitespace-nowrap">scroll · drag · click to pin</span>
       </div>
     </Scene>
   );
