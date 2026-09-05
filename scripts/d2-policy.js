@@ -7,13 +7,17 @@ import {
   AccountId, AccountBalanceQuery, TokenId,
 } from '@hiero-ledger/sdk';
 import { client, operator, assertOperatorKey, HASHSCAN, NETWORK } from '../src/config.js';
-import { annualRate, quote } from '../src/pricing/hazard.js';
+import { annualRate } from '../src/pricing/hazard.js';
+import { underwrite } from '../src/pricing/underwrite.js';
+import { hbarUsd, usdToHbar, demoScale } from '../src/pricing/fx.js';
 import { createPolicyTopic, publishTerms, triggerSpec } from '../src/policy/terms.js';
 import { createPolicyCollection, mintPolicy, deliverAndFreeze } from '../src/policy/collection.js';
 import { purchasePolicy } from '../src/policy/purchase.js';
 
 const LOCATION = { name: 'Armenia, Quindio, Colombia', lat: 4.53, lon: -75.68 };
-const PAYOUT_HBAR = Number(process.env.PAYOUT_HBAR ?? (process.env.HEDERA_NETWORK === 'mainnet' ? 4 : 40));
+// The policy is modelled at the size it would really be sold at. Only what
+// settles on-chain is scaled down — see src/pricing/fx.js.
+const BUDGET_USD = Number(process.env.BUDGET_USD ?? 4);
 const DAYS = 30;
 const log = (s) => console.log(s);
 
@@ -34,17 +38,35 @@ async function main() {
 
   // 1. Underwrite: the premium comes from the live catalogue, not a constant.
   const hazard = await annualRate({ lat: LOCATION.lat, lon: LOCATION.lon });
-  const q = quote({ lambda: hazard.lambda, payout: PAYOUT_HBAR, days: DAYS });
+  const q = underwrite({ hazard, days: DAYS, budget: BUDGET_USD });
   log(`1. underwriting ${LOCATION.name}`);
-  log(`   n=${hazard.count} over ${hazard.years.toFixed(1)}y  lambda=${hazard.lambda.toFixed(4)}/yr`);
-  log(`   P(${DAYS}d)=${(q.probability * 100).toFixed(3)}%  premium=${q.premium.toFixed(4)} HBAR for ${PAYOUT_HBAR} HBAR cover`);
+  log(`   n=${hazard.count} over ${hazard.years.toFixed(1)}y  lambda=${hazard.lambda.toFixed(4)}/yr` +
+      `  +${(hazard.z * hazard.relativeError * 100).toFixed(0)}% uncertainty -> ${hazard.lambdaPriced.toFixed(4)}/yr`);
+  if (!q.ok) {
+    log(`\n   DECLINED (${q.reason}): ${q.message}`);
+    c.close();
+    process.exit(0);
+  }
+  log(`   P(${DAYS}d)=${(q.probability * 100).toFixed(3)}%  $${q.premium.toFixed(2)} buys $${q.payout.toFixed(0)} of cover`);
+
+  // Convert the modelled policy to HBAR, then shrink only what settles.
+  const fx = await hbarUsd();
+  const scale = demoScale();
+  // HBAR is only divisible to 8 places; anything finer is not an amount the ledger can hold.
+  const toTinybar = (hbar) => Math.round(hbar * 1e8) / 1e8;
+  const premiumHbar = toTinybar(usdToHbar(q.premium, fx.price) * scale);
+  const payoutHbar = toTinybar(usdToHbar(q.payout, fx.price) * scale);
+  log(`   HBAR $${fx.price} (${fx.source}) · demo scale ${scale} -> settles ${premiumHbar.toFixed(4)} / ${payoutHbar.toFixed(4)} ℏ`);
 
   // 2. Terms to HCS, so the premium is reproducible from the record.
   const topic = await createPolicyTopic(c, agent.key);
   const terms = {
     trigger: triggerSpec({ ...LOCATION, radiusKm: hazard.triggerRadiusKm, minMagnitude: 6, maxDepthKm: 70, days: DAYS }),
-    premiumHbar: Number(q.premium.toFixed(8)), payoutHbar: PAYOUT_HBAR,
-    hazard, lossRatio: q.lossRatio, issuedAt: new Date().toISOString(),
+    modelled: { premiumUsd: q.premium, payoutUsd: q.payout, currency: 'USD' },
+    settled: { premiumHbar: Number(premiumHbar.toFixed(8)), payoutHbar: Number(payoutHbar.toFixed(8)) },
+    fx: { hbarUsd: fx.price, source: fx.source, at: fx.at, demoScale: scale },
+    hazard: q.hazard, lossRatio: q.lossRatio, viabilityFloor: q.floor,
+    issuedAt: new Date().toISOString(),
   };
   const published = await publishTerms(c, topic.topicId, terms);
   log(`\n2. terms on HCS ${topic.topicId} seq ${published.sequenceNumber}`);
@@ -69,7 +91,7 @@ async function main() {
   const poolBefore = await new AccountBalanceQuery().setAccountId(poolId).execute(c);
   const sale = await purchasePolicy(c, {
     buyerId: buyer.id, buyerKey: buyer.key, poolId, brokerId: broker.id,
-    premiumHbar: q.premium,
+    premiumHbar,
   });
   log(`\n5. premium settled atomically`);
   log(`   buyer -${(sale.premiumTinybar / 1e8).toFixed(8)}  pool +${(sale.toPoolTinybar / 1e8).toFixed(8)}  broker +${(sale.commissionTinybar / 1e8).toFixed(8)} (${sale.commissionBps / 100}%)`);
@@ -93,7 +115,7 @@ async function main() {
       topicId: topic.topicId.toString(), termsPointer: published.pointer,
       policyTokenId: col.tokenId.toString(), policySerial: minted.serial,
       buyerId: buyer.id.toString(), brokerId: broker.id.toString(),
-      premiumHbar: q.premium, payoutHbar: PAYOUT_HBAR, saleTxId: sale.txId,
+      premiumHbar, payoutHbar, payoutUsd: q.payout, premiumUsd: q.premium, saleTxId: sale.txId,
       buyerPrivateKey: buyer.key.toString(), gatePassed: ok,
     },
   };

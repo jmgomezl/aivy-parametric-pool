@@ -23,7 +23,7 @@ async function main() {
   const a = JSON.parse(fs.readFileSync(`.artifacts/${NETWORK}.json`, 'utf8'));
   const poolId = AccountId.fromString(a.poolAccountId);
   const buyerId = AccountId.fromString(a.d2.buyerId);
-  const payout = a.d2.payoutHbar;
+  const payout = Math.round(a.d2.payoutHbar * 1e8) / 1e8;
   const oracles = a.oraclePrivateKeys;
   log(`network: ${NETWORK}   pool: ${poolId}   cover: ${payout} HBAR\n`);
 

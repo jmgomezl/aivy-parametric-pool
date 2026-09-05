@@ -51,3 +51,27 @@ it was produced. Network: Hedera **testnet**.
 
 ## D3 — 2026-09-04 — mainnet — the spine
 - payout schedule `0.0.10843721` — pre-signed at purchase, executed on the 2nd oracle signature — https://hashscan.io/mainnet/schedule/0.0.10843721
+
+## D1 — 2026-09-05 — testnet — pool, share token, 1:1 deposit
+- pool account `0.0.10373586` (key = and(agent, 2-of-3 oracles)) — https://hashscan.io/testnet/account/0.0.10373586
+- share token `0.0.10373587` (ARPS) — https://hashscan.io/testnet/token/0.0.10373587
+- lp account `0.0.10373588` — https://hashscan.io/testnet/account/0.0.10373588
+- atomic deposit 20 HBAR -> 20 ARPS — https://hashscan.io/testnet/transaction/0.0.7231440@1788583394.025686918
+
+## D2 — 2026-09-05 — testnet — policy NFT, terms on HCS, atomic premium
+- policy terms topic `0.0.10373605` seq 1 — https://hashscan.io/testnet/topic/0.0.10373605
+- policy collection `0.0.10373607` serial 1 (non-transferable) — https://hashscan.io/testnet/token/0.0.10373607
+- atomic premium split buyer/pool/broker — https://hashscan.io/testnet/transaction/0.0.7231440@1788583495.369298698
+
+## D2 — 2026-09-05 — testnet — policy NFT, terms on HCS, atomic premium
+- policy terms topic `0.0.10373615` seq 1 — https://hashscan.io/testnet/topic/0.0.10373615
+- policy collection `0.0.10373617` serial 1 (non-transferable) — https://hashscan.io/testnet/token/0.0.10373617
+- atomic premium split buyer/pool/broker — https://hashscan.io/testnet/transaction/0.0.7231440@1788583518.348240019
+
+## D2 — 2026-09-05 — testnet — policy NFT, terms on HCS, atomic premium
+- policy terms topic `0.0.10373626` seq 1 — https://hashscan.io/testnet/topic/0.0.10373626
+- policy collection `0.0.10373627` serial 1 (non-transferable) — https://hashscan.io/testnet/token/0.0.10373627
+- atomic premium split buyer/pool/broker — https://hashscan.io/testnet/transaction/0.0.7231440@1788583556.240335770
+
+## D3 — 2026-09-05 — testnet — the spine
+- payout schedule `0.0.10373631` — pre-signed at purchase, executed on the 2nd oracle signature — https://hashscan.io/testnet/schedule/0.0.10373631

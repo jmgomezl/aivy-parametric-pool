@@ -12,7 +12,8 @@
     "d1:main": "dotenv -e .env.mainnet -- node scripts/d1-bootstrap.js",
     "d2:main": "dotenv -e .env.mainnet -- node scripts/d2-policy.js",
     "d3:main": "dotenv -e .env.mainnet -- node scripts/d3-spine.js",
-    "verify:main": "dotenv -e .env.mainnet -- node scripts/verify-quorum.js"
+    "verify:main": "dotenv -e .env.mainnet -- node scripts/verify-quorum.js",
+    "test": "node --test tests/"
   },
   "dependencies": {
     "@hiero-ledger/sdk": "^2.87.0",

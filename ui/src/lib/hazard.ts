@@ -12,7 +12,12 @@ export interface Quake { lon: number; lat: number; mag: number; depthKm: number;
 export const QUAKES: Quake[] = (catalogue.rows as number[][]).map(([lon, lat, mag, depthKm, day]) => ({ lon, lat, mag, depthKm, day }));
 export const CATALOGUE = { source: catalogue.source, since: catalogue.since, fetchedAt: catalogue.fetchedAt, count: catalogue.count };
 
-export const MODEL = { referenceRadiusKm: 300, triggerRadiusKm: 100, days: 30, lossRatio: 0.5, payoutHbar: 4, minMagnitude: 6, since: '1970-01-01' };
+export const MODEL = { referenceRadiusKm: 300, triggerRadiusKm: 100, days: 30, lossRatio: 0.5, payoutHbar: 4, minMagnitude: 6, since: '1970-01-01', z: 1 };
+
+// What it costs to put one policy on the ledger. Only the part of the premium not
+// reserved for claims can pay for it, so the floor is issueCost / (1 - lossRatio).
+export const ISSUE_COST_HBAR = 0.0005;
+export const minimumPremium = (lossRatio = MODEL.lossRatio) => ISSUE_COST_HBAR / (1 - lossRatio);
 export const MAX_DAYS = 62; // Scheduled Transactions lapse at 62 days; cover cannot outlive its payout
 
 export const SINCE_MS = new Date(MODEL.since).getTime();
@@ -38,6 +43,12 @@ export interface PriceOpts {
 
 export interface Priced {
   count: number; years: number; density: number; lambda: number; probability: number; premiumHbar: number; expectedLossHbar: number;
+  /** relative standard error of the count, 1/sqrt(n) — what the record does not pin down */
+  relativeError: number;
+  /** the rate we actually underwrite at: lambda inflated by z standard errors */
+  lambdaPriced: number;
+  /** false when the priced premium falls below what it costs to issue a policy */
+  viable: boolean;
   nearby: (Quake & { km: number })[];
   opts: Required<PriceOpts>;
 }
@@ -65,7 +76,13 @@ function rate(count: number, years: number) {
   const refArea = Math.PI * MODEL.referenceRadiusKm ** 2;
   const trigArea = Math.PI * MODEL.triggerRadiusKm ** 2;
   const density = count / years / refArea;
-  return { density, lambda: density * trigArea };
+  const lambda = density * trigArea;
+  // A Poisson count of n has relative standard error 1/sqrt(n). We underwrite at
+  // the inflated rate, so a thin record costs more — and the loading extinguishes
+  // itself as the catalogue grows, without anyone lowering the price by hand.
+  const relativeError = count > 0 ? 1 / Math.sqrt(count) : Infinity;
+  const lambdaPriced = count > 0 ? lambda * (1 + MODEL.z * relativeError) : 0;
+  return { density, lambda, lambdaPriced, relativeError };
 }
 
 /** Price cover at a point, exactly as the agent does, with the record as it stood at `now`. */
@@ -74,10 +91,15 @@ export function price(lat: number, lon: number, o: PriceOpts = {}): Priced {
   const cutoff = dayOf(opts.now);
   const nearby = around(lat, lon, opts.minMag).filter((q) => q.day <= cutoff);
   const years = Math.max(1 / 365.25, (opts.now.getTime() - SINCE_MS) / (365.25 * 86400000));
-  const { density, lambda } = rate(nearby.length, years);
-  const probability = 1 - Math.exp(-lambda * (opts.days / 365.25));
+  const { density, lambda, lambdaPriced, relativeError } = rate(nearby.length, years);
+  const probability = 1 - Math.exp(-lambdaPriced * (opts.days / 365.25));
   const expectedLossHbar = opts.payoutHbar * probability;
-  return { count: nearby.length, years, density, lambda, probability, expectedLossHbar, premiumHbar: expectedLossHbar / MODEL.lossRatio, nearby, opts };
+  const premiumHbar = expectedLossHbar / MODEL.lossRatio;
+  return {
+    count: nearby.length, years, density, lambda, lambdaPriced, relativeError, probability,
+    expectedLossHbar, premiumHbar, viable: nearby.length > 0 && premiumHbar >= minimumPremium(),
+    nearby, opts,
+  };
 }
 
 /** What the same cover would have cost at the start of each year: the model re-run with only the record available then. */
@@ -89,11 +111,23 @@ export function priceHistory(nearby: (Quake & { km: number })[], o: PriceOpts = 
     const at = atMs / 86400000;
     const count = nearby.filter((q) => q.day < at && q.mag >= opts.minMag).length;
     const years = (atMs - SINCE_MS) / (365.25 * 86400000);
-    const { lambda } = rate(count, years);
-    const p = 1 - Math.exp(-lambda * (opts.days / 365.25));
+    const { lambdaPriced } = rate(count, years);
+    const p = 1 - Math.exp(-lambdaPriced * (opts.days / 365.25));
     out.push({ year: y, count, premiumHbar: (opts.payoutHbar * p) / MODEL.lossRatio });
   }
   return out;
+}
+
+/**
+ * Cover a budget buys — the inverse of `price`, and the one people actually ask
+ * for. Nobody arrives wanting exactly 4 ℏ of cover; they arrive with a budget.
+ * Quoting this way also keeps a high-hazard place sellable: the cover shrinks
+ * instead of the premium becoming absurd.
+ */
+export function coverForBudget(lat: number, lon: number, budgetHbar: number, o: PriceOpts = {}): { coverHbar: number; priced: Priced } {
+  const priced = price(lat, lon, o);
+  const cover = priced.probability > 0 ? (budgetHbar * MODEL.lossRatio) / priced.probability : Infinity;
+  return { coverHbar: cover, priced };
 }
 
 /** The closest recorded event to a point, anywhere on Earth. */
