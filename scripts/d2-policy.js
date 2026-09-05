@@ -7,6 +7,7 @@ import {
   AccountId, AccountBalanceQuery, TokenId,
 } from '@hiero-ledger/sdk';
 import { client, operator, assertOperatorKey, HASHSCAN, NETWORK } from '../src/config.js';
+import { createFundedAccount } from '../src/accounts.js';
 import { annualRate } from '../src/pricing/hazard.js';
 import { underwrite } from '../src/pricing/underwrite.js';
 import { hbarUsd, usdToHbar, demoScale } from '../src/pricing/fx.js';
@@ -21,12 +22,6 @@ const BUDGET_USD = Number(process.env.BUDGET_USD ?? 4);
 const DAYS = 30;
 const log = (s) => console.log(s);
 
-async function newAccount(c, hbar) {
-  const key = PrivateKey.generateECDSA();
-  const res = await new AccountCreateTransaction()
-    .setKeyWithoutAlias(key.publicKey).setInitialBalance(new Hbar(hbar)).execute(c);
-  return { id: (await res.getReceipt(c)).accountId, key };
-}
 
 async function main() {
   await assertOperatorKey();
@@ -79,8 +74,8 @@ async function main() {
   log(`   ${HASHSCAN('token', col.tokenId)}`);
 
   // 4. Buyer and an arbitrary broker.
-  const buyer = await newAccount(c, 1);
-  const broker = await newAccount(c, 0.5);
+  const buyer = await createFundedAccount(c, NETWORK, 1, 'buyer');
+  const broker = await createFundedAccount(c, NETWORK, 0.5, 'broker');
   const brokerBefore = (await new AccountBalanceQuery().setAccountId(broker.id).execute(c)).hbars.toTinybars().toNumber();
   log(`\n4. buyer ${buyer.id}   broker ${broker.id}`);
 

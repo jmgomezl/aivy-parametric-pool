@@ -15,7 +15,10 @@
     "verify:main": "dotenv -e .env.mainnet -- node scripts/verify-quorum.js",
     "test": "node --test tests/",
     "provision": "node scripts/provision.js",
-    "provision:main": "dotenv -e .env.mainnet -- node scripts/provision.js"
+    "provision:main": "dotenv -e .env.mainnet -- node scripts/provision.js",
+    "sweep": "node scripts/sweep.js",
+    "sweep:main": "dotenv -e .env.mainnet -- node scripts/sweep.js",
+    "serve": "node src/server.js"
   },
   "dependencies": {
     "@hiero-ledger/sdk": "^2.87.0",

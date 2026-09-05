@@ -16,6 +16,7 @@ import { createPolicyCollection } from '../src/policy/collection.js';
 import { createPolicyTopic } from '../src/policy/terms.js';
 import { deposit } from '../src/pool/deposit.js';
 import { ensure, load, save } from '../src/registry.js';
+import { createFundedAccount } from '../src/accounts.js';
 
 const DEPOSIT_HBAR = Number(process.env.DEPOSIT_HBAR ?? (process.env.HEDERA_NETWORK === 'mainnet' ? 2 : 20));
 const log = (s) => console.log(s);
@@ -69,10 +70,7 @@ async function main() {
     : `\ncreated ${created} permanent asset(s); subsequent runs will reuse them`);
 
   // Per-run: an LP deposit, to prove the 1:1 path still works.
-  const lpKey = PrivateKey.generateECDSA();
-  const lpId = (await (await new AccountCreateTransaction()
-    .setKeyWithoutAlias(lpKey.publicKey).setInitialBalance(new Hbar(DEPOSIT_HBAR + 1)).execute(c)
-  ).getReceipt(c)).accountId;
+  const { id: lpId, key: lpKey } = await createFundedAccount(c, NETWORK, DEPOSIT_HBAR + 1, 'lp');
   await associate(c, lpId, lpKey, TokenId.fromString(share.id));
 
   const dep = await deposit(c, {

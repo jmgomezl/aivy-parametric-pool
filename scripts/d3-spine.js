@@ -12,6 +12,7 @@ import { client, operator, assertOperatorKey, HASHSCAN, NETWORK } from '../src/c
 import { canUnderwrite } from '../src/pool/solvency.js';
 import { deposit } from '../src/pool/deposit.js';
 import { schedulePayout, attest, payoutStatus } from '../src/policy/payout.js';
+import { createFundedAccount } from '../src/accounts.js';
 
 const log = (s) => console.log(s);
 const hbar = (t) => (t / 1e8).toFixed(4);
@@ -36,10 +37,7 @@ async function main() {
 
   // 2. An LP funds the pool. Capital is capacity: without it there is no product.
   if (!check.ok) {
-    const lpKey = PrivateKey.generateECDSA();
-    const lpId = (await (await new AccountCreateTransaction()
-      .setKeyWithoutAlias(lpKey.publicKey).setInitialBalance(new Hbar(payout + 1))
-      .execute(c)).getReceipt(c)).accountId;
+    const { id: lpId, key: lpKey } = await createFundedAccount(c, NETWORK, payout + 1, 'lp (spine)');
     await (await (await new TokenAssociateTransaction().setAccountId(lpId)
       .setTokenIds([TokenId.fromString(a.shareTokenId)]).freezeWith(c)).sign(lpKey)).execute(c);
 

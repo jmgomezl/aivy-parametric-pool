@@ -15,6 +15,7 @@ import {
   Timestamp, Client,
 } from '@hiero-ledger/sdk';
 import { client, operator, assertOperatorKey, HASHSCAN, NETWORK } from '../src/config.js';
+import { createFundedAccount } from '../src/accounts.js';
 
 const a = JSON.parse(fs.readFileSync(`.artifacts/${NETWORK}.json`, 'utf8'));
 const POOL = AccountId.fromString(a.poolAccountId);
@@ -76,10 +77,7 @@ async function main() {
   // execute on oracle signatures alone, however many arrive. Created and paid by
   // an unrelated account so the agent's key is nowhere near it.
   console.log('\n=== C: oracles alone, agent branch never satisfied ===');
-  const outsiderKey = PrivateKey.generateECDSA();
-  const outsiderId = (await (await new AccountCreateTransaction()
-    .setKeyWithoutAlias(outsiderKey.publicKey).setInitialBalance(new Hbar(12))
-    .execute(c)).getReceipt(c)).accountId;
+  const { id: outsiderId, key: outsiderKey } = await createFundedAccount(c, NETWORK, 12, 'outsider');
 
   const oc = (NETWORK === 'mainnet' ? Client.forMainnet() : Client.forTestnet())
     .setOperator(outsiderId, outsiderKey);

@@ -35,6 +35,9 @@ export const hbarToUsd = (hbar, rate) => hbar * rate;
 
 /**
  * How much smaller the on-chain policy is than the modelled one.
- * `DEMO_SCALE=1` settles at real size; the default keeps a full run affordable.
+ *
+ * The default is small enough that the public testnet pool can back many
+ * policies at once — a visitor who is refused because someone else bought first
+ * learns nothing about the protocol. `DEMO_SCALE=1` settles at real size.
  */
-export const demoScale = () => Number(process.env.DEMO_SCALE ?? 0.005);
+export const demoScale = () => Number(process.env.DEMO_SCALE ?? 0.0005);

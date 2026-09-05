@@ -18,15 +18,18 @@ export async function purchasePolicy(client, {
   buyerId, buyerKey, poolId, brokerId, premiumHbar, commissionBps = DEFAULT_COMMISSION_BPS,
 }) {
   const premium = Math.round(premiumHbar * 1e8);          // tinybar
-  const commission = Math.round((premium * commissionBps) / 10000);
+  // A sale with no broker keeps the whole premium in the pool. The commission has
+  // to be zero in that case, not merely undelivered: a transfer list that does not
+  // sum to zero is rejected outright, so an unpaid commission would break the sale.
+  const hasBroker = Boolean(brokerId);
+  const commission = hasBroker ? Math.round((premium * commissionBps) / 10000) : 0;
   const toPool = premium - commission;
 
   const tx = new TransferTransaction()
     .addHbarTransfer(AccountId.fromString(buyerId.toString()), Hbar.fromTinybars(-premium))
     .addHbarTransfer(AccountId.fromString(poolId.toString()), Hbar.fromTinybars(toPool));
 
-  // A sale with no broker keeps the whole premium in the pool.
-  if (brokerId && commission > 0) {
+  if (hasBroker && commission > 0) {
     tx.addHbarTransfer(AccountId.fromString(brokerId.toString()), Hbar.fromTinybars(commission));
   }
 
@@ -39,6 +42,6 @@ export async function purchasePolicy(client, {
     premiumTinybar: premium,
     toPoolTinybar: toPool,
     commissionTinybar: commission,
-    commissionBps,
+    commissionBps: hasBroker ? commissionBps : 0,
   };
 }
