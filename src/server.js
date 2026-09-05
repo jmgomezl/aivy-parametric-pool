@@ -20,6 +20,7 @@ import { committedTinybar, policies, zoneExposureTinybar } from './book.js';
 import { checkWrite, recordWrite, budgetToday, LIMITS } from './guards.js';
 import { associate } from './pool/shares.js';
 import { settlementAsset, fromUnits } from './asset.js';
+import { quoteCrossAsset, STABLES } from './settlement/crossAsset.js';
 
 const PORT = Number(process.env.PORT ?? 8791);
 const json = (res, status, body) => {
@@ -90,6 +91,25 @@ async function main() {
         if (lat == null || lon == null) return json(res, 400, { ok: false, message: 'lat and lon are required' });
         const q = await quotePolicy({ lat, lon, budgetUsd: num(url.searchParams.get('budget'), 4), days: num(url.searchParams.get('days'), 30) });
         return json(res, q.ok ? 200 : 200, q); // a refusal is a valid answer, not an error
+      }
+
+      // What a payout would convert into elsewhere. A quote, and it says so.
+      if (route === '/api/settle-quote') {
+        const usd = num(url.searchParams.get('usd'), null);
+        if (usd == null) return json(res, 400, { ok: false, message: 'usd is required' });
+        try {
+          const q = await quoteCrossAsset({
+            payoutUsd: usd,
+            chainId: num(url.searchParams.get('chainId'), 8453),
+            tokenOut: url.searchParams.get('tokenOut') ?? undefined,
+          });
+          return json(res, 200, q);
+        } catch (err) {
+          return json(res, 200, {
+            ok: false, reason: 'quote_unavailable', message: err.message,
+            chains: Object.entries(STABLES).map(([id, s]) => ({ chainId: Number(id), chain: s.chain })),
+          });
+        }
       }
 
       if (route === '/api/policies' && req.method === 'GET') {

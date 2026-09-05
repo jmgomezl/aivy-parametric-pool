@@ -135,6 +135,24 @@ a licensed insurer issues the cover and carries the regulatory risk while this
 provides the rail — which is the same route Etherisc took with ACRE Africa. There
 is no jurisdictional loophole here and none is claimed.
 
+## Cross-asset settlement, and where it stops
+
+A payout lands in the pool's settlement asset on Hedera. A beneficiary may want
+something else, and Uniswap has the liquidity — so the settlement agent prices
+the conversion against it through the Trading API and returns the transaction
+that would execute it.
+
+Then it stops, and says so in the response. That liquidity lives on an EVM chain
+and this payout lives on Hedera; crossing between them needs a bridge, and this
+protocol deliberately does not have one. Building a "simple trustless bridge"
+would mean a handful of signers attesting that something happened on another
+chain — a custodian, which is the thing this whole design exists to remove.
+
+Hashgraph's [Cross-Ledger Protocol](https://hashgraph.com/clpr/) is the right
+answer to this seam: bridgeless messaging over state proofs and threshold
+signatures — the same family of idea as this pool's key. It is not open to
+developers yet, so the boundary stands and is stated rather than papered over.
+
 ## Known limits
 
 - **Basis risk.** A M5.8 that destroys your house pays nothing. The product pays
