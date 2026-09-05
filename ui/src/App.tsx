@@ -13,9 +13,10 @@ import { waiting } from './beats/05-waiting';
 import { quake } from './beats/06-quake';
 import { paid } from './beats/07-paid';
 import { coda } from './beats/08-coda';
+import { protect } from './beats/09-protect';
 
 // index 0 is the atlas; the eight story beats keep their numbers 1–8.
-const BEATS: Beat[] = [atlas, quote, guard, capital, issued, waiting, quake, paid, coda];
+const BEATS: Beat[] = [atlas, quote, guard, capital, issued, waiting, quake, paid, coda, protect];
 
 /* ---------------------------------------------------------------- routing */
 // The position lives in the URL hash (#3.1 = beat 3, sub-step 1; #0 = atlas) so a reload
