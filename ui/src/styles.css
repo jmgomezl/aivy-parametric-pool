@@ -356,3 +356,78 @@ kbd {
 svg text {
   user-select: none;
 }
+
+/* ------------------------------------------------------------- controls */
+input[type='range'].slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 22px;
+  background: transparent;
+  cursor: pointer;
+}
+input[type='range'].slider::-webkit-slider-runnable-track {
+  height: 2px;
+  background: var(--line-strong);
+  border-radius: 1px;
+}
+input[type='range'].slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -6px;
+  border-radius: 50%;
+  background: var(--fg-0);
+  border: 2px solid var(--bg-0);
+  transition: transform var(--t-fast) var(--ease);
+}
+input[type='range'].slider:hover::-webkit-slider-thumb,
+input[type='range'].slider:active::-webkit-slider-thumb {
+  transform: scale(1.25);
+}
+input[type='range'].slider:focus {
+  outline: none;
+}
+input[type='range'].slider.slider-accent::-webkit-slider-thumb {
+  background: var(--pending);
+}
+
+.chip {
+  white-space: nowrap;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  padding: 4px 12px;
+  font-size: 14px;
+  color: var(--fg-2);
+  background: rgba(10, 11, 13, 0.6);
+  transition:
+    color var(--t-fast) var(--ease),
+    border-color var(--t-fast) var(--ease),
+    background-color var(--t-fast) var(--ease);
+  cursor: pointer;
+}
+.chip:hover {
+  color: var(--fg-0);
+  border-color: var(--line-strong);
+}
+.chip-on {
+  color: var(--fg-0);
+  border-color: var(--fg-1);
+  background: var(--bg-3);
+}
+
+.icon-btn {
+  width: 30px;
+  height: 30px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 6px;
+  border: 1px solid var(--line-strong);
+  color: var(--fg-0);
+  background: rgba(10, 11, 13, 0.6);
+  cursor: pointer;
+  transition: background-color var(--t-fast) var(--ease);
+}
+.icon-btn:hover {
+  background: var(--bg-3);
+}

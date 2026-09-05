@@ -21,7 +21,7 @@ const BEATS: Beat[] = [atlas, quote, guard, capital, issued, waiting, quake, pai
 // The position lives in the URL hash (#3.1 = beat 3, sub-step 1; #0 = atlas) so a reload
 // mid-recording lands on the same frame.
 function readHash(): { b: number; s: number } {
-  const m = /^#(\d+)(?:\.(\d+))?$/.exec(window.location.hash);
+  const m = /^#(\d+)(?:\.(\d+))?(?:@.*)?$/.exec(window.location.hash); // #0@lat,lon carries an atlas pin
   const b = m ? Math.min(Math.max(Number(m[1]), 0), BEATS.length - 1) : 0;
   const s = m && m[2] ? Math.min(Math.max(Number(m[2]), 0), BEATS[b].steps - 1) : 0;
   return { b, s };

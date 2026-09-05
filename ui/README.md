@@ -25,7 +25,18 @@ with the keyboard, no timers:
 The position lives in the URL hash (`#6.2` = beat 6, sub-step 2, `#0` = atlas),
 so a reload mid-recording lands on the same frame.
 
-On the atlas, move the mouse to price a point, click to pin it, or pick a city.
+On the atlas:
+
+- **move** the mouse to price the point under it; **click** to pin; pick a city chip
+- **scroll** to zoom (up to 12×), **drag** to pan, **double-click** to reset
+- **play** or scrub the year slider: the field fills in as the record accumulates,
+  and every number is the model re-run with only the record available that year
+- **cover** and **window** sliders re-price on the fly; the window stops at 62 days,
+  the ledger's ceiling for a scheduled payout
+- **trigger** chips switch the magnitude floor between M6, M6.5 and M7
+- **+ compare** keeps up to four places side by side at the same cover and window
+- the pinned point is in the URL (`#0@lat,lon`), so any view can be shared
+
 The pinned point is recounted live at USGS and the two numbers are shown side by
 side; HBAR is converted at the mirror node's current exchange rate.
 
@@ -55,7 +66,8 @@ scripts/snapshot.mjs     artifact + mirror node -> src/data/mainnet.json
 scripts/quakes.mjs       USGS ComCat -> src/data/quakes.json (the atlas catalogue)
 src/data/mainnet.json    the public record of the run (committed)
 src/lib/hazard.ts        the agent's hazard model, in the browser
-src/beats/00-atlas.tsx   the world hazard field: hover to price, click to pin
+src/beats/00-atlas.tsx   the atlas: hover, pin, zoom, scrub, compare
+src/beats/atlas/         projection + zoom view, the additive heat canvas, land outlines
 src/beats/               one file per story beat; 05-waiting exports the pool – lock – buyer scene 06 reuses
 src/components/viz.tsx   the visual language: nodes, flows, the two-ring lock, the capital tank, waves
 src/components/Scene.tsx the frame every beat uses: title, visual, big numbers, HashScan strip
