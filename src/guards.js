@@ -11,8 +11,9 @@ export const LIMITS = {
   perIpPerHour: Number(process.env.LIMIT_PER_IP_HOUR ?? 3),
   /** Nor can the whole internet, collectively, in a day. */
   policiesPerDay: Number(process.env.LIMIT_POLICIES_DAY ?? 100),
-  /** And a hard ceiling on what may be committed, whatever the count. */
-  hbarPerDay: Number(process.env.LIMIT_HBAR_DAY ?? 400),
+  /** And a hard ceiling on the cover committed, in USD — the unit the policy is
+   *  modelled in, so the cap means the same thing whatever the ledger settles. */
+  usdPerDay: Number(process.env.LIMIT_USD_DAY ?? 20_000),
 };
 
 const hits = new Map();   // ip -> timestamps
@@ -30,13 +31,13 @@ export function budgetToday() {
   prune(Date.now());
   return {
     policies: spend.length,
-    hbar: spend.reduce((s, e) => s + e.hbar, 0),
-    limits: { policies: LIMITS.policiesPerDay, hbar: LIMITS.hbarPerDay },
+    usd: spend.reduce((s, e) => s + e.usd, 0),
+    limits: { policies: LIMITS.policiesPerDay, usd: LIMITS.usdPerDay },
   };
 }
 
 /** Decide whether a write may proceed. Returns null when it may. */
-export function checkWrite({ network, ip, hbar }) {
+export function checkWrite({ network, ip, usd }) {
   const now = Date.now();
   prune(now);
 
@@ -62,19 +63,19 @@ export function checkWrite({ network, ip, hbar }) {
   if (today.policies >= LIMITS.policiesPerDay) {
     return { status: 429, reason: 'daily_policy_cap', message: 'The demo has issued its policies for today.' };
   }
-  if (today.hbar + hbar > LIMITS.hbarPerDay) {
+  if (today.usd + usd > LIMITS.usdPerDay) {
     return {
-      status: 429, reason: 'daily_hbar_cap',
-      message: `Issuing this would commit ${(today.hbar + hbar).toFixed(2)} HBAR today, above the ` +
-               `${LIMITS.hbarPerDay} HBAR the demo is allowed to put at risk.`,
+      status: 429, reason: 'daily_cover_cap',
+      message: `Issuing this would commit $${(today.usd + usd).toLocaleString()} of cover today, above ` +
+               `the $${LIMITS.usdPerDay.toLocaleString()} the demo is allowed to put at risk.`,
     };
   }
   return null;
 }
 
 /** Record a write that actually happened. */
-export function recordWrite({ ip, hbar }) {
+export function recordWrite({ ip, usd }) {
   const now = Date.now();
   hits.set(ip, [...(hits.get(ip) ?? []), now]);
-  spend.push({ at: now, hbar });
+  spend.push({ at: now, usd });
 }

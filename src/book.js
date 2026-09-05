@@ -28,7 +28,7 @@ export const policies = (network) => read(network).policies;
 export function committedTinybar(network, now = Date.now()) {
   return policies(network)
     .filter((p) => !p.settled && new Date(p.lapsesAt).getTime() > now)
-    .reduce((sum, p) => sum + Math.round(p.payoutHbar * 1e8), 0);
+    .reduce((sum, p) => sum + (p.payoutUnits ?? Math.round((p.payoutHbar ?? 0) * 1e8)), 0);
 }
 
 /** Exposure a single trigger zone already carries — what a correlated event would cost. */
@@ -42,7 +42,7 @@ export function zoneExposureTinybar(network, { lat, lon, radiusKm = 100 }, now =
   return policies(network)
     .filter((p) => !p.settled && new Date(p.lapsesAt).getTime() > now)
     .filter((p) => km(lat, lon, p.lat, p.lon) <= radiusKm)
-    .reduce((sum, p) => sum + Math.round(p.payoutHbar * 1e8), 0);
+    .reduce((sum, p) => sum + (p.payoutUnits ?? Math.round((p.payoutHbar ?? 0) * 1e8)), 0);
 }
 
 export function record(network, policy) {

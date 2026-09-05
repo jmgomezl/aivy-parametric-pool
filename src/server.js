@@ -10,15 +10,16 @@
 // own leg of the premium transfer, which the kit already supports through
 // AgentMode.RETURN_BYTES.
 import http from 'node:http';
-import { AccountId, TokenId } from '@hiero-ledger/sdk';
+import { AccountId, TokenId, TransferTransaction } from '@hiero-ledger/sdk';
 import { client, operator, assertOperatorKey, NETWORK, HASHSCAN } from './config.js';
 import { load } from './registry.js';
 import { createFundedAccount } from './accounts.js';
 import { quotePolicy, issuePolicy } from './policy/issue.js';
-import { poolCapitalTinybar } from './pool/solvency.js';
+import { poolCapital } from './pool/solvency.js';
 import { committedTinybar, policies, zoneExposureTinybar } from './book.js';
 import { checkWrite, recordWrite, budgetToday, LIMITS } from './guards.js';
 import { associate } from './pool/shares.js';
+import { settlementAsset, fromUnits } from './asset.js';
 
 const PORT = Number(process.env.PORT ?? 8791);
 const json = (res, status, body) => {
@@ -67,12 +68,16 @@ async function main() {
       }
 
       if (route === '/api/pool') {
-        const capital = await poolCapitalTinybar(c, poolId);
+        const asset = settlementAsset(NETWORK);
+        const capital = await poolCapital(c, poolId, NETWORK);
         const committed = committedTinybar(NETWORK);
         return json(res, 200, {
           network: NETWORK, poolAccountId: reg.poolAccountId,
-          capitalHbar: capital / 1e8, committedHbar: committed / 1e8,
-          headroomHbar: (capital - committed) / 1e8,
+          asset: { symbol: asset.symbol, tokenId: asset.tokenId, isUsdc: Boolean(asset.isUsdc) },
+          capital: fromUnits(capital, asset), committed: fromUnits(committed, asset),
+          headroom: fromUnits(capital - committed, asset),
+          capitalHbar: fromUnits(capital, asset), committedHbar: fromUnits(committed, asset),
+          headroomHbar: fromUnits(capital - committed, asset),
           livePolicies: policies(NETWORK).filter((p) => !p.settled).length,
           budgetToday: budgetToday(),
           hashscan: HASHSCAN('account', reg.poolAccountId),
@@ -107,11 +112,21 @@ async function main() {
         const quote = await quotePolicy({ lat, lon, budgetUsd: num(input.budgetUsd, 4), days: num(input.days, 30) });
         if (!quote.ok) return json(res, 200, quote);
 
-        const denied = checkWrite({ network: NETWORK, ip: ipOf(req), hbar: quote.settled.payoutHbar });
+        const denied = checkWrite({ network: NETWORK, ip: ipOf(req), usd: quote.payout });
         if (denied) return json(res, denied.status, { ok: false, ...denied });
 
+        // The buyer needs the policy NFT and, when we settle in a token, the
+        // settlement asset too — and enough of it to pay the premium.
+        const asset = settlementAsset(NETWORK);
         const buyer = await createFundedAccount(c, NETWORK, 1, 'buyer (api)');
         await associate(c, buyer.id, buyer.key, TokenId.fromString(reg.policyTokenId));
+        if (asset.kind === 'token') {
+          await associate(c, buyer.id, buyer.key, TokenId.fromString(asset.tokenId));
+          const fund = new TransferTransaction()
+            .addTokenTransfer(TokenId.fromString(asset.tokenId), agent.id, -quote.settled.premiumUnits)
+            .addTokenTransfer(TokenId.fromString(asset.tokenId), buyer.id, quote.settled.premiumUnits);
+          await (await fund.execute(c)).getReceipt(c);
+        }
         const broker = input.brokerId ? AccountId.fromString(input.brokerId) : null;
 
         const result = await issuePolicy(deps, {
@@ -120,7 +135,7 @@ async function main() {
         });
         if (!result.ok) return json(res, 200, result);
 
-        recordWrite({ ip: ipOf(req), hbar: quote.settled.payoutHbar });
+        recordWrite({ ip: ipOf(req), usd: quote.payout });
         return json(res, 201, {
           ...result,
           hashscan: {
@@ -140,7 +155,7 @@ async function main() {
   server.listen(PORT, () => {
     console.log(`underwriting agent on :${PORT}  network=${NETWORK}`);
     console.log(`  writes ${NETWORK === 'mainnet' && !LIMITS.allowMainnetWrites ? 'DISABLED (mainnet)' : 'enabled'}` +
-      `  · ${LIMITS.perIpPerHour}/ip/hour · ${LIMITS.policiesPerDay}/day · ${LIMITS.hbarPerDay} HBAR/day`);
+      `  · ${LIMITS.perIpPerHour}/ip/hour · ${LIMITS.policiesPerDay}/day · $${LIMITS.usdPerDay.toLocaleString()}/day`);
   });
 }
 main().catch((e) => { console.error(e.message ?? e); process.exit(1); });

@@ -9,7 +9,8 @@
 import { AccountId, TokenId } from '@hiero-ledger/sdk';
 import { annualRate } from '../pricing/hazard.js';
 import { underwrite } from '../pricing/underwrite.js';
-import { hbarUsd, usdToHbar, demoScale } from '../pricing/fx.js';
+import { hbarUsd } from '../pricing/fx.js';
+import { settlementAsset, toUnits, fromUnits } from '../asset.js';
 import { canUnderwrite } from '../pool/solvency.js';
 import { committedTinybar, record } from '../book.js';
 import { publishTerms, triggerSpec } from './terms.js';
@@ -17,22 +18,30 @@ import { mintPolicy, deliverAndFreeze } from './collection.js';
 import { purchasePolicy } from './purchase.js';
 import { schedulePayout } from './payout.js';
 
-const toTinybar = (hbar) => Math.round(hbar * 1e8) / 1e8;
+
 
 /** Price a policy without touching the ledger. Safe to call from anywhere. */
-export async function quotePolicy({ lat, lon, budgetUsd = 4, days = 30 }) {
+export async function quotePolicy({ lat, lon, budgetUsd = 4, days = 30, network = 'testnet' }) {
   const hazard = await annualRate({ lat, lon });
   const decision = underwrite({ hazard, budget: budgetUsd, days });
   if (!decision.ok) return decision;
 
-  const fx = await hbarUsd();
-  const scale = demoScale();
+  // A dollar-denominated asset needs no rate and no scale: $4 of premium is
+  // 4 tokens. Only an HBAR-settled policy has to be converted, and only then
+  // does the cover float with the price of the asset backing it.
+  const asset = settlementAsset(network);
+  const fx = asset.kind === 'hbar' ? await hbarUsd() : null;
+  const premiumUnits = toUnits(decision.premium, asset, fx?.price);
+  const payoutUnits = toUnits(decision.payout, asset, fx?.price);
+
   return {
     ...decision,
-    fx: { hbarUsd: fx.price, source: fx.source, at: fx.at, demoScale: scale },
+    asset: { kind: asset.kind, symbol: asset.symbol, tokenId: asset.tokenId, decimals: asset.decimals, isUsdc: Boolean(asset.isUsdc) },
+    fx: fx ? { hbarUsd: fx.price, source: fx.source, at: fx.at } : null,
     settled: {
-      premiumHbar: toTinybar(usdToHbar(decision.premium, fx.price) * scale),
-      payoutHbar: toTinybar(usdToHbar(decision.payout, fx.price) * scale),
+      premiumUnits, payoutUnits,
+      premium: fromUnits(premiumUnits, asset), payout: fromUnits(payoutUnits, asset),
+      symbol: asset.symbol,
     },
   };
 }
@@ -44,13 +53,13 @@ export async function quotePolicy({ lat, lon, budgetUsd = 4, days = 30 }) {
 export async function issuePolicy(deps, { lat, lon, place, budgetUsd = 4, days = 30, brokerId = null, buyer }) {
   const { client, agent, network, poolId, policyTokenId, termsTopicId } = deps;
 
-  const quote = await quotePolicy({ lat, lon, budgetUsd, days });
+  const quote = await quotePolicy({ lat, lon, budgetUsd, days, network });
   if (!quote.ok) return quote;
 
   // The guard is an invariant, not an exception: a promise the pool cannot keep
   // must never be made, because pre-signed payouts have no queue between them.
   const committed = committedTinybar(network);
-  const guard = await canUnderwrite(client, poolId, committed, Math.round(quote.settled.payoutHbar * 1e8));
+  const guard = await canUnderwrite(client, poolId, committed, quote.settled.payoutUnits, network);
   if (!guard.ok) return { ok: false, reason: 'exceeds_capital', message: guard.reason, guard };
 
   const lapsesAt = new Date(Date.now() + days * 86400_000).toISOString();
@@ -59,6 +68,7 @@ export async function issuePolicy(deps, { lat, lon, place, budgetUsd = 4, days =
     place: place ?? null,
     modelled: { premiumUsd: quote.premium, payoutUsd: quote.payout, currency: 'USD' },
     settled: quote.settled,
+    asset: quote.asset,
     fx: quote.fx,
     hazard: quote.hazard,
     lossRatio: quote.lossRatio,
@@ -73,21 +83,23 @@ export async function issuePolicy(deps, { lat, lon, place, budgetUsd = 4, days =
 
   const sale = await purchasePolicy(client, {
     buyerId: buyer.id, buyerKey: buyer.key, poolId, brokerId,
-    premiumHbar: quote.settled.premiumHbar,
+    premiumUnits: quote.settled.premiumUnits, network,
   });
 
   await deliverAndFreeze(client, token, minted.serial, agent.id, buyer.id);
 
   const payout = await schedulePayout(client, {
     poolId, beneficiaryId: AccountId.fromString(buyer.id.toString()),
-    payoutHbar: quote.settled.payoutHbar, days,
+    payoutUnits: quote.settled.payoutUnits, network, days,
     memo: `quake payout M6+ ${place ?? `${lat},${lon}`}`.slice(0, 100),
   });
 
   const policy = {
     serial: minted.serial, lat, lon, place: place ?? null,
     premiumUsd: quote.premium, payoutUsd: quote.payout,
-    premiumHbar: quote.settled.premiumHbar, payoutHbar: quote.settled.payoutHbar,
+    premiumUnits: quote.settled.premiumUnits, payoutUnits: quote.settled.payoutUnits,
+    premiumHbar: quote.settled.premium, payoutHbar: quote.settled.payout,
+    asset: quote.asset.symbol,
     buyerId: buyer.id.toString(), brokerId: brokerId ? brokerId.toString() : null,
     termsPointer: published.pointer, saleTxId: sale.txId,
     scheduleId: payout.scheduleId, lapsesAt, settled: false,

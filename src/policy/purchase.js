@@ -10,14 +10,16 @@
 // any account, different on every sale, and the three legs settle or fail
 // together — the pool never custodies the commission and the broker cannot be
 // stiffed. This is what makes "anyone can be a broker" actually work.
-import { TransferTransaction, Hbar, AccountId } from '@hiero-ledger/sdk';
+import { TransferTransaction, Hbar, AccountId, TokenId } from '@hiero-ledger/sdk';
+import { settlementAsset } from '../asset.js';
 
 export const DEFAULT_COMMISSION_BPS = 1500; // 15%
 
 export async function purchasePolicy(client, {
-  buyerId, buyerKey, poolId, brokerId, premiumHbar, commissionBps = DEFAULT_COMMISSION_BPS,
+  buyerId, buyerKey, poolId, brokerId, premiumUnits, network, commissionBps = DEFAULT_COMMISSION_BPS,
 }) {
-  const premium = Math.round(premiumHbar * 1e8);          // tinybar
+  const asset = settlementAsset(network);
+  const premium = Math.round(premiumUnits);
   // A sale with no broker keeps the whole premium in the pool. The commission has
   // to be zero in that case, not merely undelivered: a transfer list that does not
   // sum to zero is rejected outright, so an unpaid commission would break the sale.
@@ -25,13 +27,19 @@ export async function purchasePolicy(client, {
   const commission = hasBroker ? Math.round((premium * commissionBps) / 10000) : 0;
   const toPool = premium - commission;
 
-  const tx = new TransferTransaction()
-    .addHbarTransfer(AccountId.fromString(buyerId.toString()), Hbar.fromTinybars(-premium))
-    .addHbarTransfer(AccountId.fromString(poolId.toString()), Hbar.fromTinybars(toPool));
-
-  if (hasBroker && commission > 0) {
-    tx.addHbarTransfer(AccountId.fromString(brokerId.toString()), Hbar.fromTinybars(commission));
-  }
+  const buyer = AccountId.fromString(buyerId.toString());
+  const pool = AccountId.fromString(poolId.toString());
+  const tx = new TransferTransaction();
+  const send = (from, to, amount) => {
+    if (asset.kind === 'hbar') {
+      tx.addHbarTransfer(from, Hbar.fromTinybars(-amount)).addHbarTransfer(to, Hbar.fromTinybars(amount));
+    } else {
+      const t = TokenId.fromString(asset.tokenId);
+      tx.addTokenTransfer(t, from, -amount).addTokenTransfer(t, to, amount);
+    }
+  };
+  send(buyer, pool, toPool);
+  if (hasBroker && commission > 0) send(buyer, AccountId.fromString(brokerId.toString()), commission);
 
   const signed = await (await tx.freezeWith(client)).sign(buyerKey);
   const res = await signed.execute(client);
@@ -39,9 +47,10 @@ export async function purchasePolicy(client, {
 
   return {
     txId: res.transactionId.toString(),
-    premiumTinybar: premium,
-    toPoolTinybar: toPool,
-    commissionTinybar: commission,
+    asset: asset.symbol,
+    premiumUnits: premium,
+    toPoolUnits: toPool,
+    commissionUnits: commission,
     commissionBps: hasBroker ? commissionBps : 0,
   };
 }

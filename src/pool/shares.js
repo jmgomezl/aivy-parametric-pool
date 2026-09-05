@@ -53,3 +53,28 @@ export async function mintTo(client, tokenId, treasuryId, toId, units) {
 
   return { mintTxId: mint.transactionId.toString(), transferTxId: move.transactionId.toString() };
 }
+
+/**
+ * The demo settlement unit.
+ *
+ * Named "Aivy Demo Dollar (unbacked)" on purpose: it is a dollar-denominated
+ * accounting unit for a demonstration, not a claim on anything. Real USDC is
+ * supported and preferred wherever there is enough of it — see src/asset.js.
+ */
+export async function createDemoUnit(client, treasuryId, agentKey) {
+  const { TokenCreateTransaction, TokenType, TokenSupplyType } = await import('@hiero-ledger/sdk');
+  const tx = await new TokenCreateTransaction()
+    .setTokenName('Aivy Demo Dollar (unbacked)')
+    .setTokenSymbol('aUSDd')
+    .setTokenType(TokenType.FungibleCommon)
+    .setSupplyType(TokenSupplyType.Infinite)
+    .setDecimals(6)
+    .setInitialSupply(1_000_000 * 1e6)
+    .setTreasuryAccountId(treasuryId)
+    .setSupplyKey(agentKey.publicKey)
+    .setAdminKey(agentKey.publicKey)
+    .setTokenMemo('Unbacked demo unit. Not a stablecoin. Not redeemable.')
+    .execute(client);
+  const receipt = await tx.getReceipt(client);
+  return { tokenId: receipt.tokenId, txId: tx.transactionId.toString() };
+}

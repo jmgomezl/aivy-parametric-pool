@@ -10,16 +10,23 @@
 // the only signatures the payout still needs are the oracles'.
 import {
   ScheduleCreateTransaction, ScheduleSignTransaction, ScheduleInfoQuery,
-  TransferTransaction, Hbar, Timestamp, ScheduleId, PrivateKey,
+  TransferTransaction, Hbar, Timestamp, ScheduleId, PrivateKey, TokenId,
 } from '@hiero-ledger/sdk';
 import { MAX_EXPIRY_SECONDS } from 'hak-scheduled-settlement';
+import { settlementAsset } from '../asset.js';
 
-export async function schedulePayout(client, { poolId, beneficiaryId, payoutHbar, days, memo }) {
+export async function schedulePayout(client, { poolId, beneficiaryId, payoutUnits, network, days, memo }) {
   const expirySeconds = Math.min(days * 24 * 3600, MAX_EXPIRY_SECONDS);
+  const asset = settlementAsset(network);
+  const amount = Math.round(payoutUnits);
 
-  const inner = new TransferTransaction()
-    .addHbarTransfer(poolId, new Hbar(-payoutHbar))
-    .addHbarTransfer(beneficiaryId, new Hbar(payoutHbar));
+  const inner = new TransferTransaction();
+  if (asset.kind === 'hbar') {
+    inner.addHbarTransfer(poolId, Hbar.fromTinybars(-amount)).addHbarTransfer(beneficiaryId, Hbar.fromTinybars(amount));
+  } else {
+    const t = TokenId.fromString(asset.tokenId);
+    inner.addTokenTransfer(t, poolId, -amount).addTokenTransfer(t, beneficiaryId, amount);
+  }
 
   const res = await new ScheduleCreateTransaction()
     .setScheduledTransaction(inner)

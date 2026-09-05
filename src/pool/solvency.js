@@ -8,19 +8,26 @@
 //
 // So insolvency is not something to handle gracefully. It is something to make
 // impossible by refusing to underwrite past capital.
-import { AccountBalanceQuery } from '@hiero-ledger/sdk';
+import { AccountBalanceQuery, TokenId } from '@hiero-ledger/sdk';
+import { settlementAsset } from '../asset.js';
 
-export async function poolCapitalTinybar(client, poolId) {
+/** Pool capital in the settlement asset's smallest unit. */
+export async function poolCapital(client, poolId, network) {
+  const asset = settlementAsset(network);
   const bal = await new AccountBalanceQuery().setAccountId(poolId).execute(client);
-  return bal.hbars.toTinybars().toNumber();
+  if (asset.kind === 'hbar') return bal.hbars.toTinybars().toNumber();
+  return Number(bal.tokens?.get(TokenId.fromString(asset.tokenId)) ?? 0);
 }
+
+/** @deprecated use poolCapital — kept so HBAR-era callers still read correctly */
+export const poolCapitalTinybar = (client, poolId) => poolCapital(client, poolId, 'hbar-legacy');
 
 /**
  * @param committedTinybar sum of payouts on policies already live
  * @param requestedTinybar payout of the policy being considered
  */
-export async function canUnderwrite(client, poolId, committedTinybar, requestedTinybar) {
-  const capital = await poolCapitalTinybar(client, poolId);
+export async function canUnderwrite(client, poolId, committedTinybar, requestedTinybar, network) {
+  const capital = await poolCapital(client, poolId, network);
   const exposureAfter = committedTinybar + requestedTinybar;
   const ok = exposureAfter <= capital;
   return {
