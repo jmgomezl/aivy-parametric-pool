@@ -4,17 +4,19 @@
 import { useEffect, useState } from 'react';
 
 export const MIRROR = 'https://mainnet.mirrornode.hedera.com/api/v1';
+export type Network = 'mainnet' | 'testnet';
+const mirrorFor = (n: Network) => `https://${n}.mirrornode.hedera.com/api/v1`;
 
 export type Live<T> =
   | { status: 'loading' }
   | { status: 'ok'; data: T; at: string }
   | { status: 'unavailable'; reason: string };
 
-async function get<T>(path: string, timeoutMs = 8000): Promise<T> {
+async function get<T>(path: string, timeoutMs = 8000, network: Network = 'mainnet'): Promise<T> {
   const ctl = new AbortController();
   const t = setTimeout(() => ctl.abort(), timeoutMs);
   try {
-    const res = await fetch(`${MIRROR}${path}`, { signal: ctl.signal, headers: { accept: 'application/json' } });
+    const res = await fetch(`${mirrorFor(network)}${path}`, { signal: ctl.signal, headers: { accept: 'application/json' } });
     if (!res.ok) throw new Error(`mirror node ${res.status}`);
     return (await res.json()) as T;
   } finally {
@@ -27,13 +29,13 @@ export interface ScheduleLive { executedAt: string | null; signatures: number; d
 export interface TokenLive { totalSupply: string; symbol: string }
 export interface NftLive { owner: string; metadata: string }
 
-export const fetchAccount = async (id: string): Promise<AccountLive> => {
-  const j = await get<{ balance: { balance: number; tokens: { token_id: string; balance: number }[] } }>(`/accounts/${id}?transactions=false`);
+export const fetchAccount = async (id: string, network: Network = 'mainnet'): Promise<AccountLive> => {
+  const j = await get<{ balance: { balance: number; tokens: { token_id: string; balance: number }[] } }>(`/accounts/${id}?transactions=false`, 8000, network);
   return { balanceTinybar: j.balance.balance, tokens: j.balance.tokens ?? [] };
 };
 
-export const fetchSchedule = async (id: string): Promise<ScheduleLive> => {
-  const j = await get<{ executed_timestamp: string | null; signatures: unknown[]; deleted: boolean; expiration_time: string }>(`/schedules/${id}`);
+export const fetchSchedule = async (id: string, network: Network = 'mainnet'): Promise<ScheduleLive> => {
+  const j = await get<{ executed_timestamp: string | null; signatures: unknown[]; deleted: boolean; expiration_time: string }>(`/schedules/${id}`, 8000, network);
   return {
     executedAt: j.executed_timestamp ? new Date(Number(j.executed_timestamp) * 1000).toISOString() : null,
     signatures: j.signatures.length,
