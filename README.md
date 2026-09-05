@@ -154,6 +154,7 @@ src/pricing/hazard.js   Poisson rate density over the USGS catalogue
 scripts/d1-bootstrap.js pool + token + deposit, end to end
 scripts/verify-quorum.js the two adversarial proofs above
 research/               live probe results: x402 facilitator, hazard model
+ui/                     the settlement timeline — the mainnet run, quote to payout, filmed at 1920×1080
 LINKS.md                every on-chain artifact produced, as it was produced
 ```
 

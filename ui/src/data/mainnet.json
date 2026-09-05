@@ -1,0 +1,609 @@
+{
+  "network": "mainnet",
+  "snapshotAt": "2026-09-05T03:00:38.993Z",
+  "runCreatedAt": "2026-09-04T23:07:21.382Z",
+  "mirror": "https://mainnet.mirrornode.hedera.com/api/v1",
+  "accounts": {
+    "agent": {
+      "id": "0.0.10843702",
+      "publicKey": "0316ca7c602cd8a061a13df93a1d7a8e9fd9ccbff80b240775290a3c1d764caf48",
+      "keyType": "ECDSA_SECP256K1"
+    },
+    "pool": {
+      "id": "0.0.10843704",
+      "memo": "aivy parametric risk pool",
+      "createTxId": "0.0.10843702@1788563148.896945597",
+      "createdAt": "2026-09-04T23:05:56.020Z",
+      "keyProtobuf": "3299010a233a210316ca7c602cd8a061a13df93a1d7a8e9fd9ccbff80b240775290a3c1d764caf480a722a700802126c0a221220e92cae7d2cb171c876a8ad42932ae3bebf375b38d8e6056790061d58a9adab4d0a22122054f27dbacf5be433ce07f63c7adba3354b1659affb78a9f694da774326274b2b0a2212209bc47f4ed7956ea7bb46f18e7cda55ab0a6ca0b81b6ce2c86c3d50f5dd9d6ee9",
+      "balanceAtSnapshot": 102625360
+    },
+    "lp1": {
+      "id": "0.0.10843706",
+      "balanceAtSnapshot": 100000000
+    },
+    "lp2": {
+      "id": "0.0.10843720",
+      "balanceAtSnapshot": 100000000
+    },
+    "buyer": {
+      "id": "0.0.10843717",
+      "createdAt": "2026-09-04T23:09:28.888Z",
+      "balanceAtSnapshot": 498455671
+    },
+    "broker": {
+      "id": "0.0.10843718",
+      "createdAt": "2026-09-04T23:09:35.692Z",
+      "balanceAtSnapshot": 50231649
+    },
+    "outsider": {
+      "id": "0.0.10843724",
+      "publicKey": "039d035746e4ec5bcf83c0a31677202cdb494885879c1cb4516d0b1b1f792ea793"
+    }
+  },
+  "oracles": [
+    {
+      "name": "USGS ComCat",
+      "index": 0,
+      "derPublicKey": "302a300506032b6570032100e92cae7d2cb171c876a8ad42932ae3bebf375b38d8e6056790061d58a9adab4d",
+      "rawKey": "e92cae7d2cb171c876a8ad42932ae3bebf375b38d8e6056790061d58a9adab4d"
+    },
+    {
+      "name": "EMSC",
+      "index": 1,
+      "derPublicKey": "302a300506032b657003210054f27dbacf5be433ce07f63c7adba3354b1659affb78a9f694da774326274b2b",
+      "rawKey": "54f27dbacf5be433ce07f63c7adba3354b1659affb78a9f694da774326274b2b"
+    },
+    {
+      "name": "SGC",
+      "index": 2,
+      "derPublicKey": "302a300506032b65700321009bc47f4ed7956ea7bb46f18e7cda55ab0a6ca0b81b6ce2c86c3d50f5dd9d6ee9",
+      "rawKey": "9bc47f4ed7956ea7bb46f18e7cda55ab0a6ca0b81b6ce2c86c3d50f5dd9d6ee9"
+    }
+  ],
+  "quorum": {
+    "threshold": 2,
+    "count": 3
+  },
+  "shareToken": {
+    "id": "0.0.10843705",
+    "symbol": "ARPS",
+    "name": "Aivy Risk Pool Share",
+    "decimals": 8,
+    "totalSupplyAtSnapshot": "600000000",
+    "treasury": "0.0.10843702",
+    "createTxId": "0.0.10843702@1788563184.322560863"
+  },
+  "policy": {
+    "tokenId": "0.0.10843715",
+    "symbol": "APOL",
+    "name": "Aivy Parametric Policy",
+    "serial": 1,
+    "metadata": "hcs://0.0.10843714/1",
+    "owner": "0.0.10843717",
+    "mintTxId": "0.0.10843702@1788563352.548702323",
+    "mintedAt": "2026-09-04T23:09:21.151Z",
+    "deliverTxId": "0.0.10843702@1788563388.519368061",
+    "deliveredAt": "2026-09-04T23:10:05.139Z",
+    "freezeTxId": "0.0.10843702@1788563403.741956906",
+    "frozenAt": "2026-09-04T23:10:08.983Z",
+    "freezeKey": "0316ca7c602cd8a061a13df93a1d7a8e9fd9ccbff80b240775290a3c1d764caf48"
+  },
+  "terms": {
+    "topicId": "0.0.10843714",
+    "sequence": 1,
+    "pointer": "hcs://0.0.10843714/1",
+    "submitTxId": "0.0.10843702@1788563345.317652995",
+    "consensusAt": "2026-09-04T23:09:11.421Z",
+    "runningHash": "f4KhjRw3XhH7Ta3pFEg4yvMFEWD6b9FHdktOm2kapmscTlRLvkUEjdg4ceNQcrIu",
+    "body": {
+      "trigger": {
+        "kind": "earthquake.parametric.v1",
+        "location": {
+          "lat": 4.53,
+          "lon": -75.68
+        },
+        "radiusKm": 100,
+        "minMagnitude": 6,
+        "maxDepthKm": 70,
+        "windowDays": 30,
+        "sources": [
+          "USGS ComCat",
+          "EMSC",
+          "SGC"
+        ],
+        "resolution": "k-of-n oracle attestation; 2 of 3 signatures release the payout"
+      },
+      "premiumHbar": 0.01544329,
+      "payoutHbar": 4,
+      "hazard": {
+        "lambda": 0.02352547373033485,
+        "count": 12,
+        "years": 56.6761523536961,
+        "referenceRadiusKm": 300,
+        "triggerRadiusKm": 100,
+        "density": 7.488390865522644e-7,
+        "since": "1970-01-01",
+        "source": "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minmagnitude=6&latitude=4.53&longitude=-75.68&maxradiuskm=300&maxdepth=70&starttime=1970-01-01"
+      },
+      "lossRatio": 0.5,
+      "issuedAt": "2026-09-04T23:09:10.528Z"
+    }
+  },
+  "quote": {
+    "location": {
+      "name": "Armenia, Quindío, Colombia",
+      "lat": 4.53,
+      "lon": -75.68
+    },
+    "hazard": {
+      "lambda": 0.02352547373033485,
+      "count": 12,
+      "years": 56.6761523536961,
+      "referenceRadiusKm": 300,
+      "triggerRadiusKm": 100,
+      "density": 7.488390865522644e-7,
+      "since": "1970-01-01",
+      "source": "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minmagnitude=6&latitude=4.53&longitude=-75.68&maxradiuskm=300&maxdepth=70&starttime=1970-01-01"
+    },
+    "trigger": {
+      "kind": "earthquake.parametric.v1",
+      "location": {
+        "lat": 4.53,
+        "lon": -75.68
+      },
+      "radiusKm": 100,
+      "minMagnitude": 6,
+      "maxDepthKm": 70,
+      "windowDays": 30,
+      "sources": [
+        "USGS ComCat",
+        "EMSC",
+        "SGC"
+      ],
+      "resolution": "k-of-n oracle attestation; 2 of 3 signatures release the payout"
+    },
+    "premiumHbar": 0.01544329166038061,
+    "payoutHbar": 4,
+    "lossRatio": 0.5,
+    "days": 30,
+    "issuedAt": "2026-09-04T23:09:10.528Z"
+  },
+  "guard": {
+    "before": {
+      "capitalTinybar": 202625360,
+      "committedTinybar": 0,
+      "requestedTinybar": 400000000,
+      "exposureAfterTinybar": 400000000,
+      "headroomTinybar": -197374640,
+      "ok": false
+    },
+    "after": {
+      "capitalTinybar": 602625360,
+      "committedTinybar": 0,
+      "requestedTinybar": 400000000,
+      "exposureAfterTinybar": 400000000,
+      "headroomTinybar": 202625360,
+      "ok": true
+    }
+  },
+  "deposits": {
+    "d1": {
+      "txId": "0.0.10843702@1788563209.912221913",
+      "at": "2026-09-04T23:06:56.264Z",
+      "consensus": "1788563216.264942104",
+      "lpAccount": "0.0.10843706",
+      "hbarTinybar": 200000000,
+      "shareUnits": 200000000,
+      "capitalAfter": 200000000,
+      "capitalBefore": 0
+    },
+    "d3": {
+      "txId": "0.0.10843702@1788563437.842582114",
+      "at": "2026-09-04T23:10:52.828Z",
+      "consensus": "1788563452.828379104",
+      "lpAccount": "0.0.10843720",
+      "hbarTinybar": 400000000,
+      "shareUnits": 400000000,
+      "capitalAfter": 602625360,
+      "capitalBefore": 202625360
+    }
+  },
+  "sale": {
+    "txId": "0.0.10843702@1788563384.305354878",
+    "consensus": "1788563391.297972104",
+    "at": "2026-09-04T23:09:51.297Z",
+    "result": "SUCCESS",
+    "chargedFee": 385501,
+    "commissionBps": 1500,
+    "legs": [
+      {
+        "account": "0.0.10843704",
+        "tinybar": 1312680
+      },
+      {
+        "account": "0.0.10843717",
+        "tinybar": -1544329
+      },
+      {
+        "account": "0.0.10843718",
+        "tinybar": 231649
+      }
+    ]
+  },
+  "payout": {
+    "scheduleId": "0.0.10843721",
+    "memo": "quake payout M6+ Armenia",
+    "creator": "0.0.10843702",
+    "payer": "0.0.10843702",
+    "createTxId": "0.0.10843702@1788563452.394493293",
+    "createdAt": "2026-09-04T23:11:00.656Z",
+    "createdConsensus": "1788563460.656141104",
+    "expiresAt": "2026-10-04T23:11:00.026Z",
+    "waitForExpiry": false,
+    "adminKey": null,
+    "executedAt": "2026-09-04T23:11:18.715Z",
+    "executedConsensus": "1788563478.715401105",
+    "inner": [
+      {
+        "account": "0.0.10843704",
+        "tinybar": -400000000
+      },
+      {
+        "account": "0.0.10843717",
+        "tinybar": 400000000
+      }
+    ],
+    "signatures": [
+      {
+        "role": "agent",
+        "name": "pool agent",
+        "keyType": "ECDSA_SECP256K1",
+        "at": "2026-09-04T23:11:00.656Z",
+        "consensus": "1788563460.656141104",
+        "txId": "0.0.10843702@1788563452.394493293",
+        "viaCreate": true
+      },
+      {
+        "role": "oracle",
+        "index": 0,
+        "name": "USGS ComCat",
+        "keyType": "ED25519",
+        "at": "2026-09-04T23:11:15.334Z",
+        "consensus": "1788563475.334161101",
+        "txId": "0.0.10843702@1788563470.102498075"
+      },
+      {
+        "role": "oracle",
+        "index": 1,
+        "name": "EMSC",
+        "keyType": "ED25519",
+        "at": "2026-09-04T23:11:18.715Z",
+        "consensus": "1788563478.715401104",
+        "txId": "0.0.10843702@1788563473.461655253"
+      }
+    ],
+    "executedTx": {
+      "consensus": "1788563478.715401105",
+      "at": "2026-09-04T23:11:18.715Z",
+      "txId": "0.0.10843702@1788563452.394493293",
+      "transfers": [
+        {
+          "account": "0.0.10843704",
+          "tinybar": -400000000
+        },
+        {
+          "account": "0.0.10843717",
+          "tinybar": 400000000
+        }
+      ],
+      "chargedFee": 0
+    }
+  },
+  "control": {
+    "scheduleId": "0.0.10843723",
+    "memo": "parametric payout",
+    "creator": "0.0.10843702",
+    "payer": "0.0.10843702",
+    "createTxId": "0.0.10843702@1788563490.325083953",
+    "createdAt": "2026-09-04T23:11:43.956Z",
+    "createdConsensus": "1788563503.956572104",
+    "expiresAt": "2026-09-04T23:41:33.387Z",
+    "waitForExpiry": false,
+    "adminKey": null,
+    "executedAt": "2026-09-04T23:12:15.749Z",
+    "executedConsensus": "1788563535.749378105",
+    "inner": [
+      {
+        "account": "0.0.10843702",
+        "tinybar": 100000000
+      },
+      {
+        "account": "0.0.10843704",
+        "tinybar": -100000000
+      }
+    ],
+    "signatures": [
+      {
+        "role": "agent",
+        "name": "pool agent",
+        "keyType": "ECDSA_SECP256K1",
+        "at": "2026-09-04T23:11:43.956Z",
+        "consensus": "1788563503.956572104",
+        "txId": "0.0.10843702@1788563490.325083953",
+        "viaCreate": true
+      },
+      {
+        "role": "oracle",
+        "index": 0,
+        "name": "USGS ComCat",
+        "keyType": "ED25519",
+        "at": "2026-09-04T23:11:50.369Z",
+        "consensus": "1788563510.369982104",
+        "txId": "0.0.10843702@1788563502.004953832"
+      },
+      {
+        "role": "oracle",
+        "index": 1,
+        "name": "EMSC",
+        "keyType": "ED25519",
+        "at": "2026-09-04T23:12:15.749Z",
+        "consensus": "1788563535.749378104",
+        "txId": "0.0.10843702@1788563518.171669806"
+      }
+    ],
+    "executedTx": {
+      "consensus": "1788563535.749378105",
+      "at": "2026-09-04T23:12:15.749Z",
+      "txId": "0.0.10843702@1788563490.325083953",
+      "transfers": [
+        {
+          "account": "0.0.10843702",
+          "tinybar": 100000000
+        },
+        {
+          "account": "0.0.10843704",
+          "tinybar": -100000000
+        }
+      ],
+      "chargedFee": 0
+    }
+  },
+  "adversarial": {
+    "scheduleId": "0.0.10843725",
+    "memo": "attack: oracle quorum tries to drain the pool",
+    "creator": "0.0.10843724",
+    "payer": "0.0.10843724",
+    "createTxId": "0.0.10843724@1788563550.031805321",
+    "createdAt": "2026-09-04T23:12:44.006Z",
+    "createdConsensus": "1788563564.006173104",
+    "expiresAt": "2026-09-04T23:42:33.427Z",
+    "waitForExpiry": false,
+    "adminKey": null,
+    "executedAt": null,
+    "executedConsensus": null,
+    "inner": [
+      {
+        "account": "0.0.10843704",
+        "tinybar": -500000000
+      },
+      {
+        "account": "0.0.10843724",
+        "tinybar": 500000000
+      }
+    ],
+    "signatures": [
+      {
+        "role": "outsider",
+        "name": "outsider (schedule payer)",
+        "keyType": "ECDSA_SECP256K1",
+        "at": "2026-09-04T23:12:44.006Z",
+        "consensus": "1788563564.006173104",
+        "txId": "0.0.10843724@1788563550.031805321",
+        "viaCreate": true
+      },
+      {
+        "role": "oracle",
+        "index": 0,
+        "name": "USGS ComCat",
+        "keyType": "ED25519",
+        "at": "2026-09-04T23:12:59.864Z",
+        "consensus": "1788563579.864944104",
+        "txId": "0.0.10843724@1788563563.716405617"
+      },
+      {
+        "role": "oracle",
+        "index": 1,
+        "name": "EMSC",
+        "keyType": "ED25519",
+        "at": "2026-09-04T23:13:04.280Z",
+        "consensus": "1788563584.280835893",
+        "txId": "0.0.10843724@1788563577.280214265"
+      },
+      {
+        "role": "oracle",
+        "index": 2,
+        "name": "SGC",
+        "keyType": "ED25519",
+        "at": "2026-09-04T23:13:07.659Z",
+        "consensus": "1788563587.659181104",
+        "txId": "0.0.10843724@1788563581.389644207"
+      }
+    ],
+    "executedTx": null
+  },
+  "ledgers": {
+    "pool": [
+      {
+        "consensus": "1788563216.264942104",
+        "at": "2026-09-04T23:06:56.264Z",
+        "name": "CRYPTOTRANSFER",
+        "txId": "0.0.10843702@1788563209.912221913",
+        "scheduled": false,
+        "delta": 200000000,
+        "balanceAfter": 200000000,
+        "counterparties": [
+          {
+            "account": "0.0.10843702",
+            "tinybar": -1542006
+          },
+          {
+            "account": "0.0.10843706",
+            "tinybar": -200000000
+          }
+        ],
+        "tokens": [
+          {
+            "token": "0.0.10843705",
+            "account": "0.0.10843702",
+            "amount": -200000000
+          },
+          {
+            "token": "0.0.10843705",
+            "account": "0.0.10843706",
+            "amount": 200000000
+          }
+        ]
+      },
+      {
+        "consensus": "1788563314.209130104",
+        "at": "2026-09-04T23:08:34.209Z",
+        "name": "CRYPTOTRANSFER",
+        "txId": "0.0.10843702@1788563295.756656577",
+        "scheduled": false,
+        "delta": 1312680,
+        "balanceAfter": 201312680,
+        "counterparties": [
+          {
+            "account": "0.0.10843702",
+            "tinybar": -385501
+          },
+          {
+            "account": "0.0.10843711",
+            "tinybar": -1544329
+          },
+          {
+            "account": "0.0.10843712",
+            "tinybar": 231649
+          }
+        ],
+        "tokens": []
+      },
+      {
+        "consensus": "1788563391.297972104",
+        "at": "2026-09-04T23:09:51.297Z",
+        "name": "CRYPTOTRANSFER",
+        "txId": "0.0.10843702@1788563384.305354878",
+        "scheduled": false,
+        "delta": 1312680,
+        "balanceAfter": 202625360,
+        "counterparties": [
+          {
+            "account": "0.0.10843702",
+            "tinybar": -385501
+          },
+          {
+            "account": "0.0.10843717",
+            "tinybar": -1544329
+          },
+          {
+            "account": "0.0.10843718",
+            "tinybar": 231649
+          }
+        ],
+        "tokens": []
+      },
+      {
+        "consensus": "1788563452.828379104",
+        "at": "2026-09-04T23:10:52.828Z",
+        "name": "CRYPTOTRANSFER",
+        "txId": "0.0.10843702@1788563437.842582114",
+        "scheduled": false,
+        "delta": 400000000,
+        "balanceAfter": 602625360,
+        "counterparties": [
+          {
+            "account": "0.0.10843702",
+            "tinybar": -1542006
+          },
+          {
+            "account": "0.0.10843720",
+            "tinybar": -400000000
+          }
+        ],
+        "tokens": [
+          {
+            "token": "0.0.10843705",
+            "account": "0.0.10843702",
+            "amount": -400000000
+          },
+          {
+            "token": "0.0.10843705",
+            "account": "0.0.10843720",
+            "amount": 400000000
+          }
+        ]
+      },
+      {
+        "consensus": "1788563478.715401105",
+        "at": "2026-09-04T23:11:18.715Z",
+        "name": "CRYPTOTRANSFER",
+        "txId": "0.0.10843702@1788563452.394493293",
+        "scheduled": true,
+        "delta": -400000000,
+        "balanceAfter": 202625360,
+        "counterparties": [
+          {
+            "account": "0.0.10843717",
+            "tinybar": 400000000
+          }
+        ],
+        "tokens": []
+      },
+      {
+        "consensus": "1788563535.749378105",
+        "at": "2026-09-04T23:12:15.749Z",
+        "name": "CRYPTOTRANSFER",
+        "txId": "0.0.10843702@1788563490.325083953",
+        "scheduled": true,
+        "delta": -100000000,
+        "balanceAfter": 102625360,
+        "counterparties": [
+          {
+            "account": "0.0.10843702",
+            "tinybar": 100000000
+          }
+        ],
+        "tokens": []
+      }
+    ],
+    "buyer": [
+      {
+        "consensus": "1788563368.888640104",
+        "at": "2026-09-04T23:09:28.888Z",
+        "name": "CRYPTOCREATEACCOUNT",
+        "txId": "0.0.10843702@1788563359.621978123",
+        "scheduled": false,
+        "delta": 100000000,
+        "balanceAfter": 100000000
+      },
+      {
+        "consensus": "1788563391.297972104",
+        "at": "2026-09-04T23:09:51.297Z",
+        "name": "CRYPTOTRANSFER",
+        "txId": "0.0.10843702@1788563384.305354878",
+        "scheduled": false,
+        "delta": -1544329,
+        "balanceAfter": 98455671
+      },
+      {
+        "consensus": "1788563478.715401105",
+        "at": "2026-09-04T23:11:18.715Z",
+        "name": "CRYPTOTRANSFER",
+        "txId": "0.0.10843702@1788563452.394493293",
+        "scheduled": true,
+        "delta": 400000000,
+        "balanceAfter": 498455671
+      }
+    ]
+  }
+}

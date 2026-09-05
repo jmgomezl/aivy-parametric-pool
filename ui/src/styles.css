@@ -1,0 +1,355 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/jetbrains-mono';
+
+/* ------------------------------------------------------------------ tokens */
+:root {
+  /* near-neutral dark ground with real elevation steps */
+  --bg-0: #0a0b0d;
+  --bg-1: #101216;
+  --bg-2: #161920;
+  --bg-3: #1d2129;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.16);
+
+  --fg-0: #f2f3f5;
+  --fg-1: #aeb3bc;
+  --fg-2: #737985;
+  --fg-3: #4b505a;
+
+  /* state is the only thing that earns colour */
+  --ok: #3fcf8e;
+  --ok-dim: rgba(63, 207, 142, 0.14);
+  --pending: #e3b341;
+  --pending-dim: rgba(227, 179, 65, 0.14);
+  --refused: #f0555b;
+  --refused-dim: rgba(240, 85, 91, 0.14);
+
+  --sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --t-fast: 160ms;
+  --t-med: 220ms;
+}
+
+@theme {
+  --color-bg-0: var(--bg-0);
+  --color-bg-1: var(--bg-1);
+  --color-bg-2: var(--bg-2);
+  --color-bg-3: var(--bg-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg-0: var(--fg-0);
+  --color-fg-1: var(--fg-1);
+  --color-fg-2: var(--fg-2);
+  --color-fg-3: var(--fg-3);
+  --color-ok: var(--ok);
+  --color-pending: var(--pending);
+  --color-refused: var(--refused);
+  --font-sans: var(--sans);
+  --font-mono: var(--mono);
+}
+
+/* ------------------------------------------------------------------- base */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  background: var(--bg-0);
+  color: var(--fg-0);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'cv11', 'ss01', 'ss03';
+  overflow: hidden;
+}
+
+::selection {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ledger values are data and should read as data */
+.mono,
+.num {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums slashed-zero;
+  font-feature-settings: 'tnum', 'zero';
+  letter-spacing: -0.005em;
+}
+
+.kicker {
+  font-family: var(--mono);
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+
+.title {
+  font-size: 54px;
+  line-height: 1.06;
+  letter-spacing: -0.024em;
+  font-weight: 560;
+  color: var(--fg-0);
+  text-wrap: balance;
+}
+
+.lede {
+  font-size: 22px;
+  line-height: 1.45;
+  letter-spacing: -0.008em;
+  color: var(--fg-1);
+  text-wrap: pretty;
+}
+
+.label {
+  font-size: 15px;
+  line-height: 1.3;
+  color: var(--fg-2);
+  letter-spacing: 0.002em;
+}
+
+.value {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums slashed-zero;
+  font-size: 18px;
+  line-height: 1.3;
+  color: var(--fg-0);
+}
+
+.hairline {
+  border-color: var(--line);
+}
+
+/* the frame is authored at 1920 × 1080 and scaled to the window */
+.stage {
+  width: 1920px;
+  height: 1080px;
+  transform-origin: top left;
+  display: grid;
+  grid-template-rows: 64px 1fr 60px;
+  background: var(--bg-0);
+}
+
+/* --------------------------------------------------------------- HashScan */
+.hs {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35em;
+  border-bottom: 1px solid transparent;
+  transition:
+    border-color var(--t-fast) var(--ease),
+    color var(--t-fast) var(--ease);
+  color: var(--fg-0);
+}
+.hs:hover {
+  border-bottom-color: var(--line-strong);
+}
+.hs .arrow {
+  font-family: var(--mono);
+  font-size: 0.8em;
+  color: var(--fg-3);
+  transition: color var(--t-fast) var(--ease);
+  transform: translateY(-0.05em);
+}
+.hs:hover .arrow {
+  color: var(--fg-1);
+}
+
+/* ----------------------------------------------------------------- states */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 500;
+  transition:
+    background-color var(--t-med) var(--ease),
+    color var(--t-med) var(--ease);
+}
+.pill::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.pill-ok {
+  background: var(--ok-dim);
+  color: var(--ok);
+}
+.pill-pending {
+  background: var(--pending-dim);
+  color: var(--pending);
+}
+.pill-refused {
+  background: var(--refused-dim);
+  color: var(--refused);
+}
+.pill-neutral {
+  background: var(--bg-3);
+  color: var(--fg-1);
+}
+.pill-lg {
+  height: 40px;
+  padding: 0 16px;
+  font-size: 18px;
+}
+
+/* ------------------------------------------------------------------ motion */
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.enter {
+  animation: enter var(--t-med) var(--ease) both;
+}
+.enter-d1 {
+  animation-delay: 40ms;
+}
+.enter-d2 {
+  animation-delay: 80ms;
+}
+
+/* an item that lands when its sub-step arrives */
+.land {
+  transition:
+    opacity var(--t-med) var(--ease),
+    transform var(--t-med) var(--ease),
+    color var(--t-med) var(--ease),
+    background-color var(--t-med) var(--ease),
+    border-color var(--t-med) var(--ease);
+}
+.land-off {
+  opacity: 0.38;
+}
+
+/* thin capacity bar */
+.bar {
+  position: relative;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--bg-3);
+  overflow: hidden;
+}
+.bar > span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 3px;
+  transition: width var(--t-med) var(--ease);
+}
+
+/* stepper */
+.step {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 6px 0;
+  color: var(--fg-3);
+  font-size: 15px;
+  letter-spacing: 0.002em;
+  border-top: 2px solid transparent;
+  transition: color var(--t-fast) var(--ease);
+  cursor: pointer;
+  background: none;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+  font: inherit;
+  font-size: 15px;
+}
+.step .n {
+  font-family: var(--mono);
+  font-size: 13.5px;
+  color: var(--fg-3);
+  letter-spacing: 0.04em;
+}
+.step:hover {
+  color: var(--fg-1);
+}
+.step-done {
+  color: var(--fg-2);
+}
+.step-current {
+  color: var(--fg-0);
+}
+.step-current .n {
+  color: var(--fg-1);
+}
+
+kbd {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--fg-2);
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  padding: 1px 6px;
+  line-height: 1.4;
+}
+
+.divider {
+  height: 1px;
+  background: var(--line);
+}
+
+.check {
+  font-family: var(--mono);
+  color: var(--ok);
+}
+.dash {
+  color: var(--fg-3);
+}
+
+/* ------------------------------------------------------------ visuals */
+@keyframes wave {
+  from {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(14);
+    opacity: 0;
+  }
+}
+.wave {
+  animation: wave 1600ms var(--ease) both;
+}
+
+@keyframes count {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.count {
+  animation: count var(--t-med) var(--ease) both;
+}
+
+svg text {
+  user-select: none;
+}
