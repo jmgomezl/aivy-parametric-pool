@@ -2,6 +2,9 @@
 
 The demo surface for the parametric pool: one real Hedera **mainnet** policy walked
 from quote to payout, one beat at a time, every ledger id a working HashScan link.
+It opens on the **atlas**: every shallow M6+ earthquake since 1970 drawn as the
+hazard field the model actually integrates, and a cursor that prices 30 days of
+cover anywhere on Earth with the agent's own arithmetic.
 
 ```bash
 npm install
@@ -15,11 +18,16 @@ with the keyboard, no timers:
 |---|---|
 | `→` `space` `enter` | next sub-step, then next beat |
 | `←` `backspace` | back |
+| `0` | the atlas |
 | `1` … `8` | jump to a beat |
 | `home` / `end` | first / last |
 
-The position lives in the URL hash (`#6.2` = beat 6, sub-step 2), so a reload
-mid-recording lands on the same frame.
+The position lives in the URL hash (`#6.2` = beat 6, sub-step 2, `#0` = atlas),
+so a reload mid-recording lands on the same frame.
+
+On the atlas, move the mouse to price a point, click to pin it, or pick a city.
+The pinned point is recounted live at USGS and the two numbers are shown side by
+side; HBAR is converted at the mirror node's current exchange rate.
 
 ## Where the numbers come from
 
@@ -30,6 +38,12 @@ the page is open it re-reads the parts that can still change (balances, schedule
 state, token supply, NFT owner, the USGS catalogue count) and says so next to the
 value: *confirmed by mirror node*, *mirror node differs*, or *unavailable*.
 
+`src/data/quakes.json` is the global catalogue behind the atlas (`npm run quakes`):
+every shallow M6+ event since 1970 from the same USGS endpoint the agent queries,
+6,311 rows of `[lon, lat, mag, depth, day]`. `src/lib/hazard.ts` is the agent's
+model ported line for line, and reproduces its numbers (Armenia 12 events,
+0.01544329 ℏ; Tokyo 103).
+
 The two quorum proofs (`0.0.10843723` control, `0.0.10843725` adversarial) come
 from `scripts/verify-quorum.js`, which prints but does not persist its schedule
 ids; they are pinned in `scripts/snapshot.mjs`.
@@ -38,8 +52,11 @@ ids; they are pinned in `scripts/snapshot.mjs`.
 
 ```
 scripts/snapshot.mjs     artifact + mirror node -> src/data/mainnet.json
+scripts/quakes.mjs       USGS ComCat -> src/data/quakes.json (the atlas catalogue)
 src/data/mainnet.json    the public record of the run (committed)
-src/beats/               one file per beat; 05-waiting exports the pool – lock – buyer scene 06 reuses
+src/lib/hazard.ts        the agent's hazard model, in the browser
+src/beats/00-atlas.tsx   the world hazard field: hover to price, click to pin
+src/beats/               one file per story beat; 05-waiting exports the pool – lock – buyer scene 06 reuses
 src/components/viz.tsx   the visual language: nodes, flows, the two-ring lock, the capital tank, waves
 src/components/Scene.tsx the frame every beat uses: title, visual, big numbers, HashScan strip
 src/components/ui.tsx    HashScan ids and state pills

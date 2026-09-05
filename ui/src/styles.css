@@ -132,6 +132,9 @@ a {
 
 /* the frame is authored at 1920 × 1080 and scaled to the window */
 .stage {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 1920px;
   height: 1080px;
   transform-origin: top left;

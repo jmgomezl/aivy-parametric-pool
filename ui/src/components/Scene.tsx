@@ -9,7 +9,7 @@ export interface Link { kind: Kind; id: string; label: string; href?: string }
  * the visual in the middle, a few big numbers on the right, and the ledger
  * ids that verify it in a slim strip at the bottom.
  */
-export function Scene({ n, kicker, title, caption, hud, links, children, note }: { n: number; kicker: string; title: ReactNode; caption?: ReactNode; hud?: ReactNode; links?: Link[]; children: ReactNode; note?: ReactNode }) {
+export function Scene({ n, kicker, title, caption, hud, links, children, note, verifyLabel = 'verify on HashScan' }: { n: number; kicker: string; title: ReactNode; caption?: ReactNode; hud?: ReactNode; links?: Link[]; children: ReactNode; note?: ReactNode; verifyLabel?: string }) {
   return (
     <div className="grid h-full grid-cols-[minmax(0,1fr)] grid-rows-[auto_minmax(0,1fr)_auto] gap-[24px]">
       <header className="flex items-end justify-between gap-[48px]">
@@ -27,7 +27,7 @@ export function Scene({ n, kicker, title, caption, hud, links, children, note }:
 
       <footer className="flex items-center justify-between gap-[40px] text-[15px] enter enter-d2">
         <div className="flex min-w-0 items-center gap-[26px] whitespace-nowrap overflow-hidden">
-          <span className="label">verify on HashScan</span>
+          <span className="label">{verifyLabel}</span>
           {links?.map((l) => (
             <span key={l.label + l.id} className="flex items-baseline gap-[8px]">
               <span className="label">{l.label}</span>

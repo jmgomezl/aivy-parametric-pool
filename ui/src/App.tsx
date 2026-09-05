@@ -4,6 +4,7 @@ import { Id } from './components/ui';
 import { fetchAccount, useLive } from './lib/mirror';
 import { clock } from './lib/format';
 import type { Beat } from './beats/types';
+import { atlas } from './beats/00-atlas';
 import { quote } from './beats/01-quote';
 import { guard } from './beats/02-guard';
 import { capital } from './beats/03-capital';
@@ -13,14 +14,15 @@ import { quake } from './beats/06-quake';
 import { paid } from './beats/07-paid';
 import { coda } from './beats/08-coda';
 
-const BEATS: Beat[] = [quote, guard, capital, issued, waiting, quake, paid, coda];
+// index 0 is the atlas; the eight story beats keep their numbers 1–8.
+const BEATS: Beat[] = [atlas, quote, guard, capital, issued, waiting, quake, paid, coda];
 
 /* ---------------------------------------------------------------- routing */
-// The position lives in the URL hash (#3.1 = beat 3, sub-step 1) so a reload
+// The position lives in the URL hash (#3.1 = beat 3, sub-step 1; #0 = atlas) so a reload
 // mid-recording lands on the same frame.
 function readHash(): { b: number; s: number } {
   const m = /^#(\d+)(?:\.(\d+))?$/.exec(window.location.hash);
-  const b = m ? Math.min(Math.max(Number(m[1]) - 1, 0), BEATS.length - 1) : 0;
+  const b = m ? Math.min(Math.max(Number(m[1]), 0), BEATS.length - 1) : 0;
   const s = m && m[2] ? Math.min(Math.max(Number(m[2]), 0), BEATS[b].steps - 1) : 0;
   return { b, s };
 }
@@ -35,7 +37,7 @@ function usePosition() {
   const go = useCallback((b: number, s = 0) => {
     const bb = Math.min(Math.max(b, 0), BEATS.length - 1);
     const ss = Math.min(Math.max(s, 0), BEATS[bb].steps - 1);
-    window.location.hash = ss === 0 ? `#${bb + 1}` : `#${bb + 1}.${ss}`;
+    window.location.hash = ss === 0 ? `#${bb}` : `#${bb}.${ss}`;
     setPos({ b: bb, s: ss });
   }, []);
   const next = useCallback(() => {
@@ -82,7 +84,7 @@ export default function App() {
         case 'Home': e.preventDefault(); go(0); break;
         case 'End': e.preventDefault(); go(BEATS.length - 1, BEATS[BEATS.length - 1].steps - 1); break;
         default:
-          if (/^[1-9]$/.test(e.key)) { const n = Number(e.key) - 1; if (n < BEATS.length) { e.preventDefault(); go(n); } }
+          if (/^[0-9]$/.test(e.key)) { const n = Number(e.key); if (n < BEATS.length) { e.preventDefault(); go(n); } }
       }
     };
     window.addEventListener('keydown', onKey);
@@ -94,6 +96,7 @@ export default function App() {
 
   return (
     <div className="h-full w-full flex items-center justify-center overflow-hidden bg-bg-0">
+      <div style={{ width: 1920 * scale, height: 1080 * scale, position: 'relative' }}>
       <div className="stage" style={frame}>
         {/* top bar */}
         <header className="flex items-center justify-between border-b border-line px-[72px]">
@@ -129,7 +132,7 @@ export default function App() {
           <nav className="flex items-center gap-[30px]">
             {BEATS.map((b, i) => (
               <button key={b.label} type="button" onClick={() => go(i)} className={`step ${i === pos.b ? 'step-current' : i < pos.b ? 'step-done' : ''}`}>
-                <span className="n">{String(i + 1).padStart(2, '0')}</span>
+                <span className="n">{String(i).padStart(2, '0')}</span>
                 <span>{b.label}</span>
                 {b.steps > 1 && i === pos.b ? <span className="num text-[13px] text-fg-3">{pos.s + 1}/{b.steps}</span> : null}
               </button>
@@ -137,9 +140,10 @@ export default function App() {
           </nav>
           <div className="flex items-center gap-[14px] text-[14px] text-fg-3">
             <span><kbd>←</kbd> <kbd>→</kbd> step</span>
-            <span><kbd>1</kbd>–<kbd>8</kbd> jump</span>
+            <span><kbd>0</kbd>–<kbd>8</kbd> jump</span>
           </div>
         </footer>
+      </div>
       </div>
     </div>
   );
