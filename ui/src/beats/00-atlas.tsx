@@ -1,12 +1,36 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Scene } from '../components/Scene';
-import { Big, C } from '../components/viz';
+import { Big, C, Delta } from '../components/viz';
 import { CATALOGUE, FIRST_YEAR, LAST_YEAR, MAX_DAYS, MODEL, PLACES, around, dayOf, nearest, placeName, price, priceHistory, sourceUrl, type Place, type PriceOpts, type Priced } from '../lib/hazard';
 import { useLive } from '../lib/mirror';
 import { Heat } from './atlas/Heat';
 import { landPath } from './atlas/land';
 import { H, HOME, W, kmToPxX, kmToPxY, pan, project, unproject, zoomAt, type View } from './atlas/projection';
+import capitalsData from '../data/capitals.json';
 import type { Beat } from './types';
+
+/* --------------------------------------------------------------- capitals */
+// Natural Earth's national capitals. `rank` is its label priority (0 = always).
+interface Capital { name: string; country: string; lon: number; lat: number; pop: number; rank: number }
+const CAPITALS: Capital[] = (capitalsData.rows as [string, string, number, number, number, number][]).map(([name, country, lon, lat, pop, rank]) => ({ name, country, lon, lat, pop, rank }));
+const LABEL_PX = 12;
+
+/** Which capital labels fit at this zoom: by priority first, then greedily without overlaps. */
+function placeCapitals(view: View): (Capital & { x: number; y: number })[] {
+  const maxRank = view.k < 1.6 ? 1 : view.k < 2.6 ? 2 : view.k < 4 ? 3 : view.k < 6 ? 4 : 9;
+  const placed: (Capital & { x: number; y: number })[] = [];
+  const boxes: { x0: number; y0: number; x1: number; y1: number }[] = [];
+  for (const c of CAPITALS) {
+    if (c.rank > maxRank) continue;
+    const p = project(c.lon, c.lat, view);
+    if (p.x < -20 || p.x > W + 20 || p.y < -10 || p.y > H + 10) continue;
+    const box = { x0: p.x - 4, y0: p.y - LABEL_PX - 2, x1: p.x + 8 + c.name.length * LABEL_PX * 0.56, y1: p.y + 6 };
+    if (boxes.some((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0)) continue;
+    boxes.push(box);
+    placed.push({ ...c, x: p.x, y: p.y });
+  }
+  return placed;
+}
 
 const MAGS = [6, 6.5, 7];
 const isoDay = (day: number) => new Date(day * 86400000).toISOString().slice(0, 10);
@@ -79,6 +103,7 @@ function View() {
   const [days, setDays] = useState(MODEL.days);
   const [minMag, setMinMag] = useState(MODEL.minMagnitude);
   const [compare, setCompare] = useState<Pin[]>([]);
+  const [showCapitals, setShowCapitals] = useState(true);
   const drag = useRef<{ x: number; y: number; view: View; moved: boolean } | null>(null);
 
   // the record as it stood at the chosen year
@@ -92,6 +117,8 @@ function View() {
   const fullNearby = useMemo(() => around(focus.lat, focus.lon, minMag), [focus.lat, focus.lon, minMag]);
   const near = useMemo(() => nearest(focus.lat, focus.lon, minMag, toDay), [focus.lat, focus.lon, minMag, toDay]);
   const pinned = useMemo(() => price(pin.lat, pin.lon, opts), [pin.lat, pin.lon, opts]);
+  // the same point, priced with the record as it stood one year earlier
+  const yearAgo = useMemo(() => price(focus.lat, focus.lon, { ...opts, now: new Date(now.getTime() - 365.25 * 86400000) }), [focus.lat, focus.lon, opts, now]);
 
   // playback
   useEffect(() => {
@@ -155,6 +182,7 @@ function View() {
   const f = project(focus.lon, focus.lat, view);
   const p = project(pin.lon, pin.lat, view);
   const land = useMemo(() => landPath(view), [view]);
+  const capitals = useMemo(() => (showCapitals ? placeCapitals(view) : []), [view, showCapitals]);
 
   const addCompare = () => setCompare((c) => (c.some((x) => x.lat === pin.lat && x.lon === pin.lon) || c.length >= 4 ? c : [...c, { ...pin }]));
   const compareRows = useMemo(() => compare.map((c) => ({ ...c, premium: price(c.lat, c.lon, opts).premiumHbar })), [compare, opts]);
@@ -179,7 +207,7 @@ function View() {
             <Big label={`M${minMag}+ within 300 km`} value={String(priced.count)} size={32} />
             <Big label="rate λ · / yr" value={priced.lambda.toFixed(4)} size={32} />
             <Big label={`chance in ${days} days`} value={(priced.probability * 100).toFixed(2)} unit="%" size={32} />
-            <Big label={usd !== null && live ? `premium · ≈ $${usd.toFixed(4)}` : 'premium'} value={priced.premiumHbar.toFixed(4)} unit="ℏ" tone={priced.count ? 'ok' : 'dim'} size={32} />
+            <Big label={usd !== null && live ? `premium · ≈ $${usd.toFixed(4)}` : 'premium · vs a year earlier'} value={priced.premiumHbar.toFixed(4)} unit="ℏ" tone={priced.count ? 'ok' : 'dim'} size={32} after={<Delta now={priced.premiumHbar} before={yearAgo.premiumHbar} />} />
           </div>
           <div className="label num">
             {near ? <>nearest recorded · M {near.mag.toFixed(1)} · {isoDay(near.day)} · {Math.round(near.km)} km away · {Math.round(near.depthKm)} km deep</> : 'no recorded event yet'}
@@ -223,6 +251,7 @@ function View() {
         </button>
         <span className="num text-[28px] leading-none text-fg-0 w-[80px]">{year}</span>
         <input type="range" className="slider slider-accent flex-1" min={FIRST_YEAR} max={LAST_YEAR} step={1} value={year} onChange={(e) => { setPlaying(false); setYear(Number(e.target.value)); }} onKeyDown={(e) => e.stopPropagation()} />
+        <button type="button" className={`chip ${showCapitals ? 'chip-on' : ''}`} onClick={(e) => { setShowCapitals((v) => !v); e.currentTarget.blur(); }} title="show or hide the world's capitals">capitals</button>
         <span className="label w-[250px] text-right">{live ? 'the record today' : `the record as of ${year}`}{view.k > 1.02 ? ` · zoom ×${view.k.toFixed(1)}` : ''}</span>
         {view.k > 1.02 ? <button type="button" className="chip" onClick={(e) => { setView(HOME); e.currentTarget.blur(); }}>reset view</button> : null}
       </div>
@@ -252,14 +281,21 @@ function View() {
           >
             <path d={land} fill="rgba(255,255,255,0.035)" stroke="rgba(255,255,255,0.10)" strokeWidth={0.6} />
             {priced.nearby.map((q, i) => { const e = project(q.lon, q.lat, view); return <circle key={i} cx={e.x} cy={e.y} r={(1.5 + (q.mag - 6) * 2) * Math.sqrt(view.k)} fill="none" stroke={C.pending} strokeWidth={1} />; })}
+            {/* capitals: click one to pin it */}
+            {capitals.map((c) => (
+              <g key={`${c.name}-${c.country}`} style={{ cursor: 'pointer' }} onMouseDown={(e) => e.stopPropagation()} onMouseUp={(e) => { e.stopPropagation(); drag.current = null; setPin({ name: c.name, lat: c.lat, lon: c.lon }); }}>
+                <circle cx={c.x} cy={c.y} r={2.2} fill={C.fg1} />
+                <text x={c.x + 7} y={c.y + 4} className="label" fill={C.fg1} fontSize={LABEL_PX} style={{ paintOrder: 'stroke', stroke: 'rgba(10,11,13,0.85)', strokeWidth: 3, strokeLinejoin: 'round' }}>{c.name}</text>
+              </g>
+            ))}
             <ellipse cx={f.x} cy={f.y} rx={kmToPxX(MODEL.referenceRadiusKm, focus.lat, view)} ry={kmToPxY(MODEL.referenceRadiusKm, view)} fill="rgba(242,243,245,0.04)" stroke={C.fg1} strokeWidth={1} strokeDasharray="3 4" />
             <ellipse cx={f.x} cy={f.y} rx={kmToPxX(MODEL.triggerRadiusKm, focus.lat, view)} ry={kmToPxY(MODEL.triggerRadiusKm, view)} fill="none" stroke={C.fg0} strokeWidth={1.2} />
             <line x1={f.x - 14} x2={f.x + 14} y1={f.y} y2={f.y} stroke={C.fg0} strokeWidth={1} />
             <line x1={f.x} x2={f.x} y1={f.y - 14} y2={f.y + 14} stroke={C.fg0} strokeWidth={1} />
             {hover ? <circle cx={p.x} cy={p.y} r={4} fill={C.ok} /> : null}
             {compare.map((c, i) => { const e = project(c.lon, c.lat, view); return <g key={i}><circle cx={e.x} cy={e.y} r={3.5} fill={C.fg1} /><text x={e.x + 8} y={e.y - 6} className="label" fill={C.fg1} fontSize={12}>{placeName(c)}</text></g>; })}
-            <text x={f.x + 18} y={f.y - 10} className="num" fill={C.fg0} fontSize={14}>{priced.premiumHbar.toFixed(4)} ℏ</text>
-            <text x={f.x + 18} y={f.y + 8} className="label" fill={C.fg2} fontSize={12}>{priced.count} events · P {(priced.probability * 100).toFixed(2)} %</text>
+            <text x={f.x + 18} y={f.y + 26} className="num" fill={C.fg0} fontSize={14} style={{ paintOrder: 'stroke', stroke: 'rgba(10,11,13,0.85)', strokeWidth: 3 }}>{priced.premiumHbar.toFixed(4)} ℏ</text>
+            <text x={f.x + 18} y={f.y + 43} className="label" fill={C.fg2} fontSize={12} style={{ paintOrder: 'stroke', stroke: 'rgba(10,11,13,0.85)', strokeWidth: 3 }}>{priced.count} events · P {(priced.probability * 100).toFixed(2)} %</text>
           </svg>
         </div>
       </div>

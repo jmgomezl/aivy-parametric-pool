@@ -9,7 +9,8 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "snapshot": "node scripts/snapshot.mjs",
-    "quakes": "node scripts/quakes.mjs"
+    "quakes": "node scripts/quakes.mjs",
+    "capitals": "node scripts/capitals.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.0",

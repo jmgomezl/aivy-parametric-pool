@@ -35,6 +35,7 @@ On the atlas:
   the ledger's ceiling for a scheduled payout
 - **trigger** chips switch the magnitude floor between M6, M6.5 and M7
 - **+ compare** keeps up to four places side by side at the same cover and window
+- **capitals** toggles the world's capitals; more appear as you zoom, and clicking one pins it
 - the pinned point is in the URL (`#0@lat,lon`), so any view can be shared
 
 The pinned point is recounted live at USGS and the two numbers are shown side by
@@ -64,6 +65,7 @@ ids; they are pinned in `scripts/snapshot.mjs`.
 ```
 scripts/snapshot.mjs     artifact + mirror node -> src/data/mainnet.json
 scripts/quakes.mjs       USGS ComCat -> src/data/quakes.json (the atlas catalogue)
+scripts/capitals.mjs     Natural Earth -> src/data/capitals.json (202 national capitals)
 src/data/mainnet.json    the public record of the run (committed)
 src/lib/hazard.ts        the agent's hazard model, in the browser
 src/beats/00-atlas.tsx   the atlas: hover, pin, zoom, scrub, compare

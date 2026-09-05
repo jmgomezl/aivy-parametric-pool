@@ -184,14 +184,29 @@ export function Waves({ cx, cy, on }: { cx: number; cy: number; on: boolean }) {
 }
 
 /* ------------------------------------------------------------- BigNumber */
-export function Big({ label, value, unit, tone = 'neutral', size = 44 }: { label: string; value: string; unit?: string; tone?: 'neutral' | 'ok' | 'pending' | 'refused' | 'dim'; size?: number }) {
+export function Big({ label, value, unit, tone = 'neutral', size = 44, after }: { label: string; value: string; unit?: string; tone?: 'neutral' | 'ok' | 'pending' | 'refused' | 'dim'; size?: number; after?: ReactNode }) {
   const color = tone === 'neutral' ? 'text-fg-0' : tone === 'dim' ? 'text-fg-2' : `text-${tone}`;
   return (
     <div className="flex flex-col gap-[6px]">
       <div className="label">{label}</div>
-      <div className={`num leading-none ${color}`} style={{ fontSize: size, letterSpacing: '-0.02em', fontFeatureSettings: '"tnum"' }}>
+      <div className={`num leading-none ${color} whitespace-nowrap`} style={{ fontSize: size, letterSpacing: '-0.02em', fontFeatureSettings: '"tnum"' }}>
         {value}{unit ? <span className="text-fg-2 ml-[0.25em]" style={{ fontSize: size * 0.6 }}>{unit}</span> : null}
       </div>
+      {after ? <div className="leading-none">{after}</div> : null}
     </div>
+  );
+}
+
+/** A modest year-over-year arrow: up is red (dearer), down is green (cheaper). */
+export function Delta({ now, before, size = 14 }: { now: number; before: number; size?: number }) {
+  if (before === 0 && now === 0) return null;
+  if (before === 0) return <span className="num text-refused" style={{ fontSize: size, letterSpacing: 0 }} title="first event in range">▲ new · first event nearby</span>;
+  const pct = ((now - before) / before) * 100;
+  if (Math.abs(pct) < 0.05) return <span className="num text-fg-3" style={{ fontSize: size, letterSpacing: 0 }} title="no change on a year ago">— unchanged in a year</span>;
+  const up = pct > 0;
+  return (
+    <span className={`num ${up ? 'text-refused' : 'text-ok'}`} style={{ fontSize: size, letterSpacing: 0 }} title={`${up ? 'up' : 'down'} on a year ago`}>
+      {up ? '▲' : '▼'} {Math.abs(pct) >= 100 ? Math.round(Math.abs(pct)) : Math.abs(pct).toFixed(1)} % <span className="text-fg-3">in a year</span>
+    </span>
   );
 }
