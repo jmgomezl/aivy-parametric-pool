@@ -7,7 +7,7 @@ funding-preview and submission-evidence improvements below.
 
 | Audit requirement | Implementation | Evidence |
 |---|---|---|
-| Simple, visual primary journey | Three navigation destinations; compact map search/examples, quote and confirmation ring | Browser reviewed at 1280 px desktop and 390 px mobile |
+| Simple, visual primary journey | Three navigation destinations; compact map search/examples, quote and explicit signature evidence | Browser reviewed at 1280 px desktop and 390 px mobile |
 | Minimal primary copy | Conditions/pricing and ledger evidence use disclosure controls; primary quote has two amounts and one action | Desktop/mobile quote inspection |
 | Map clarity and navigation | City/coordinate search, zoom buttons, drag pan, selected radius; quieter historical heat layer | Browser city selection, mobile map and keyboard-accessible controls |
 | Historical exploration cannot change policy terms | Explicit estimate mode; issuing disabled; closing restores M6+ | Isolated browser test verified disabled action |
@@ -16,7 +16,7 @@ funding-preview and submission-evidence improvements below.
 | No fake confirmation timers | Creation waits for backend result | Isolated fixture showed Creating before confirmed policy |
 | Interrupted issuance recovery | Saved request ID, request-status API, durable checkpoints/reservation and Policies recovery | Isolated interrupted POST + navigation showed Request needs review |
 | Distinct loading, refusal and offline states | Dedicated states and disabled offline issuance | Browser fixtures verified no-record refusal and offline estimate |
-| Readable policy ring | Amount outside ring; unknown information has a neutral graphic | Live policy detail inspection |
+| Readable policy confirmations | Explicit agent AND oracle signature gate; unknown ledger information stays unverified | Live policy detail inspection; latest visual review at desktop and 320 px |
 | Six-step judge story | Choose, commit, first confirmation, release, receipt, protection | Browser stepped through all six; invalid hash recovered to first step |
 | Responsive story and evidence | Persistent mobile navigation; separate stacked protection diagrams | 390 px review, no horizontal overflow |
 | Protect capital during concurrent issuance | Exclusive filesystem lock, reservation before account creation, atomic book replacement, idempotent requests | Offline concurrency, replay, failure reservation and abandoned lock tests |
