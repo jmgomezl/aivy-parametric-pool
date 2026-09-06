@@ -854,3 +854,38 @@ small { font-size:12px; color:var(--fg-2); }
  .nft-header { letter-spacing:0; }
  .nft-location h2 { font-size:26px; }
 }
+
+/* Evidence stays one quiet row until a judge asks to inspect it. */
+.chain-activity { border-bottom:1px solid var(--line); background:var(--bg-0); }
+.chain-toggle { display:flex; align-items:center; justify-content:space-between; gap:16px; width:100%; min-height:44px; padding:8px 36px; font-size:11px; color:var(--fg-2); text-align:left; }
+.chain-toggle:hover,.chain-toggle[aria-expanded=true] { color:var(--fg-0); }
+.chain-toggle-title { display:flex; align-items:center; gap:9px; }
+.chain-toggle-title>span:first-child { color:var(--ok); font-size:16px; }
+.chain-scope { color:var(--fg-2); margin-left:10px; }
+.chain-panel { max-width:850px; margin:0 auto; padding:12px 36px 24px; }
+.chain-tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:18px; }
+.chain-tabs button { border:1px solid transparent; border-radius:20px; padding:8px 14px; min-height:40px; color:var(--fg-2); font-size:12px; }
+.chain-tabs button[aria-pressed=true] { border-color:var(--line-strong); background:var(--bg-2); color:var(--fg-0); }
+.chain-context { display:flex; gap:12px; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:14px; color:var(--fg-2); font-size:12px; }
+.chain-context strong { color:var(--fg-0); font-weight:500; }
+.chain-context label { display:flex; gap:8px; align-items:center; min-width:0; max-width:100%; }
+.chain-context select { min-width:0; max-width:260px; padding:8px; background:var(--bg-1); color:var(--fg-1); border:1px solid var(--line-strong); border-radius:6px; }
+.chain-receipts { border-top:1px solid var(--line); }
+.chain-receipt { display:flex; align-items:start; gap:10px; border-bottom:1px solid var(--line); }
+.chain-receipt details { flex:1; min-width:0; }
+.chain-receipt summary { display:flex; align-items:center; gap:10px; min-height:48px; font-size:13px; }
+.chain-receipt summary>span:nth-child(2) { flex:1; }
+.chain-receipt summary small { font-size:10px; color:var(--fg-2); }
+.chain-receipt>a { display:grid; place-items:center; width:44px; min-height:48px; flex:none; color:var(--fg-1); }
+.chain-network { font:9px var(--mono); padding:4px 6px; border:1px solid var(--line-strong); border-radius:4px; white-space:nowrap; }
+.chain-testnet { color:var(--fg-2); }.chain-mainnet { color:var(--pending); }
+.chain-receipt p,.chain-mainnet-x402 p { font-size:12px; color:var(--fg-2); line-height:1.7; margin:0 0 14px; overflow-wrap:anywhere; }
+.chain-note { font-size:12px; color:var(--fg-2); line-height:1.6; margin:12px 0; }
+.chain-freshness { display:block; font-size:10px; color:var(--fg-3); margin-top:12px; }
+.chain-payment-flow { display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:11px; color:var(--fg-1); margin:20px 0; }
+.chain-payment-flow span { padding:8px 10px; border:1px solid var(--line-strong); border-radius:6px; }.chain-payment-flow i { font-style:normal; color:var(--fg-2); }
+.chain-mainnet-x402 { border-top:1px solid var(--line); margin-top:20px; padding-top:8px; }.chain-mainnet-x402 summary { min-height:44px; display:flex; align-items:center; gap:10px; font-size:12px; }.chain-mainnet-x402 a { text-decoration:underline; }
+@media(max-width:760px) { .chain-toggle { padding-inline:20px; }.chain-panel { padding:8px 20px 22px; }.chain-tabs { gap:2px; }.chain-tabs button { padding-inline:10px; min-height:44px; }.chain-context select { font-size:16px; max-width:230px; }.chain-receipt summary { flex-wrap:wrap; gap:5px 8px; padding:10px 0; }.chain-receipt summary small { margin-left:auto; }.chain-receipt summary>span:nth-child(2) { min-width:125px; }.chain-scope { margin-left:0; font-size:10px; }.chain-payment-flow { gap:6px; }.chain-payment-flow span { padding:7px; } }
+@media(max-width:359px) { .chain-scope { display:none; }.chain-context select { max-width:205px; } }
+.chain-receipt summary::after { content:'+'; color:var(--fg-2); font-size:13px; }
+.chain-receipt details[open] summary::after { content:'−'; }

@@ -118,7 +118,7 @@ async function issueLocked(deps, { lat, lon, place, budgetUsd = 4, days = 30, br
   });
 
   updateReservation(network,requestId,{saleTxId:sale.txId,stage:'delivery'});
-  await deliver(client, token, minted.serial, agent.id, buyer.id);
+  const delivery = await deliver(client, token, minted.serial, agent.id, buyer.id);
 
   updateReservation(network,requestId,{stage:'schedule'});
   const payout = await schedule(client, {
@@ -138,6 +138,7 @@ async function issueLocked(deps, { lat, lon, place, budgetUsd = 4, days = 30, br
     asset: quote.asset.symbol,
     buyerId: buyer.id.toString(), brokerId: brokerId ? brokerId.toString() : null,
     termsPointer: published.pointer, saleTxId: sale.txId,
+    receipts: { mint: minted.txId, delivery: delivery?.transferTxId, freeze: delivery?.freezeTxId },
     scheduleId: payout.scheduleId, lapsesAt, settled: false,
   };
   record(network, policy);

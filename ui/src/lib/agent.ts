@@ -37,6 +37,7 @@ export interface Policy {
   premiumUsd: number; payoutUsd: number; premiumHbar: number; payoutHbar: number;
   premiumUnits?: number; payoutUnits?: number; asset?: string;
   buyerId: string; brokerId: string | null; termsPointer: string;
+  receipts?: { mint?: string; delivery?: string; freeze?: string };
   saleTxId: string; scheduleId: string; lapsesAt: string; settled: boolean;
   recordedAt?: string; executedAt?: string;
   state?: 'active' | 'confirming' | 'paid' | 'expired' | 'unavailable';
@@ -50,7 +51,7 @@ export interface Policy {
 export interface Issued { ok: true; policy: Policy; quote: Quote; hashscan: Record<string, string> }
 
 export interface Pool {
-  network: Network; poolAccountId: string;
+  network: Network; poolAccountId: string; policyTokenId?: string;
   asset: { symbol: string; tokenId: string | null; isUsdc: boolean };
   capital: number; committed: number; headroom: number;
   capitalHbar: number; committedHbar: number; headroomHbar: number;
@@ -94,3 +95,6 @@ export const payoutLabel = (p: Policy) => p.asset && p.asset !== 'HBAR' ? `${p.p
 
 export type RequestStatus = {ok:true;status:'creating'|'needs_review'|'complete';policy?:Policy;message?:string;place?:string} | Refusal;
 export const requestStatus=(id:string)=>call<RequestStatus>(`/api/requests/${encodeURIComponent(id)}`,undefined,10000);
+
+export interface PaymentReceipt { kind: 'x402-payment'; network: Network; transaction: string; amount: string; asset: string; resource: string; at: string }
+export const activity = () => call<{ network: Network; payments: PaymentReceipt[]; checkedAt: string }>('/api/activity', undefined, 10000);

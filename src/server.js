@@ -10,6 +10,7 @@
 // own leg of the premium transfer, which the kit already supports through
 // AgentMode.RETURN_BYTES.
 import http from 'node:http';
+import { paymentActivity } from './activity.js';
 import { AccountId, TokenId, TransferTransaction } from '@hiero-ledger/sdk';
 import { client, operator, assertOperatorKey, NETWORK, HASHSCAN } from './config.js';
 import { load } from './registry.js';
@@ -68,6 +69,8 @@ async function main() {
     const route = url.pathname.replace(/\/$/, '');
 
     try {
+      if (route === '/api/activity' && req.method === 'GET') return json(res, 200, { network: NETWORK, payments: paymentActivity(NETWORK), checkedAt: new Date().toISOString() });
+
       if (route === '/api/health') {
         return json(res, 200, { ok: true, network: NETWORK, writesAllowed: NETWORK === 'testnet' });
       }
@@ -79,7 +82,7 @@ async function main() {
         const capital=asset.kind==='hbar'?balance.balance.balance:Number(balance.tokens?.find(t=>t.token_id===asset.tokenId)?.balance??0);
         const committed=[...rows,...reservations(NETWORK)].filter(p=>p.state!=='paid'&&!p.settled&&Date.parse(p.lapsesAt)>Date.now()).reduce((sum,p)=>sum+(p.payoutUnits??Math.round(p.payoutHbar*1e8)),0);
         return json(res, 200, {
-          network: NETWORK, poolAccountId: reg.poolAccountId,
+          network: NETWORK, poolAccountId: reg.poolAccountId, policyTokenId: reg.policyTokenId,
           asset: { symbol: asset.symbol, tokenId: asset.tokenId, isUsdc: Boolean(asset.isUsdc) },
           capital: fromUnits(capital, asset), committed: fromUnits(committed, asset),
           headroom: fromUnits(capital - committed, asset),

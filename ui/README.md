@@ -56,3 +56,18 @@ its proposed amount and percentage of that policy's target. Deep-link with
 This is a UI concept, not a new LP contract or mint. Existing LP ownership remains
 fungible ARPS shares in the shared pool. No deposit endpoint is called by the
 preview, and existing NFT metadata/artwork in external wallets is unchanged.
+
+## Blockchain evidence
+
+The collapsed Onchain strip shows the selected/latest policy's signature state.
+Its expandable panel separates live policy records, the frozen mainnet recording,
+and confirmed x402 payment receipts. Every explorer link carries its network.
+The app distinguishes offchain quotes, manual oracle checks, and unminted LP previews.
+New policies retain NFT mint, delivery, and freeze transaction IDs; older policies
+link to the NFT itself. Oracle signatures are schedule approvals, not token allowances.
+
+The deployed self-hosted x402 facilitator settles on testnet. Blocky's public
+`/supported` endpoint advertised only `hedera:mainnet` on September 6, 2026;
+it is not the deployed payment path. No mainnet x402 payment is claimed.
+`/api/activity` reads a bounded, network-specific receipt journal written only
+following successful payment consensus. Historical payments are not inferred.

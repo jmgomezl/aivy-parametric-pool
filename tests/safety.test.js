@@ -47,11 +47,11 @@ test('concurrent issuance cannot promise the same capital; replay is idempotent;
     let created=0,minted=0;
     const quote={ok:true,premium:4,payout:80,hazard:{triggerRadiusKm:100},settled:{payoutUnits:80,premiumUnits:4,premium:4,payout:80,symbol:'aUSDd'},asset:{symbol:'aUSDd'}};
     const deps={network:'testnet',client:{},agent:{id:AccountId.fromString('0.0.1')},poolId:AccountId.fromString('0.0.100'),policyTokenId:'0.0.2',termsTopicId:'0.0.3',createBuyer:async()=>{created++;return{id:AccountId.fromString('0.0.200')};},operations:{
-      price:async()=>quote,check:async(c,p,committed,requested)=>{await new Promise(r=>setTimeout(r,20));return {ok:committed+requested<=100,reason:'capacity'};},publish:async()=>({pointer:'hcs://0.0.3/1'}),mint:async()=>({serial:String(++minted)}),purchase:async()=>({txId:'sale'}),deliver:async()=>{},schedule:async()=>({scheduleId:'0.0.4'})}};
+      price:async()=>quote,check:async(c,p,committed,requested)=>{await new Promise(r=>setTimeout(r,20));return {ok:committed+requested<=100,reason:'capacity'};},publish:async()=>({pointer:'hcs://0.0.3/1'}),mint:async()=>({serial:String(++minted),txId:'mint-receipt'}),purchase:async()=>({txId:'sale'}),deliver:async()=>({transferTxId:'delivery-receipt',freezeTxId:'freeze-receipt'}),schedule:async()=>({scheduleId:'0.0.4'})}};
     const input={lat:4,lon:-75,requestId:'first-request-12345'};
     const results=await Promise.all([issuePolicy(deps,input),issuePolicy(deps,{...input,requestId:'second-request-12345'})]);
     assert.equal(results.filter(r=>r.ok).length,1);assert.equal(created,1);assert.equal(committedTinybar('testnet'),80);
-    const duplicate=await issuePolicy(deps,input);assert.equal(duplicate.reused,true);assert.equal(created,1);
+    const duplicate=await issuePolicy(deps,input);assert.equal(duplicate.reused,true);assert.equal(created,1);assert.deepEqual(duplicate.policy.receipts,{mint:'mint-receipt',delivery:'delivery-receipt',freeze:'freeze-receipt'});
     const failing={...deps,network:'failure',operations:{...deps.operations,purchase:async()=>{throw new Error('receipt interrupted');}}};
     await assert.rejects(issuePolicy(failing,input),/receipt interrupted/);assert.equal(reservations('failure').length,1);assert.equal(committedTinybar('failure'),80);
     const retry=await issuePolicy(failing,input);assert.equal(retry.reason,'pending_recovery');assert.equal(created,2);

@@ -4,6 +4,7 @@
 // satisfy them without a human reading a page. A header -> verify it really pays,
 // settle it on-chain, then serve. The resource is never served before settlement
 // resolves, so a client cannot get the answer and skip the payment.
+import { recordPayment } from '../activity.js';
 import { verify, settle } from './facilitator.js';
 
 export const X402_VERSION = 2;
@@ -71,5 +72,7 @@ export async function charge({ header, terms, feePayerId, feePayerKey, network }
     };
   }
 
+  try { recordPayment({ network, transaction: settlement.transaction, amount: terms.amount, asset: terms.asset, resource: terms.resource }); }
+  catch { console.warn('Payment settled; public receipt journal unavailable.'); }
   return { paid: true, settlement };
 }
