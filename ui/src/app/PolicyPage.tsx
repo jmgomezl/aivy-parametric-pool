@@ -22,7 +22,7 @@ export function PolicyPage({serial}:{serial:string}){
   const oracles=ledger?.oracles??[];
   const signed=oracles.filter(o=>o.signed).length;
   return <div className="page"><div className="page-inner policy-detail">
-    <a className="back-link" href="/policies" onClick={onLink}>← Policies</a>
+    <a className="back-link" href={position==='liquidity'?'/policies?view=fund':'/policies'} onClick={onLink}>← {position==='liquidity'?'Funding previews':'Policies'}</a>
     <div className="policy-detail-grid">
       <div className="policy-main"><div className="eyebrow">Policy #{serial} · {a.network}{mine(a.network).includes(serial)?' · created here':''}</div><h1>{placeName(p)}</h1>
         <div className={`state-label state-${state}`} role="status"><span className="status-dot"/>{statusLabel(p)}</div>
@@ -33,7 +33,7 @@ export function PolicyPage({serial}:{serial:string}){
         <dl className="facts"><div><dt>{paid?'Paid on':'Cover ends'}</dt><dd>{new Date(p.executedAt??p.lapsesAt).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'})}</dd></div><div><dt>Modeled premium</dt><dd>${p.premiumUsd.toFixed(2)} once</dd></div></dl>
         <p className="trigger-note">{paid?'The scheduled transfer executed after the required signatures arrived.':expired?'The coverage window has ended. This alone does not prove that no qualifying event occurred.':'The network executes when the agent and two oracle keys have signed. Damage alone does not trigger a payout.'}</p>
       </div>
-      <div className="policy-visual"><PolicyPosition policy={p} kind={position} onKind={setPosition} portion={portion} onPortion={setPortion}/>
+      <div className="policy-visual"><PolicyPosition policy={p} kind={position} onKind={kind=>{setPosition(kind);history.replaceState(null,'',`/policy/${serial}${kind==='liquidity'?'?position=lp':''}`);}} portion={portion} onPortion={setPortion}/>
         <details className="nft-settlement-details"><summary>Settlement confirmations <span>{ledger?.available?`${signed}/2`:'—'}</span></summary>
         <svg viewBox="0 0 520 420" width="100%" role="img" aria-label={ledger?.available?`${ledger.agentSigned?'Agent signed':'Agent signature missing'}; ${signed} of 2 required oracle confirmations`:'Signature status unavailable'}>
           {ledger?.available?<Lock cx={260} cy={180} r={112} agent={ledger?.agentSigned??false} oracles={oracles.length?oracles.map(o=>o.signed):[false,false,false]} names={[]} state={paid?'ok':expired?'lapsed':'pending'} centre={<g><text x={260} y={177} textAnchor="middle" fill={paid?C.ok:C.fg0} fontSize={36} className="num">{paid?'✓':ledger?.available?`${signed}/2`:'—'}</text><text x={260} y={204} textAnchor="middle" fill={C.fg1} fontSize={14}>{paid?'paid':'confirmations'}</text></g>}/>:<g><circle cx={260} cy={180} r={100} fill="none" stroke={C.line}/><text x={260} y={180} textAnchor="middle" fill={C.fg1} fontSize={16}>Unable to verify</text></g>}
@@ -46,6 +46,7 @@ export function PolicyPage({serial}:{serial:string}){
       </div>
     </div>
     <details className="proof-details"><summary>View on Hedera <span>↗</span></summary><dl className="facts"><div><dt>Demo beneficiary</dt><dd><Id kind="account" id={p.buyerId} network={a.network}/></dd></div><div><dt>Scheduled payout</dt><dd><Id kind="schedule" id={p.scheduleId} network={a.network}/></dd></div><div><dt>Premium transfer</dt><dd><Id kind="transaction" id={p.saleTxId} network={a.network}/></dd></div><div><dt>Recorded terms</dt><dd><Id kind="topic" id={p.termsPointer} href={hsPointer(p.termsPointer,a.network)} network={a.network}/></dd></div></dl></details>
+    <a href="/story#2" onClick={onLink} className="settlement-story-link">See confirmations become a payout <span>Recorded mainnet demo →</span></a>
     <details className="proof-details"><summary>How funds are protected <span>+</span></summary><p>The oracle quorum cannot spend without the agent's signature. This recorded mainnet experiment proves that specific key restriction.</p><OracleProof/></details>
   </div></div>;
 }

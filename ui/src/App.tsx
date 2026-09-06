@@ -4,11 +4,13 @@ import { Chrome } from './app/Chrome';
 import { Home } from './app/Home';
 import { PoliciesPage } from './app/PoliciesPage';
 import { PolicyPage } from './app/PolicyPage';
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 const Story=lazy(()=>import('./story/Story').then(m=>({default:m.Story})));
 
 export default function App() {
   const route = useRoute();
+  const pageKey=route.name==='policy'?`policy-${route.serial}`:route.name;
+  useEffect(()=>{window.scrollTo(0,0);},[pageKey]);
   if (route.name === 'story') return <Suspense fallback={<div className="page" role="status">Loading demonstration…</div>}><Story /></Suspense>;
   return (
     <div className="app">

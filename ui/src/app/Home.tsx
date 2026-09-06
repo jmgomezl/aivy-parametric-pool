@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { PLACES, MODEL } from '../lib/hazard';
-import { navigate, policyPath } from '../lib/router';
+import { navigate, policyPath, onLink } from '../lib/router';
 import { useAgent } from '../lib/store';
 import { AtlasMap, type MapState, type Pin } from './AtlasMap';
 import { QuotePanel } from './QuotePanel';
 
 function readPin(): Pin | null {
-  const m = /[?&]at=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/.exec(location.search);
+  const m = /^(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$/.exec(new URLSearchParams(location.search).get('at')??'');
   if (!m) return null;
   const lat = Number(m[1]), lon = Number(m[2]);
   if (Math.abs(lat) > 90 || Math.abs(lon) > 180) return null;
@@ -28,7 +28,7 @@ export function Home() {
   const markers = (a.policies ?? []).filter(p => p.state === 'active' || p.state === 'confirming').map(p => ({ lat: p.lat, lon: p.lon, label: p.place ?? `Policy ${p.serial}`, id: String(p.serial), tone: 'ok' as const }));
   return <div className={`cover-layout ${pin ? 'has-quote' : ''}`}>
     <div className="atlas-surface">
-      <div className="atlas-intro"><div className="eyebrow">Ready before it happens</div><h1>Earthquake cover.<br /><span>Choose a place.</span></h1><p>A payout committed in advance. Released when two oracles confirm.</p></div>
+      <div className="atlas-intro"><div className="eyebrow">Ready before it happens</div><h1>Earthquake cover.<br /><span>Choose a place.</span></h1><p>A payout committed in advance. Released when two oracles confirm.</p><div className="journey-links"><a href="/policies?view=fund" onClick={onLink}>Fund a policy <span>↗</span></a><a href="/story#1" onClick={onLink}>Watch a payout <span>→</span></a></div></div>
       <AtlasMap days={days} pin={pin} onPin={setPin} onState={setMap} markers={markers} onMarker={id => navigate(policyPath(id))} />
     </div>
     {pin ? <QuotePanel key={`${pin.lat},${pin.lon}`} pin={pin} map={map} budget={budget} days={days} onBudget={setBudget} onDays={setDays} onClose={() => setPin(null)} /> : null}

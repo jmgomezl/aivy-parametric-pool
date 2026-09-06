@@ -1,5 +1,8 @@
 # Audit implementation and verification
 
+Updated September 6, 2026. The original audit was followed by the deployed
+funding-preview and submission-evidence improvements below.
+
 ## Scope delivered
 
 | Audit requirement | Implementation | Evidence |
@@ -25,7 +28,7 @@
 
 ## Checks
 
-- `npm test`: 20 passing offline app tests.
+- `npm test`: 26 passing offline app tests, including LP estimate and claim-scenario checks.
 - `npm --prefix ui run build`: passing TypeScript and production build.
 - Sibling plugin: 15 passing tests; typecheck, lint and build pass.
 - `git diff --check`: clean in both repositories.
@@ -35,9 +38,30 @@
 ## Deliberate boundaries
 
 Event checks remain request-driven and are labeled manual. No production
-monitoring or remote deployment was performed. No transaction was submitted as
-part of these verification checks. Historical ledger scripts were syntax-checked,
+monitoring is implemented. The app and oracle services are deployed on the VPS
+at quorum.aivylabs.xyz and the three oracle hostnames. The initial audit was
+read-only; subsequent authorized work created three global testnet demo policies
+and one x402 testnet payment. Historical mainnet ledger scripts were syntax-checked,
 not rerun against funded accounts. Existing mainnet receipts remain recordings.
 Interrupted ledger writes can require operator reconciliation; the system retains
 capacity rather than assuming they failed. A shared filesystem book is required
 for issuance processes; this is not a distributed database or production insurer.
+
+## Submission-readiness follow-up
+
+| Requirement | Current implementation and evidence |
+| --- | --- |
+| Worldwide discovery | Photon/OpenStreetMap lookup, cached and debounced; accent-free Medellin verified live |
+| Understandable history | Fixed $800 modeled payout; yearly premium chart, red/green change indicators preserved |
+| Funding discovery | Home “Fund a policy” links to a dedicated gallery mode; each card opens its own LP preview |
+| Explain estimated earnings | Pro-rata term income and annual premium rate before claims/costs; full contribution-at-risk scenario; formula and assumptions disclosed |
+| Preserve honest LP scope | No per-policy deposits or LP NFTs are issued; shared-pool primitives distinguished from proposed funding model |
+| Settlement climax | Policy links into controlled mainnet replay; button explicitly says Replay; actual 4 HBAR execution rechecked through mirror node |
+| x402 payment proof | 0.001 aUSDd transferred from 0.0.10386838 to USGS-service account 0.0.10386832; SUCCESS on mirror node; payment journal and public evidence JSON retained |
+| Navigation | Funding back link retains gallery mode; selected coordinates survive refresh; page changes reset scroll |
+| Submission docs | docs/SUBMISSION.md provides a timed walkthrough, scope, links and event requirements; docs/AI-ASSISTANCE.md discloses known AI use |
+
+Browser verification covers desktop funding layout, 320px mobile controls and
+claim outcomes, a contribution change from 10% to 100%, and the mobile story's
+confirmation-to-payment transition. No new mainnet transaction was submitted.
+The x402 historical query did not sign a policy or cause a payout.

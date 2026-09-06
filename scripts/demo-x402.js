@@ -1,0 +1,23 @@
+// One bounded testnet payment for a historical oracle query; never signs a policy.
+import fs from 'node:fs';
+import { NETWORK } from '../src/config.js';
+import { buildPayment } from '../src/x402/client.js';
+const url = 'https://usgs.aivylabs.xyz/attest';
+const spec = {lat:19.4326,lon:-99.1332,radiusKm:100,minMagnitude:6,maxDepthKm:70,windowStart:'2025-01-01T00:00:00Z',windowEnd:'2025-02-01T00:00:00Z'};
+if (NETWORK !== 'testnet' || !process.argv.includes('--execute')) throw new Error('Requires testnet and --execute. Spends 0.001 aUSDd plus facilitator testnet fees.');
+const registry=JSON.parse(fs.readFileSync('.artifacts/registry-testnet.json','utf8'));
+if (!registry.x402PayerId || !registry.x402PayerKey) throw new Error('Dedicated testnet x402 payer is required in the local registry.');
+const init = {method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({spec})};
+const challenge = await fetch(url,init);
+if (challenge.status !== 402) throw new Error(`Expected 402; got ${challenge.status}`);
+const terms = (await challenge.json()).accepts?.[0];
+if (terms?.network !== 'hedera:testnet' || terms.amount !== '1000' || terms.asset !== '0.0.10374011' || terms.payTo !== '0.0.10386832' || terms.extra?.feePayer !== '0.0.7231440' || terms.resource !== url) throw new Error('Unexpected payment requirements; stopped before signing.');
+const payer = {id:registry.x402PayerId,key:registry.x402PayerKey};
+const {header} = await buildPayment({requirements:terms,payerId:payer.id,payerKey:payer.key,network:NETWORK});
+const response = await fetch(url,{...init,headers:{...init.headers,'X-PAYMENT':header}});
+const body = await response.json();
+if (!response.ok || !body.payment?.success) throw new Error(JSON.stringify({status:response.status,body}));
+const evidence = {network:NETWORK,purpose:'Historical catalogue query, not a policy approval or payout',challengeStatus:402,responseStatus:response.status,requirements:{amount:terms.amount,asset:terms.asset,payTo:terms.payTo,resource:url},...body};
+fs.mkdirSync('.artifacts',{recursive:true});
+fs.writeFileSync('.artifacts/demo-x402-testnet.json',JSON.stringify(evidence,null,2));
+console.log(JSON.stringify(evidence,null,2));

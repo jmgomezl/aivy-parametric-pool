@@ -1,6 +1,8 @@
 import type { Policy } from '../lib/agent';
 import { PositionNFT } from '../components/PositionNFT';
 import { Slider } from './History';
+import { placeName } from '../lib/hazard';
+import { lpModel } from '../lib/lp-model.mjs';
 export type PositionKind='cover'|'liquidity';
 type Props={policy:Policy;kind:PositionKind;onKind:(kind:PositionKind)=>void;portion:number;onPortion:(value:number)=>void};
 export function PolicyPosition({policy,kind,onKind,portion,onPortion}:Props){
@@ -13,10 +15,15 @@ export function PolicyPosition({policy,kind,onKind,portion,onPortion}:Props){
  </div>;
 }
 export function LPPreviewControls({policy,portion,onPortion}:{policy:Policy;portion:number;onPortion:(value:number)=>void}){
+ const model=lpModel(policy,portion),asset=policy.asset??'HBAR';
+ const number=(v:number)=>v.toLocaleString(undefined,{maximumFractionDigits:2});
  return <div className="lp-preview-controls">
-   <h3>Back this policy</h3>
-   <Slider label="Contribution" value={portion} min={0} max={100} step={.1} unit={policy.asset??'HBAR'} format={v=>(Math.round(policy.payoutHbar*v)/100).toLocaleString(undefined,{maximumFractionDigits:2})} onChange={onPortion}/>
-   <div className="lp-preview-flow" aria-label="Proposed flow: your capital backs this policy"><span>Your capital</span><span aria-hidden="true">→</span><span>Policy #{policy.serial}</span></div>
-   <p>Concept preview. No deposit or NFT is created. Current LP shares back the shared pool.</p>
+   <div className="eyebrow">Open funding · concept preview</div><h3>Back {placeName(policy).split(',')[0]}. Share its premiums.</h3>
+   <Slider label="Your contribution" value={portion} min={0} max={100} step={.1} unit={asset} format={v=>number(policy.payoutHbar*v/100)} onChange={onPortion}/>
+   <div className="lp-preview-flow" aria-label="Proposed flow: contribute capital, back this policy, receive a share of premiums"><span>Your capital</span><span aria-hidden="true">→</span><span>Policy #{policy.serial}</span><span aria-hidden="true">→</span><span>Premiums</span></div>
+   {model?<><div className="lp-income"><div><span>Est. annual premium rate</span><strong className="num">{number(model.annualRate)}%<small> / yr</small></strong><small>Before claims & costs</small></div><div><span>Your {model.days}-day premiums</span><strong className="num">{number(model.income)}</strong><small>{asset} · {number(portion)}% share</small></div></div>
+   <div className="lp-outcomes"><div><span>No qualifying payout</span><strong>{number(model.noClaimTotal)} {asset}</strong><small>Capital + premium share</small></div><div><span>Payout triggers</span><strong>{number(model.claimTotal)} {asset}</strong><small>Your contributed capital is used</small></div></div>
+   <details className="lp-assumptions"><summary>How the estimate works</summary><p>{Math.round(model.poolFraction*100)}% of this policy’s premium goes to the pool{policy.brokerId?' after the 15% broker split':''}. The preview allocates it pro rata to contributors. Annual rate = pool premium ÷ payout target × 365 ÷ {model.days} days. Assumes continuous funding at the same terms, without compounding. Claims, fees and idle capital reduce returns; losses can consume your entire contribution.</p></details></>:<p>Return estimate unavailable for this policy’s recorded terms.</p>}
+   <p>Designed for anyone to fund a policy. Preview only: no deposit, income distribution or LP NFT is created. Current LP shares back the shared pool.</p>
  </div>;
 }

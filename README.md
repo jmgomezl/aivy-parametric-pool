@@ -15,6 +15,8 @@ value; displayed dollars are model outputs. This is a prototype, not live cover.
 Automatic ledger execution does not imply automatic earthquake monitoring.
 The story replays controlled signatures from a recorded mainnet transfer.
 
+See [the submission walkthrough](docs/SUBMISSION.md) and [AI assistance disclosure](docs/AI-ASSISTANCE.md).
+
 ## Run locally
 
 ```sh
@@ -153,7 +155,7 @@ What is **new**, built during this event:
    [#1088](https://github.com/hashgraph/hedera-agent-kit-js/pull/1088).
 2. **A hazard-priced underwriting agent** — premiums derived live from the USGS
    catalogue for any lat/lon on earth, with published inputs.
-3. **A solvency guard** enforcing `exposure <= capital` as a permanent invariant.
+3. **An issuance capacity guard** reserving aggregate exposure against available capital in the shared book. External spending can invalidate this off-ledger reservation.
 4. **Atomic premium settlement with an open broker channel** — buyer, pool and an
    arbitrary per-sale broker settled in one multi-party transaction.
 5. **x402-gated oracle services** — the oracle agents are the paid service, not

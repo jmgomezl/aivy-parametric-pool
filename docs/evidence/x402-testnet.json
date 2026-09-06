@@ -1,0 +1,36 @@
+{
+  "network": "testnet",
+  "purpose": "Historical catalogue query, not a policy approval or payout",
+  "challengeStatus": 402,
+  "responseStatus": 200,
+  "requirements": {
+    "amount": "1000",
+    "asset": "0.0.10374011",
+    "payTo": "0.0.10386832",
+    "resource": "https://usgs.aivylabs.xyz/attest"
+  },
+  "source": "USGS ComCat",
+  "operator": "United States Geological Survey",
+  "sourceKey": "usgs",
+  "queriedAt": "2026-09-06T05:31:44.230Z",
+  "query": "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minmagnitude=5.5&latitude=19.4326&longitude=-99.1332&maxradiuskm=100&starttime=2025-01-01T00:00:00Z&endtime=2025-02-01T00:00:00Z",
+  "spec": {
+    "lat": 19.4326,
+    "lon": -99.1332,
+    "radiusKm": 100,
+    "minMagnitude": 6,
+    "maxDepthKm": 70,
+    "windowStart": "2025-01-01T00:00:00Z",
+    "windowEnd": "2025-02-01T00:00:00Z"
+  },
+  "triggered": false,
+  "matches": [],
+  "nearMisses": [],
+  "verdict": "USGS ComCat recorded no seismic activity meeting these terms in the window.",
+  "signature": null,
+  "payment": {
+    "success": true,
+    "transaction": "0.0.7231440@1788672698.044530315",
+    "network": "hedera:testnet"
+  }
+}

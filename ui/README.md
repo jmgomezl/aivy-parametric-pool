@@ -95,3 +95,18 @@ The historical premium chart holds the modeled payout fixed at $800 USD. Its
 values show the premium required for that payout each year. The quote panel
 shows the inverse: the modeled payout for the selected premium budget. These
 USD model values do not give the testnet demo token a cash value.
+
+## Funding and judge journey
+
+The home page links to **Fund a policy** (`/policies?view=fund`) and **Watch a
+payout** (`/story#1`). Funding cards open `/policy/:serial?position=lp`. The slider
+allocates hypothetical capital and premium income pro rata. Annual premium rate
+is pool premium / policy payout × 365 / term days, without compounding. The
+current purchase path sends 100% to the pool without a broker and 85% with one.
+This is gross premium income, not a net APR: claims, costs and idle capital reduce
+returns. The adverse scenario uses all contributed capital for the payout.
+No per-policy deposit, LP NFT, redemption or income distribution is implemented.
+
+A real x402 testnet query is recorded in `../docs/evidence/x402-testnet.json`;
+the VPS journal exposes the settled payment under `/api/activity`. It is a
+historical catalogue check with no qualifying event and no schedule signature.
