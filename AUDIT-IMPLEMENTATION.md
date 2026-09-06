@@ -65,3 +65,11 @@ Browser verification covers desktop funding layout, 320px mobile controls and
 claim outcomes, a contribution change from 10% to 100%, and the mobile story's
 confirmation-to-payment transition. No new mainnet transaction was submitted.
 The x402 historical query did not sign a policy or cause a payout.
+
+## How-it-works redesign
+
+Replaced repeated lock diagrams with six task-specific scenes: geographic terms,
+capital before/after LP funding, named oracle signatures, animated transfer,
+geographic NFT with receipt trail, and successful/blocked authorization tests.
+Preserved all six deep links and mainnet evidence. Mobile retains direct step
+navigation and previous/next controls; reduced-motion support is included.

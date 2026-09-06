@@ -110,3 +110,14 @@ No per-policy deposit, LP NFT, redemption or income distribution is implemented.
 A real x402 testnet query is recorded in `../docs/evidence/x402-testnet.json`;
 the VPS journal exposes the settled payment under `/api/activity`. It is a
 historical catalogue check with no qualifying event and no schedule signature.
+
+## Guided story redesign
+
+`/story#1` through `#6` now use distinct geographic, capital, signature, transfer,
+NFT-receipt and authorization-comparison scenes. Step meanings and deep links
+are preserved. The step navigator remains visible on mobile, next actions name
+the upcoming scene, and keyboard arrows work outside interactive controls.
+Reduced-motion preferences disable scene and transfer animation. All narrative
+values come from the frozen mainnet record; the recording uses SGC as its third
+key label while current deployed services use GEOFON. Scope details distinguish
+live testnet creation, recorded mainnet execution and proposed policy LPs.
