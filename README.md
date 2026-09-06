@@ -448,3 +448,11 @@ What is **new**, built during this event:
 </details>
 
 MIT.
+
+### Current recording capacity
+
+The hosted demo uses **12 attempts/IP/hour, 100 attempts/24h and 100,000 modeled
+cover/24h**, overriding conservative defaults. The pool was topped up to
+**200,000 testnet aUSDd**; these tokens have no cash value. Existing reservations
+and usage remain intact. [Verified capacity and top-up receipt](docs/evidence/demo-capacity.json)
+· [Current limits](https://quorum.aivylabs.xyz/api/guardrails).

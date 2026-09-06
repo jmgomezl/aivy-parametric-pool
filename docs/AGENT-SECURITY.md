@@ -109,3 +109,18 @@ explicitly declaring the modern Agent Kit needed by the settlement plugin. The
 older unused automatically installed Agent Kit peer is omitted. Audit the actual
 installed tree on every deployment; a clean advisory scan is not proof that the
 application has no vulnerabilities.
+
+### Demo capacity configuration — September 6, 2026
+
+The public VPS overrides the conservative code defaults with 12 attempts per IP
+per hour, 100 admitted attempts per rolling 24 hours, and 100,000 modeled USD of
+cover per rolling 24 hours. Existing usage was retained, not reset. The operator
+replenished the unbacked testnet pool to 200,000 aUSDd from the demo treasury;
+this is a treasury top-up, not an LP deposit or share issuance. The actual-capital
+check remains mandatory. These settings do not allow public mainnet writes.
+
+[Capacity and transaction evidence](evidence/demo-capacity.json).
+`scripts/replenish-demo.js` is operator-only, refuses other networks/assets and
+dry-runs by default. `--execute` tops up to its fixed target and journals the
+submitted transaction ID before waiting for consensus. Reconcile an uncertain
+submission before running it again. It is not exposed as a public faucet.

@@ -1,0 +1,66 @@
+{
+  "checkedAt": "2026-09-06T17:14:16.880Z",
+  "replenishment": {
+    "network": "testnet",
+    "asset": "aUSDd",
+    "amount": 156591.315657,
+    "transaction": "0.0.7231440@1788714786.776939910",
+    "status": "SUCCESS",
+    "kind": "operator treasury top-up; not LP funding"
+  },
+  "pool": {
+    "network": "testnet",
+    "poolAccountId": "0.0.10373722",
+    "policyTokenId": "0.0.10373726",
+    "asset": {
+      "symbol": "aUSDd",
+      "tokenId": "0.0.10374011",
+      "isUsdc": false
+    },
+    "capital": 200000,
+    "committed": 22730.622946,
+    "headroom": 177269.377054,
+    "capitalHbar": 200000,
+    "committedHbar": 22730.622946,
+    "headroomHbar": 177269.377054,
+    "livePolicies": 23,
+    "budgetToday": {
+      "policies": 18,
+      "usd": 19852.92554883314,
+      "limits": {
+        "policies": 100,
+        "usd": 100000
+      }
+    },
+    "hashscan": "https://hashscan.io/testnet/account/0.0.10373722"
+  },
+  "guardrails": {
+    "network": "testnet",
+    "execution": "deterministic",
+    "publicWrites": true,
+    "limits": {
+      "perIpPerHour": 12,
+      "policiesPerDay": 100,
+      "usdPerDay": 100000
+    },
+    "budget": {
+      "policies": 18,
+      "usd": 19852.92554883314,
+      "limits": {
+        "policies": 100,
+        "usd": 100000
+      }
+    },
+    "checkedAt": "2026-09-06T17:14:16.880Z",
+    "custody": "Shared demo host; separate keys are not independent operators.",
+    "authorization": "Agent AND 2 of 3 oracle keys",
+    "signing": "Fixed scheduled transfer; oracle verifies recorded terms and transfer bytes."
+  },
+  "istanbulQuote": {
+    "premium": 4,
+    "payout": 944.7299472930146,
+    "fitsCapital": true,
+    "fitsDailyBudget": true
+  },
+  "note": "Quote and mirror verification only; no policy created. Existing budget usage retained."
+}
