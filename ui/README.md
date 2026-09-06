@@ -90,3 +90,8 @@ queries share a bounded server cache. Requests are debounced, canceled when stal
 and limited upstream. The public Photon service has no availability guarantee;
 local suggestions (including Medellín) and direct coordinates remain available.
 Coverage follows OpenStreetMap, not an exhaustive guarantee of every municipality.
+
+The historical premium chart holds the modeled payout fixed at $800 USD. Its
+values show the premium required for that payout each year. The quote panel
+shows the inverse: the modeled payout for the selected premium budget. These
+USD model values do not give the testnet demo token a cash value.
