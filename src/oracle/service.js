@@ -20,6 +20,8 @@ import { SOURCES } from './sources.js';
 import { attest } from './attest.js';
 import { charge, requirements } from '../x402/gate.js';
 import { settlementAsset } from '../asset.js';
+import { load } from '../registry.js';
+import { verifiedPolicy } from './verify-policy.js';
 
 const SOURCE = process.env.SOURCE ?? 'usgs';
 const PORT = Number(process.env.PORT ?? 8801);
@@ -65,7 +67,7 @@ const termsFor = (path) => requirements({
 // the payout executed the moment the k-th signature landed. That is the system
 // working, not a failure, and it must not read as an error — the oracle still
 // did its job, still got paid, and still put its verdict on record.
-const ALREADY_SETTLED = /SCHEDULE_ALREADY_EXECUTED|INVALID_SCHEDULE_ID|SCHEDULE_ALREADY_DELETED/i;
+const ALREADY_SETTLED = /SCHEDULE_ALREADY_EXECUTED/i;
 
 async function signSchedule(scheduleId) {
   const client = (NETWORK === 'mainnet' ? Client.forMainnet() : Client.forTestnet())
@@ -103,7 +105,13 @@ const server = http.createServer(async (req, res) => {
 
     if ((path === '/attest' || path === '/attest-and-sign') && req.method === 'POST') {
       const body = await readBody(req);
-      const spec = body.spec ?? body;
+      let spec;
+      if(path==='/attest-and-sign'){
+        // Caller-provided trigger conditions are never used for signing.
+        const registry=load(NETWORK);
+        try { ({spec}=await verifiedPolicy({network:NETWORK,scheduleId:body.scheduleId,termsPointer:body.termsPointer,poolId:registry.poolAccountId,termsTopicId:registry.termsTopicId})); }
+        catch(error){return json(res,422,{error:'policy_verification_failed',message:error.message});}
+      }else spec=body.spec??body;
       for (const k of ['lat', 'lon', 'radiusKm', 'minMagnitude', 'windowStart']) {
         if (spec[k] == null) return json(res, 400, { error: `spec.${k} is required` });
       }
@@ -134,7 +142,7 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, process.env.HOST ?? '127.0.0.1', () => {
   console.log(`${source.name} oracle on :${PORT}  (${source.operator})`);
   console.log(`  paid to ${ORACLE_ID} · ${PRICE} ${asset.symbol} per attestation · ${caip2}`);
 });

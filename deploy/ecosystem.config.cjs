@@ -1,6 +1,5 @@
-// One process per oracle. They are independent services with independent
-// accounts and independent keys — running them in one process would make the
-// quorum a formality.
+// One process per catalogue, with separate accounts and signing keys.
+// These demo processes are operated together; isolation is not operator independence.
 const shared = { cwd: '/opt/aivy-oracles', script: 'src/oracle/service.js',
   instances: 1, exec_mode: 'fork', max_memory_restart: '180M',
   env: { NODE_ENV: 'production', HEDERA_NETWORK: 'testnet' } };

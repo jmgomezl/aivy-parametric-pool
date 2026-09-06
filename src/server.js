@@ -14,9 +14,9 @@ import { AccountId, TokenId, TransferTransaction } from '@hiero-ledger/sdk';
 import { client, operator, assertOperatorKey, NETWORK, HASHSCAN } from './config.js';
 import { load } from './registry.js';
 import { createFundedAccount } from './accounts.js';
-import { quotePolicy, issuePolicy } from './policy/issue.js';
-import { poolCapital } from './pool/solvency.js';
-import { committedTinybar, policies, zoneExposureTinybar } from './book.js';
+import { quotePolicy, issuePolicy, isIssuing } from './policy/issue.js';
+import { readPolicies, mirrorGet } from './ledger.js';
+import { policies, reservations, settle, request } from './book.js';
 import { checkWrite, recordWrite, budgetToday, LIMITS } from './guards.js';
 import { associate } from './pool/shares.js';
 import { settlementAsset, fromUnits } from './asset.js';
@@ -34,7 +34,7 @@ const json = (res, status, body) => {
 };
 
 const ipOf = (req) =>
-  (req.headers['x-forwarded-for']?.split(',')[0] ?? req.socket.remoteAddress ?? 'unknown').trim();
+  (process.env.TRUST_PROXY === '1' ? req.headers['x-forwarded-for']?.split(',')[0] ?? req.socket.remoteAddress : req.socket.remoteAddress) ?? 'unknown';
 
 const num = (v, fallback) => (v == null || v === '' || Number.isNaN(Number(v)) ? fallback : Number(v));
 
@@ -53,9 +53,13 @@ async function main() {
     if (!reg[key]) throw new Error(`${NETWORK} is not provisioned (${key} missing). Run: npm run provision`);
   }
   const poolId = AccountId.fromString(reg.poolAccountId);
+  const identities = {agentPublicKey:agent.key.publicKey.toStringRaw(),oraclePublicKeys:reg.oraclePublicKeys,oracleSources:reg.oracleSources??['usgs','emsc','sgc']};
+  const currentPolicies = () => readPolicies(NETWORK,policies(NETWORK),identities);
+  const publicPolicy = ({requestId, quote, ...p}) => p;
   const deps = {
     client: c, agent, network: NETWORK, poolId,
     policyTokenId: reg.policyTokenId, termsTopicId: reg.termsTopicId,
+    reconcile: async () => {for(const p of await currentPolicies())if(p.state==='paid')settle(NETWORK,p.serial,p.executedAt);},
   };
 
   const server = http.createServer(async (req, res) => {
@@ -65,13 +69,15 @@ async function main() {
 
     try {
       if (route === '/api/health') {
-        return json(res, 200, { ok: true, network: NETWORK, writesAllowed: NETWORK !== 'mainnet' || LIMITS.allowMainnetWrites });
+        return json(res, 200, { ok: true, network: NETWORK, writesAllowed: NETWORK === 'testnet' });
       }
 
       if (route === '/api/pool') {
         const asset = settlementAsset(NETWORK);
-        const capital = await poolCapital(c, poolId, NETWORK);
-        const committed = committedTinybar(NETWORK);
+        const rows=await currentPolicies();
+        const balance=asset.kind==='hbar'?await mirrorGet(NETWORK,`/accounts/${poolId}?transactions=false`):await mirrorGet(NETWORK,`/accounts/${poolId}/tokens?token.id=${asset.tokenId}`);
+        const capital=asset.kind==='hbar'?balance.balance.balance:Number(balance.tokens?.find(t=>t.token_id===asset.tokenId)?.balance??0);
+        const committed=[...rows,...reservations(NETWORK)].filter(p=>p.state!=='paid'&&!p.settled&&Date.parse(p.lapsesAt)>Date.now()).reduce((sum,p)=>sum+(p.payoutUnits??Math.round(p.payoutHbar*1e8)),0);
         return json(res, 200, {
           network: NETWORK, poolAccountId: reg.poolAccountId,
           asset: { symbol: asset.symbol, tokenId: asset.tokenId, isUsdc: Boolean(asset.isUsdc) },
@@ -79,7 +85,7 @@ async function main() {
           headroom: fromUnits(capital - committed, asset),
           capitalHbar: fromUnits(capital, asset), committedHbar: fromUnits(committed, asset),
           headroomHbar: fromUnits(capital - committed, asset),
-          livePolicies: policies(NETWORK).filter((p) => !p.settled).length,
+          livePolicies: rows.filter(p=>p.state==='active'||p.state==='confirming').length,
           budgetToday: budgetToday(),
           hashscan: HASHSCAN('account', reg.poolAccountId),
         });
@@ -89,7 +95,7 @@ async function main() {
       if (route === '/api/quote') {
         const lat = num(url.searchParams.get('lat')), lon = num(url.searchParams.get('lon'));
         if (lat == null || lon == null) return json(res, 400, { ok: false, message: 'lat and lon are required' });
-        const q = await quotePolicy({ lat, lon, budgetUsd: num(url.searchParams.get('budget'), 4), days: num(url.searchParams.get('days'), 30) });
+        const q = await quotePolicy({ lat, lon, budgetUsd: num(url.searchParams.get('budget'), 4), days: num(url.searchParams.get('days'), 30), network: NETWORK });
         return json(res, q.ok ? 200 : 200, q); // a refusal is a valid answer, not an error
       }
 
@@ -112,15 +118,24 @@ async function main() {
         }
       }
 
+      if (route.startsWith('/api/requests/') && req.method === 'GET') {
+        const id=route.split('/').pop();
+        if(!/^[a-zA-Z0-9-]{16,80}$/.test(id))return json(res,400,{ok:false,reason:'invalid_input'});
+        const saved=request(NETWORK,id);
+        if(!saved)return json(res,404,{ok:false,reason:'not_found',message:'No request was recorded. It is safe to request a new quote.'});
+        if(saved.quote && saved.scheduleId)return json(res,200,{ok:true,status:'complete',policy:publicPolicy(saved)});
+        return json(res,200,{ok:true,status:isIssuing(NETWORK,id)?'creating':'needs_review',place:saved.place,stage:saved.stage,message:saved.message??(isIssuing(NETWORK,id)?'Your request is saved. Waiting for ledger confirmation.':'This reserved request needs operator review before it can be retried.'),recordedAt:saved.recordedAt});
+      }
+
       if (route === '/api/policies' && req.method === 'GET') {
-        return json(res, 200, { network: NETWORK, policies: policies(NETWORK) });
+        return json(res, 200, { network: NETWORK, policies: (await currentPolicies()).map(publicPolicy) });
       }
 
       if (route.startsWith('/api/policies/') && req.method === 'GET') {
         const serial = route.split('/').pop();
-        const p = policies(NETWORK).find((x) => String(x.serial) === serial);
-        if (!p) return json(res, 404, { ok: false, message: `No policy ${serial} on ${NETWORK}.` });
-        return json(res, 200, { ...p, hashscan: { schedule: HASHSCAN('schedule', p.scheduleId), sale: HASHSCAN('transaction', p.saleTxId) } });
+        const p = (await currentPolicies()).find((x) => String(x.serial) === serial);
+        if (!p) return json(res, 404, { ok: false, reason:'not_found', message: `No policy ${serial} on ${NETWORK}.` });
+        return json(res, 200, { ...publicPolicy(p), hashscan: { schedule: HASHSCAN('schedule', p.scheduleId), sale: HASHSCAN('transaction', p.saleTxId) } });
       }
 
       if (route === '/api/policies' && req.method === 'POST') {
@@ -128,36 +143,26 @@ async function main() {
         const lat = num(input.lat), lon = num(input.lon);
         if (lat == null || lon == null) return json(res, 400, { ok: false, message: 'lat and lon are required' });
 
-        // Price first: a refusal costs nothing and must not consume a rate slot.
-        const quote = await quotePolicy({ lat, lon, budgetUsd: num(input.budgetUsd, 4), days: num(input.days, 30) });
-        if (!quote.ok) return json(res, 200, quote);
-
-        const denied = checkWrite({ network: NETWORK, ip: ipOf(req), usd: quote.payout });
-        if (denied) return json(res, denied.status, { ok: false, ...denied });
-
-        // The buyer needs the policy NFT and, when we settle in a token, the
-        // settlement asset too — and enough of it to pay the premium.
-        const asset = settlementAsset(NETWORK);
-        const buyer = await createFundedAccount(c, NETWORK, 1, 'buyer (api)');
-        await associate(c, buyer.id, buyer.key, TokenId.fromString(reg.policyTokenId));
-        if (asset.kind === 'token') {
-          await associate(c, buyer.id, buyer.key, TokenId.fromString(asset.tokenId));
-          const fund = new TransferTransaction()
-            .addTokenTransfer(TokenId.fromString(asset.tokenId), agent.id, -quote.settled.premiumUnits)
-            .addTokenTransfer(TokenId.fromString(asset.tokenId), buyer.id, quote.settled.premiumUnits);
-          await (await fund.execute(c)).getReceipt(c);
-        }
-        const broker = input.brokerId ? AccountId.fromString(input.brokerId) : null;
-
-        const result = await issuePolicy(deps, {
-          lat, lon, place: input.place ?? null, budgetUsd: num(input.budgetUsd, 4),
-          days: num(input.days, 30), brokerId: broker, buyer,
-        });
-        if (!result.ok) return json(res, 200, result);
-
-        recordWrite({ ip: ipOf(req), usd: quote.payout });
+        if (NETWORK !== 'testnet') return json(res,403,{ok:false,reason:'mainnet_writes_disabled',message:'The public demo creates policies on testnet only.'});
+        if (input.requestId && !/^[a-zA-Z0-9-]{16,80}$/.test(input.requestId)) return json(res,400,{ok:false,reason:'invalid_input',message:'Invalid request identifier.'});
+        const result = await issuePolicy({...deps,
+          beforeWrite:quote=>checkWrite({network:NETWORK,ip:ipOf(req),usd:quote.payout}),
+          afterWrite:quote=>recordWrite({ip:ipOf(req),usd:quote.payout}),
+          createBuyer:async quote=>{
+            const asset=settlementAsset(NETWORK);
+            const buyer=await createFundedAccount(c,NETWORK,1,'demo beneficiary');
+            await associate(c,buyer.id,buyer.key,TokenId.fromString(reg.policyTokenId));
+            if(asset.kind==='token'){
+              await associate(c,buyer.id,buyer.key,TokenId.fromString(asset.tokenId));
+              const fund=new TransferTransaction().addTokenTransfer(TokenId.fromString(asset.tokenId),agent.id,-quote.settled.premiumUnits).addTokenTransfer(TokenId.fromString(asset.tokenId),buyer.id,quote.settled.premiumUnits);
+              await(await fund.execute(c)).getReceipt(c);
+            }
+            return buyer;
+          }
+        },{lat,lon,place:typeof input.place==='string'?input.place.slice(0,100):null,budgetUsd:num(input.budgetUsd,4),days:num(input.days,30),requestId:input.requestId});
+        if(!result.ok)return json(res,200,result);
         return json(res, 201, {
-          ...result,
+          ...result, policy:publicPolicy(result.policy),
           hashscan: {
             schedule: HASHSCAN('schedule', result.policy.scheduleId),
             sale: HASHSCAN('transaction', result.policy.saleTxId),
@@ -168,11 +173,11 @@ async function main() {
 
       return json(res, 404, { ok: false, message: `No route ${route}` });
     } catch (err) {
-      return json(res, 500, { ok: false, message: err.message ?? String(err) });
+      return json(res, 500, { ok: false, reason:err.reason??'service_unavailable', message: err.message ?? String(err) });
     }
   });
 
-  server.listen(PORT, () => {
+  server.listen(PORT, process.env.HOST ?? '127.0.0.1', () => {
     console.log(`underwriting agent on :${PORT}  network=${NETWORK}`);
     console.log(`  writes ${NETWORK === 'mainnet' && !LIMITS.allowMainnetWrites ? 'DISABLED (mainnet)' : 'enabled'}` +
       `  · ${LIMITS.perIpPerHour}/ip/hour · ${LIMITS.policiesPerDay}/day · $${LIMITS.usdPerDay.toLocaleString()}/day`);

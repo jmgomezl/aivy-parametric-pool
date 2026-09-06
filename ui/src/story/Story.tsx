@@ -1,150 +1,35 @@
-// Story mode: the nine beats, unchanged, in the 1920 × 1080 frame they are
-// filmed in. Reached from the app by a link; leaves by one.
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { data } from '../data';
 import { Id } from '../components/ui';
-import { fetchAccount, useLive } from '../lib/mirror';
-import { clock } from '../lib/format';
+import { C, Lock, Tank } from '../components/viz';
+import { hbar } from '../lib/format';
 import { onLink } from '../lib/router';
-import type { Beat } from '../beats/types';
-import { quote } from '../beats/01-quote';
-import { guard } from '../beats/02-guard';
-import { capital } from '../beats/03-capital';
-import { issued } from '../beats/04-issued';
-import { waiting } from '../beats/05-waiting';
-import { quake } from '../beats/06-quake';
-import { paid } from '../beats/07-paid';
-import { coda } from '../beats/08-coda';
-import { protect } from '../beats/09-protect';
+import { OracleProof } from '../app/OracleProof';
+import { Chrome } from '../app/Chrome';
 
-// Beats keep their numbers: #1 is the quote, #9 is the live purchase.
-const BEATS: Beat[] = [quote, guard, capital, issued, waiting, quake, paid, coda, protect];
-
-/* ---------------------------------------------------------------- routing */
-// The position lives in the URL hash (#3.1 = beat 3, sub-step 1) so a reload
-// mid-recording lands on the same frame.
-function readHash(): { b: number; s: number } {
-  const m = /^#(\d+)(?:\.(\d+))?(?:@.*)?$/.exec(window.location.hash); // #9@lat,lon carries a pin for the live beat
-  const b = m ? Math.min(Math.max(Number(m[1]) - 1, 0), BEATS.length - 1) : 0;
-  const s = m && m[2] ? Math.min(Math.max(Number(m[2]), 0), BEATS[b].steps - 1) : 0;
-  return { b, s };
-}
-
-function usePosition() {
-  const [pos, setPos] = useState(readHash);
-  useEffect(() => {
-    const onHash = () => setPos(readHash());
-    window.addEventListener('hashchange', onHash);
-    return () => window.removeEventListener('hashchange', onHash);
-  }, []);
-  const go = useCallback((b: number, s = 0) => {
-    const bb = Math.min(Math.max(b, 0), BEATS.length - 1);
-    const ss = Math.min(Math.max(s, 0), BEATS[bb].steps - 1);
-    window.location.hash = ss === 0 ? `#${bb + 1}` : `#${bb + 1}.${ss}`;
-    setPos({ b: bb, s: ss });
-  }, []);
-  const next = useCallback(() => {
-    const { b, s } = pos;
-    if (s < BEATS[b].steps - 1) go(b, s + 1);
-    else if (b < BEATS.length - 1) go(b + 1, 0);
-  }, [pos, go]);
-  const prev = useCallback(() => {
-    const { b, s } = pos;
-    if (s > 0) go(b, s - 1);
-    else if (b > 0) go(b - 1, BEATS[b - 1].steps - 1);
-  }, [pos, go]);
-  return { pos, go, next, prev };
-}
-
-/* ------------------------------------------------------------- scaling */
-// Authored at 1920 × 1080; scaled uniformly to whatever window is filming it.
-function useScale() {
-  const [scale, setScale] = useState(1);
-  useEffect(() => {
-    const fit = () => setScale(Math.min(window.innerWidth / 1920, window.innerHeight / 1080));
-    fit();
-    window.addEventListener('resize', fit);
-    return () => window.removeEventListener('resize', fit);
-  }, []);
-  return scale;
-}
-
-export function Story() {
-  const { pos, go, next, prev } = usePosition();
-  const scale = useScale();
-  const beat = BEATS[pos.b];
-  const pool = useLive(() => fetchAccount(data.accounts.pool.id), []);
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
-      const t = e.target as HTMLElement | null;
-      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
-      switch (e.key) {
-        case 'ArrowRight': case ' ': case 'Enter': case 'j': case 'l': case 'PageDown': e.preventDefault(); next(); break;
-        case 'ArrowLeft': case 'Backspace': case 'k': case 'h': case 'PageUp': e.preventDefault(); prev(); break;
-        case 'Home': e.preventDefault(); go(0); break;
-        case 'End': e.preventDefault(); go(BEATS.length - 1, BEATS[BEATS.length - 1].steps - 1); break;
-        default:
-          if (/^[1-9]$/.test(e.key)) { const n = Number(e.key) - 1; if (n < BEATS.length) { e.preventDefault(); go(n); } }
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [next, prev, go]);
-
-  const ViewEl = beat.View;
-  const frame = useMemo(() => ({ transform: `scale(${scale})` }), [scale]);
-
-  return (
-    <div className="h-full w-full flex items-center justify-center overflow-hidden bg-bg-0">
-      <div style={{ width: 1920 * scale, height: 1080 * scale, position: 'relative' }}>
-      <div className="stage" style={frame}>
-        <header className="flex items-center justify-between border-b border-line px-[72px]">
-          <div className="flex items-baseline gap-[18px]">
-            <a href="/" onClick={onLink} className="text-[15px] text-fg-2 hover:text-fg-0">← app</a>
-            <span className="text-[17px] font-medium tracking-[-0.01em] text-fg-0">Aivy Parametric Pool</span>
-            <span className="text-[15px] text-fg-2">the story · one real policy, quote to payout</span>
-          </div>
-          <div className="flex items-center gap-[28px] text-[15px]">
-            <span className="flex items-center gap-[8px] text-fg-1">
-              <span className="inline-block h-[7px] w-[7px] rounded-full bg-fg-1" />
-              Hedera mainnet
-            </span>
-            <span className="text-fg-2">pool <Id kind="account" id={data.accounts.pool.id} size="sm" /></span>
-            <span className="flex items-center gap-[8px]">
-              {pool.status === 'ok' ? (
-                <><span className="inline-block h-[7px] w-[7px] rounded-full bg-ok" /><span className="text-fg-2">mirror node · <span className="num">{clock(pool.at, false)}</span> UTC</span></>
-              ) : pool.status === 'loading' ? (
-                <><span className="inline-block h-[7px] w-[7px] rounded-full bg-fg-3" /><span className="text-fg-3">mirror node</span></>
-              ) : (
-                <><span className="inline-block h-[7px] w-[7px] rounded-full bg-pending" /><span className="text-pending">mirror node unavailable · recorded values</span></>
-              )}
-            </span>
-          </div>
-        </header>
-
-        <main className="px-[72px] pt-[36px] pb-[28px] min-h-0" key={pos.b}>
-          <ViewEl step={pos.s} />
-        </main>
-
-        <footer className="flex items-center justify-between border-t border-line px-[72px]">
-          <nav className="flex items-center gap-[30px]">
-            {BEATS.map((b, i) => (
-              <button key={b.label} type="button" onClick={() => go(i)} className={`step ${i === pos.b ? 'step-current' : i < pos.b ? 'step-done' : ''}`}>
-                <span className="n">{String(i + 1).padStart(2, '0')}</span>
-                <span>{b.label}</span>
-                {b.steps > 1 && i === pos.b ? <span className="num text-[13px] text-fg-3">{pos.s + 1}/{b.steps}</span> : null}
-              </button>
-            ))}
-          </nav>
-          <div className="flex items-center gap-[14px] text-[14px] text-fg-3">
-            <span><kbd>←</kbd> <kbd>→</kbd> step</span>
-            <span><kbd>1</kbd>–<kbd>9</kbd> jump</span>
-          </div>
-        </footer>
-      </div>
-      </div>
+const beats = [
+  {label:'Choose',title:'A place. A price.',caption:'Armenia, Colombia. A recorded quote from the USGS earthquake catalogue.'},
+  {label:'Commit',title:'The payout is ready.',caption:'The agent signs a fixed transfer in advance. Its destination and amount are already set.'},
+  {label:'Confirm',title:'One confirmation. Still waiting.',caption:'Replay the recorded oracle signatures. One key cannot release the payout.'},
+  {label:'Release',title:'Two confirmations. Paid.',caption:'The second oracle signature completed the quorum. Hedera executed the scheduled transfer.'},
+  {label:'Verify',title:'A real transfer. A public receipt.',caption:'Four HBAR moved on mainnet in this controlled demonstration.'},
+  {label:'Protect',title:'The oracle keys alone cannot spend.',caption:'A separate attempt collected all three oracle signatures. Without the agent, the transfer never executed.'},
+];
+const readStep=()=>{const n=Number(location.hash.slice(1)||1);return Number.isInteger(n)?Math.max(0,Math.min(5,n-1)):0;};
+export function Story(){
+  const [step,setStep]=useState(readStep);
+  const go=(next:number)=>{const n=Math.max(0,Math.min(5,next));history.replaceState(null,'',`/story#${n+1}`);setStep(n);};
+  useEffect(()=>{const hash=()=>setStep(readStep());window.addEventListener('hashchange',hash);return()=>window.removeEventListener('hashchange',hash);},[]);
+  useEffect(()=>{const key=(e:KeyboardEvent)=>{if(e.ctrlKey||e.metaKey||e.altKey||(e.target as HTMLElement).closest('input,textarea,button,a,summary'))return;if(e.key==='ArrowRight'){e.preventDefault();go(step+1);}if(e.key==='ArrowLeft'){e.preventDefault();go(step-1);}};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key);},[step]);
+  const b=beats[step], paid=step>=3, amount=hbar(data.quote.payoutHbar*1e8,0);
+  return <div className="app"><Chrome route={{name:'story'}}/><main className="story-page">
+    <div className="story-banner"><span className="status-dot bg-pending"/><span>Recorded mainnet demonstration</span><span>Controlled signatures · historical recording</span></div>
+    <div className="story-heading"><div className="eyebrow">How it works · {String(step+1).padStart(2,'0')} / 06</div><h1>{b.title}</h1><p>{b.caption}</p></div>
+    <div className={`story-visual ${step===5?'story-proof':''}`} key={step}>
+      {step===5?<OracleProof/>:step===0?<div className="story-offer"><svg viewBox="0 0 480 330" role="img" aria-label="Armenia with a 100 kilometer trigger circle"><circle cx={240} cy={165} r={132} fill="none" stroke={C.line} strokeDasharray="3 6"/><circle cx={240} cy={165} r={78} fill="rgba(63,207,142,.04)" stroke={C.ok}/><circle cx={240} cy={165} r={5} fill={C.fg0}/><text x={240} y={198} textAnchor="middle" fill={C.fg0} fontSize={17}>Armenia</text><text x={240} y={65} textAnchor="middle" fill={C.fg2} fontSize={13}>100 km trigger circle</text></svg><div><div className="eyebrow">Recorded premium</div><strong className="num">{hbar(data.quote.premiumHbar*1e8,4)} <small>HBAR</small></strong><div className="story-offer-arrow">↓</div><div className="eyebrow">Conditional payout</div><strong className="num text-ok">{amount} <small>HBAR</small></strong><div className="trigger-chips"><span>M6+</span><span>100 km</span><span>Depth ≤70 km</span><span>30 days</span></div></div></div>:<div className="story-transfer"><div className="story-account"><span>Pool</span><strong className="num">{paid?'−4':'4'} <small>HBAR</small></strong><span>{paid?'transferred':'committed'}</span></div><svg viewBox="0 0 520 410" role="img" aria-label={paid?'Two oracle signatures, payout executed':`${step===2?'One':'Zero'} oracle signatures, payout pending`}><Lock cx={260} cy={180} r={110} agent oracles={[step>=2,step>=3,false]} names={[]} state={paid?'ok':'pending'} centre={<><text x={260} y={176} textAnchor="middle" className="num" fill={paid?C.ok:C.fg0} fontSize={34}>{paid?'✓':step===2?'1/2':'0/2'}</text><text x={260} y={201} textAnchor="middle" fill={C.fg1} fontSize={13}>{paid?'executed':'confirmations'}</text></>}/></svg><div className="story-account"><span>Beneficiary</span><strong className={`num ${paid?'text-ok':''}`}>{paid?'+4':'—'} <small>{paid?'HBAR':''}</small></strong><span>{paid?'received':'waiting'}</span></div></div>}
     </div>
-  );
+    <div className="story-receipts"><span className="eyebrow">Verify the record</span><Id kind="schedule" id={step===5?data.adversarial.scheduleId:data.payout.scheduleId} label={step===5?'Blocked transfer':'Scheduled payout'} network="mainnet"/>{step>=3&&step<5?<Id kind="transaction" id={data.payout.executedConsensus!} label="Executed transfer" network="mainnet"/>:null}</div>
+    <div className="story-navigation"><button className="chip" disabled={step===0} onClick={()=>go(step-1)}>← Previous</button><nav aria-label="Demonstration steps">{beats.map((b,i)=><button key={b.label} className={step===i?'selected':''} aria-current={step===i?'step':undefined} aria-label={`Step ${i+1}: ${b.label}`} onClick={()=>go(i)}><span>{i+1}</span><small>{b.label}</small></button>)}</nav>{step<5?<button className="buy compact" onClick={()=>go(step+1)}>{step===2?'Add second confirmation':'Next'} →</button>:<a href="/" onClick={onLink} className="buy compact">Try the demo →</a>}</div>
+    <details className="proof-details story-details"><summary>Pricing, capacity, and settlement details <span>+</span></summary><div className="supporting-grid"><section><h2>Priced from the record</h2><dl className="facts"><div><dt>Qualifying events since 1970</dt><dd>{data.quote.hazard.count}</dd></div><div><dt>Reference region</dt><dd>300 km</dd></div><div><dt>Trigger circle</dt><dd>100 km</dd></div><div><dt>Recorded annual rate</dt><dd>{data.quote.hazard.lambda.toFixed(4)}</dd></div><div><dt>Premium allocation</dt><dd>85% pool · 15% broker</dd></div></dl><p>The recorded run used the model at that time. Today's quote also includes uncertainty loading. These are historical estimates, not a forecast.</p><Id kind="topic" id={data.terms.topicId} label="Recorded policy terms" network="mainnet"/></section><section><h2>A promise needs capital</h2><svg viewBox="0 0 540 360" role="img" aria-label="The requested payout exceeded available capital before the deposit"><Tank x={190} y={25} w={125} h={240} capital={data.guard.before.capitalTinybar} promise={data.guard.before.requestedTinybar} max={6.6e8} ok={false}/></svg><p>The guard refused 4 HBAR of cover before additional capital arrived. The app now reserves capacity before issuance to prevent concurrent requests from promising the same funds.</p></section></div><p className="demo-footer">The reusable settlement plugin, paid x402 oracle services, and atomic premium split support the mechanism. Automatic event monitoring is separate from automatic ledger execution; the demo's event checks are explicitly manual.</p></details>
+  </main></div>;
 }

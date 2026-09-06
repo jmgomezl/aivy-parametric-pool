@@ -42,7 +42,7 @@ export const MAX_DAYS = 62;
 export async function catalogueCount({ lat, lon, radiusKm, minMagnitude = MODEL.minMagnitude, maxDepthKm = MODEL.maxDepthKm, since = MODEL.since }) {
   const url = `${USGS}?format=geojson&minmagnitude=${minMagnitude}&latitude=${lat}` +
     `&longitude=${lon}&maxradiuskm=${radiusKm}&maxdepth=${maxDepthKm}&starttime=${since}`;
-  const res = await fetch(url);
+  const res = await fetch(url, { signal: AbortSignal.timeout(15000) });
   if (!res.ok) throw new Error(`USGS ${res.status}`);
   const data = await res.json();
   return { count: data.features.length, url, events: data.features.map((f) => f.properties) };

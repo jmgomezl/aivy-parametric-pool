@@ -23,11 +23,12 @@ export async function createPolicyTopic(client, agentKey) {
  * is reproducible from this record alone.
  */
 export async function publishTerms(client, topicId, terms) {
-  const res = await new TopicMessageSubmitTransaction()
+  const responses = await new TopicMessageSubmitTransaction()
     .setTopicId(topicId)
     .setMessage(JSON.stringify(terms))
-    .execute(client);
-  const receipt = await res.getReceipt(client);
+    .executeAll(client);
+  const receipts=await Promise.all(responses.map(r=>r.getReceipt(client)));
+  const res=responses[0],receipt=receipts[0];
   const seq = receipt.topicSequenceNumber.toString();
   return { sequenceNumber: seq, pointer: `hcs://${topicId.toString()}/${seq}`, txId: res.transactionId.toString() };
 }
@@ -39,7 +40,7 @@ export function triggerSpec({ lat, lon, radiusKm, minMagnitude, maxDepthKm, days
     location: { lat, lon },
     radiusKm, minMagnitude, maxDepthKm,
     windowDays: days,
-    sources: ['USGS ComCat', 'EMSC', 'SGC'],
+    sources: ['USGS ComCat', 'EMSC', 'GEOFON'],
     resolution: 'k-of-n oracle attestation; 2 of 3 signatures release the payout',
   };
 }

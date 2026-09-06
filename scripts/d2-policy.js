@@ -15,6 +15,9 @@ import { createPolicyTopic, publishTerms, triggerSpec } from '../src/policy/term
 import { createPolicyCollection, mintPolicy, deliverAndFreeze } from '../src/policy/collection.js';
 import { purchasePolicy } from '../src/policy/purchase.js';
 
+// Historical controlled HBAR demonstration, independent of the app's demo token.
+process.env.SETTLEMENT_TOKEN_ID = 'HBAR';
+
 const LOCATION = { name: 'Armenia, Quindio, Colombia', lat: 4.53, lon: -75.68 };
 // The policy is modelled at the size it would really be sold at. Only what
 // settles on-chain is scaled down — see src/pricing/fx.js.
@@ -86,10 +89,10 @@ async function main() {
   const poolBefore = await new AccountBalanceQuery().setAccountId(poolId).execute(c);
   const sale = await purchasePolicy(c, {
     buyerId: buyer.id, buyerKey: buyer.key, poolId, brokerId: broker.id,
-    premiumHbar,
+    premiumUnits: Math.round(premiumHbar * 1e8), network: NETWORK,
   });
   log(`\n5. premium settled atomically`);
-  log(`   buyer -${(sale.premiumTinybar / 1e8).toFixed(8)}  pool +${(sale.toPoolTinybar / 1e8).toFixed(8)}  broker +${(sale.commissionTinybar / 1e8).toFixed(8)} (${sale.commissionBps / 100}%)`);
+  log(`   buyer -${(sale.premiumUnits / 1e8).toFixed(8)}  pool +${(sale.toPoolUnits / 1e8).toFixed(8)}  broker +${(sale.commissionUnits / 1e8).toFixed(8)} (${sale.commissionBps / 100}%)`);
   log(`   ${HASHSCAN('transaction', sale.txId)}`);
 
   // 6. Deliver the policy and freeze it in place.
@@ -101,7 +104,7 @@ async function main() {
   const gained = poolAfter.hbars.toTinybars().toNumber() - poolBefore.hbars.toTinybars().toNumber();
   // Both legs of the atomic split must have landed exactly, not approximately.
   const brokerGained = brokerBal.hbars.toTinybars().toNumber() - brokerBefore;
-  const ok = gained === sale.toPoolTinybar && brokerGained === sale.commissionTinybar;
+  const ok = gained === sale.toPoolUnits && brokerGained === sale.commissionUnits;
   log(`\n7. pool gained ${(gained / 1e8).toFixed(8)} HBAR   broker gained ${(brokerGained / 1e8).toFixed(8)} HBAR`);
   log(ok ? '   GATE PASSED: policy issued, premium split atomically' : '   GATE FAILED');
 

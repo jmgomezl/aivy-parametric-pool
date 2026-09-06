@@ -28,13 +28,13 @@ export const poolCapitalTinybar = (client, poolId) => poolCapital(client, poolId
  */
 export async function canUnderwrite(client, poolId, committedTinybar, requestedTinybar, network) {
   const capital = await poolCapital(client, poolId, network);
+  const asset = settlementAsset(network);
+  const format = units => `${(units / 10 ** asset.decimals).toFixed(2)} ${asset.symbol}`;
   const exposureAfter = committedTinybar + requestedTinybar;
   const ok = exposureAfter <= capital;
   return {
     ok, capital, committed: committedTinybar, requested: requestedTinybar, exposureAfter,
     headroom: capital - exposureAfter,
-    reason: ok ? null
-      : `refused: exposure ${(exposureAfter / 1e8).toFixed(4)} HBAR would exceed capital ` +
-        `${(capital / 1e8).toFixed(4)} HBAR by ${((exposureAfter - capital) / 1e8).toFixed(4)}`,
+    reason: ok ? null : `This cover exceeds available capacity by ${format(exposureAfter-capital)}. Try a smaller budget.`,
   };
 }

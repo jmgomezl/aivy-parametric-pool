@@ -1,57 +1,28 @@
-// The persistent frame: where you are, and what the underwriter owes.
 import { Id } from '../components/ui';
 import { onLink, type Route } from '../lib/router';
 import { useAgent } from '../lib/store';
 
-const fmt = (n: number | undefined) => (typeof n === 'number' && Number.isFinite(n) ? n.toLocaleString(undefined, { maximumFractionDigits: n >= 1000 ? 0 : 2 }) : '—');
+const number = (n: number) => n.toLocaleString(undefined, { maximumFractionDigits: 0 });
 
 export function Chrome({ route }: { route: Route }) {
-  const a = useAgent();
-  const p = a.pool;
-  const nav = [
-    { href: '/', label: 'Map', on: route.name === 'home' },
-    { href: '/policies', label: 'Policies', on: route.name === 'policies' || route.name === 'policy' },
-    { href: '/story', label: 'Story', on: false },
-  ];
-  return (
-    <header className="chrome">
-      <div className="flex items-center gap-[26px]">
-        <a href="/" onClick={onLink} className="text-[16px] font-medium tracking-[-0.01em] text-fg-0">Aivy Parametric Pool</a>
-        <nav className="flex items-center gap-[18px]">
-          {nav.map((n) => (
-            <a key={n.href} href={n.href} onClick={onLink} className={`navlink ${n.on ? 'navlink-on' : ''}`}>{n.label}</a>
-          ))}
-        </nav>
-      </div>
-
-      <div className="flex items-center gap-[22px] text-[14px]">
-        {p ? (
-          <span className="flex items-baseline gap-[16px]" title="what the pool holds, what it has promised, and what it can still promise">
-            <span className="label">pool</span>
-            <Vital label="holds" value={`${fmt(p.capital)} ${p.asset?.symbol ?? ''}`} />
-            <Vital label="promised" value={fmt(p.committed)} />
-            <Vital label="can still promise" value={fmt(p.headroom)} tone={(p.headroom ?? 0) > 0 ? 'ok' : 'refused'} />
-            <Vital label="live" value={String(p.livePolicies ?? '—')} />
-          </span>
-        ) : null}
-        <span className="flex items-center gap-[8px] text-fg-2">
-          <span className={`inline-block h-[7px] w-[7px] rounded-full ${!a.checked ? 'bg-fg-3' : a.online ? 'bg-ok' : 'bg-pending'}`} />
-          {!a.checked ? 'agent' : a.online ? <>agent · Hedera {a.network}</> : <span className="text-pending">agent offline · estimates only</span>}
-        </span>
-        {p ? <Id kind="account" id={p.poolAccountId} size="sm" network={p.network} /> : null}
-        {route.name === 'home' ? (
-          <button type="button" className="icon-btn" title="what is this?" onClick={() => window.dispatchEvent(new Event('aivy:help'))}><span className="mono text-[13px]">?</span></button>
-        ) : null}
-      </div>
-    </header>
-  );
-}
-
-function Vital({ label, value, tone }: { label: string; value: string; tone?: 'ok' | 'refused' }) {
-  return (
-    <span className="flex items-baseline gap-[6px]">
-      <span className="label">{label}</span>
-      <span className={`num text-[15px] ${tone === 'ok' ? 'text-ok' : tone === 'refused' ? 'text-refused' : 'text-fg-0'}`}>{value}</span>
-    </span>
-  );
+  const a = useAgent(), p = a.pool;
+  const used = p && p.capital > 0 ? Math.min(100, Math.max(0, p.committed / p.capital * 100)) : 0;
+  return <header className="chrome">
+    <a href="/" onClick={onLink} className="brand" aria-label="Aivy home"><span className="brand-mark" aria-hidden="true">◉</span> Aivy<span className="brand-caption">earthquake cover</span></a>
+    <nav aria-label="Main navigation" className="main-nav">
+      {[['/', 'Cover', route.name === 'home'], ['/policies', 'Policies', route.name === 'policies' || route.name === 'policy'], ['/story', 'How it works', route.name === 'story']].map(([href, label, active]) => <a key={String(href)} href={String(href)} onClick={onLink} className={`navlink ${active ? 'navlink-on' : ''}`} aria-current={active ? 'page' : undefined}>{label}</a>)}
+    </nav>
+    <div className="chrome-status">
+      <span className={`network-label ${a.checked && !a.online ? 'text-pending' : ''}`}><span className={`status-dot ${a.online ? 'bg-ok' : 'bg-pending'}`} />{route.name==='story'?'Mainnet recording':!a.checked ? 'Connecting' : !a.online ? 'Estimates only' : `${a.network === 'testnet' ? 'Testnet demo' : 'Mainnet · read only'}`}</span>
+      {p && route.name!=='story' ? <details className="pool-summary">
+        <summary><span className="capacity-mini"><span style={{ width: `${used}%` }} /></span><span>Pool capacity</span></summary>
+        <div className="pool-popover">
+          <div className="eyebrow">Pool · {p.asset.symbol}</div>
+          <dl className="facts"><div><dt>Total</dt><dd>{number(p.capital)}</dd></div><div><dt>Committed</dt><dd>{number(p.committed)}</dd></div><div><dt>Available</dt><dd>{number(p.headroom)}</dd></div><div><dt>Active policies</dt><dd>{p.livePolicies}</dd></div></dl>
+          <Id kind="account" id={p.poolAccountId} size="sm" network={p.network} />
+          <small>{a.poolAt ? `Updated ${new Date(a.poolAt).toLocaleTimeString()}` : 'Reading unavailable'}{!a.online ? ' · last known values' : ''}</small>
+        </div>
+      </details> : null}
+    </div>
+  </header>;
 }

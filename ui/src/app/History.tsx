@@ -1,49 +1,56 @@
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { C } from '../components/viz';
-import { MODEL, priceHistory, type PriceOpts, type Priced } from '../lib/hazard';
+import { around, FIRST_YEAR, LAST_YEAR, placeName, priceHistory } from '../lib/hazard';
+import type { Pin } from './AtlasMap';
 
-/** What the same cover would have cost at the start of each year, on the frozen record. */
-export function History({ nearby, opts, markYear, width = 380, normalize = false }: { nearby: Priced['nearby']; opts: PriceOpts; markYear: number; width?: number; normalize?: boolean }) {
-  const raw = useMemo(() => priceHistory(nearby, opts), [nearby, opts]);
-  const series = useMemo(() => {
-    if (!normalize) return raw;
-    const last = raw.at(-1)?.premiumHbar || 1;
-    return raw.map((s) => ({ ...s, premiumHbar: (s.premiumHbar / last) * 100 }));
-  }, [raw, normalize]);
-  const w = width, h = 96, pad = 4;
-  const max = Math.max(1e-9, ...series.map((s) => s.premiumHbar));
-  const y0 = series[0].year, yN = series.at(-1)!.year;
-  const x = (yr: number) => pad + ((yr - y0) / (yN - y0)) * (w - pad * 2);
-  const y = (v: number) => h - pad - (v / max) * (h - pad * 2 - 14);
-  const d = series.map((s, i) => `${i ? 'L' : 'M'}${x(s.year).toFixed(1)} ${y(s.premiumHbar).toFixed(1)}`).join('');
-  const at = series.find((s) => s.year === Math.max(y0, Math.min(yN, markYear))) ?? series.at(-1)!;
-  const minMag = opts.minMag ?? MODEL.minMagnitude;
-  return (
-    <svg viewBox={`0 0 ${w} ${h}`} width="100%" style={{ aspectRatio: `${w} / ${h}` }}>
-      <path d={`${d}L${x(yN)} ${h - pad}L${x(y0)} ${h - pad}Z`} fill="rgba(242,243,245,0.05)" />
-      <path d={d} fill="none" stroke={C.fg0} strokeWidth={1.5} />
-      {nearby.map((q, i) => {
-        const dt = new Date(q.day * 86400000);
-        const yr = dt.getUTCFullYear() + dt.getUTCMonth() / 12;
-        if (yr < y0 || q.mag < minMag) return null;
-        return <line key={i} x1={x(yr)} x2={x(yr)} y1={h - pad} y2={h - pad - 5 - (q.mag - 6) * 6} stroke={C.pending} strokeWidth={1.5} />;
-      })}
-      {markYear < yN ? <line x1={x(at.year)} x2={x(at.year)} y1={2} y2={h - pad} stroke={C.fg2} strokeDasharray="2 3" /> : null}
-      <circle cx={x(at.year)} cy={y(at.premiumHbar)} r={3.5} fill={C.ok} />
-      <text x={pad} y={11} className="num" fill={C.fg3} fontSize={11}>{y0}</text>
-      <text x={w - pad} y={11} textAnchor="end" className="num" fill={C.fg3} fontSize={11}>{yN}</text>
-    </svg>
-  );
+/** Fixed cover isolates changes in the historical model from changes in budget. */
+export function History({ pin, days, minMag, markYear }: { pin: Pin; days: number; minMag: number; markYear: number }) {
+  const id = useId();
+  const series = useMemo(() => priceHistory(around(pin.lat, pin.lon, minMag), { payoutHbar: 1000, days, minMag }, FIRST_YEAR, LAST_YEAR, 'end'), [pin.lat, pin.lon, days, minMag]);
+  const valid = series.filter(s => s.count > 0);
+  const at = series.find(s => s.year === markYear)!;
+  const previous = series.find(s => s.year === markYear - 1);
+  const change = at.count && previous?.count && previous.premiumHbar > 0 ? (at.premiumHbar / previous.premiumHbar - 1) * 100 : null;
+  const money = (v: number) => `$${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const w = 560, h = 174, left = 48, right = 12, top = 12, bottom = 28;
+  const max = Math.max(1, ...valid.map(s => s.premiumHbar)) * 1.08;
+  const x = (year: number) => left + (year - FIRST_YEAR) / (LAST_YEAR - FIRST_YEAR) * (w - left - right);
+  const y = (v: number) => h - bottom - v / max * (h - top - bottom);
+  const d = valid.map((s, i) => `${i ? 'L' : 'M'}${x(s.year)} ${y(s.premiumHbar)}`).join(' ');
+  return <figure className="premium-history">
+    <figcaption><div><strong>Premium over time</strong><span>{placeName(pin)} · $1,000 cover · {days} days</span></div><div className="premium-history-value"><strong className="num">{at.count ? money(at.premiumHbar) : '—'}</strong><span>{markYear}{!at.count ? ' · insufficient data' : ''}</span><YearlyChange change={change} year={markYear} lowerIsBetter /></div></figcaption>
+    {valid.length ? <svg viewBox={`0 0 ${w} ${h}`} role="img" aria-labelledby={id}>
+      <title id={id}>Modeled premium history for {placeName(pin)}. {markYear}: {at.count ? money(at.premiumHbar) : 'insufficient historical data'}, for $1,000 of cover over {days} days at M{minMag}+.</title>
+      {[0, .5, 1].map(f => <g key={f}><line x1={left} x2={w-right} y1={y(max*f)} y2={y(max*f)} stroke={C.fg3} strokeOpacity=".2"/><text x={left-8} y={y(max*f)+4} textAnchor="end" fill={C.fg2} fontSize="11">${(max*f).toFixed(max < 10 ? 1 : 0)}</text></g>)}
+      <path d={`${d} L${x(valid.at(-1)!.year)} ${y(0)} L${x(valid[0].year)} ${y(0)} Z`} fill={C.ok} fillOpacity=".07"/>
+      <path d={d} fill="none" stroke={C.ok} strokeWidth="2" strokeLinejoin="round"/>
+      <line x1={x(markYear)} x2={x(markYear)} y1={top} y2={h-bottom} stroke={C.fg2} strokeDasharray="3 4"/>
+      {at.count ? <circle cx={x(markYear)} cy={y(at.premiumHbar)} r="4" fill={C.ok} stroke={C.fg0} strokeWidth="1.5"/> : null}
+      {[FIRST_YEAR, 1990, 2010, LAST_YEAR].map(year => <text key={year} x={x(year)} y={h-6} textAnchor={year===FIRST_YEAR?'start':year===LAST_YEAR?'end':'middle'} fill={C.fg2} fontSize="11">{year}</text>)}
+    </svg> : <p className="premium-history-empty">Not enough recorded events to estimate a premium here.</p>}
+    <small>Historical model · year-end estimates · {LAST_YEAR} through the snapshot date</small>
+  </figure>;
+}
+
+export function YearlyChange({ change, year, lowerIsBetter = false }: { change: number | null; year: number; lowerIsBetter?: boolean }) {
+  const rounded = change === null ? null : Math.round(change * 10) / 10;
+  const direction = rounded === null || rounded === 0 ? 'flat' : rounded > 0 ? 'up' : 'down';
+  const good = lowerIsBetter ? direction === 'down' : direction === 'up';
+  const label = rounded === null ? `No comparison for ${year - 1}` : `${direction === 'up' ? 'Increase' : direction === 'down' ? 'Decrease' : 'Unchanged'} ${Math.abs(rounded).toFixed(1)}% versus ${year - 1}${year === LAST_YEAR ? ', through snapshot date' : ''}`;
+  return <span className={`yearly-change num ${direction === 'flat' ? '' : good ? 'change-good' : 'change-bad'}`} aria-label={label} title={label}>
+    <span aria-hidden="true">{rounded === null ? '—' : `${direction === 'up' ? '↗ +' : direction === 'down' ? '↘ −' : '→ '}${Math.abs(rounded).toFixed(1)}%`}</span><span aria-hidden="true"> vs {year - 1}{year === LAST_YEAR ? ' · YTD' : ''}</span>
+  </span>;
 }
 
 export function Slider({ label, value, min, max, step = 1, unit, onChange, format }: { label: string; value: number; min: number; max: number; step?: number; unit: string; onChange: (v: number) => void; format?: (v: number) => string }) {
+  const id = useId();
   return (
     <div className="flex flex-col gap-[2px]">
       <div className="flex items-baseline justify-between">
-        <span className="label">{label}</span>
+        <label htmlFor={id} className="label">{label}</label>
         <span className="num text-[16px] text-fg-0">{format ? format(value) : value} <span className="text-fg-2">{unit}</span></span>
       </div>
-      <input type="range" className="slider" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} onKeyDown={(e) => e.stopPropagation()} />
+      <input id={id} type="range" className="slider" min={min} max={max} step={step} value={value} aria-valuetext={`${format?format(value):value}${unit?' '+unit:''}`} onChange={(e) => onChange(Number(e.target.value))} onKeyDown={(e) => e.stopPropagation()} />
     </div>
   );
 }

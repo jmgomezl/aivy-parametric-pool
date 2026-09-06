@@ -9,6 +9,9 @@ import { createPoolAccount, generateOracleKeys } from '../src/pool/createPool.js
 import { createShareToken, associate } from '../src/pool/shares.js';
 import { deposit } from '../src/pool/deposit.js';
 
+// Historical controlled HBAR demonstration, independent of the app's demo token.
+process.env.SETTLEMENT_TOKEN_ID = 'HBAR';
+
 const DEPOSIT_HBAR = Number(process.env.DEPOSIT_HBAR ?? (process.env.HEDERA_NETWORK === 'mainnet' ? 2 : 20));
 
 const log = (s) => console.log(s);
@@ -44,7 +47,7 @@ async function main() {
   // 5. Atomic deposit: HBAR in, shares out, one transaction.
   const dep = await deposit(c, {
     tokenId: share.tokenId, treasuryId: agent.id, poolId: pool.accountId,
-    lpId, lpKey, hbarAmount: DEPOSIT_HBAR,
+    lpId, lpKey, amountUnits: Math.round(DEPOSIT_HBAR * 1e8), network: NETWORK,
   });
   log(`5. deposit ${DEPOSIT_HBAR} HBAR -> ${dep.units / 1e8} shares`);
   log(`   ${HASHSCAN('transaction', dep.depositTxId)}`);

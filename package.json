@@ -13,7 +13,7 @@
     "d2:main": "dotenv -e .env.mainnet -- node scripts/d2-policy.js",
     "d3:main": "dotenv -e .env.mainnet -- node scripts/d3-spine.js",
     "verify:main": "dotenv -e .env.mainnet -- node scripts/verify-quorum.js",
-    "test": "node --test tests/",
+    "test": "node --test tests/*.test.js",
     "provision": "node scripts/provision.js",
     "provision:main": "dotenv -e .env.mainnet -- node scripts/provision.js",
     "sweep": "node scripts/sweep.js",
@@ -25,6 +25,7 @@
     "oracles": "node scripts/run-oracles.js"
   },
   "dependencies": {
+    "@hiero-ledger/proto": "2.26.0-beta.3",
     "@hiero-ledger/sdk": "^2.87.0",
     "dotenv": "^16.4.5",
     "hak-scheduled-settlement": "github:jmgomezl/hak-scheduled-settlement",

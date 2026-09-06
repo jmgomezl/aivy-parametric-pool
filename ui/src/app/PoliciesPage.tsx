@@ -1,68 +1,21 @@
-// Every policy the agent has written on this network, newest first. The ones
-// bought from this browser are marked; the demo is custodial, so "yours" means
-// "issued from here".
 import { useEffect, useState } from 'react';
 import * as agent from '../lib/agent';
-import { Pill } from '../components/ui';
-import { placeName } from '../lib/hazard';
+import { PositionNFT } from '../components/PositionNFT';
 import { onLink, policyPath } from '../lib/router';
-import { mine, useAgent } from '../lib/store';
+import { mine, policyState, refresh, useAgent, pendingRequests, trackRequest, remember } from '../lib/store';
 
-const usd = (n: number | undefined, d = 2) => (typeof n === 'number' && Number.isFinite(n) ? `$${n.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d })}` : '—');
-const daysLeft = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000));
-
-export function PoliciesPage() {
-  const a = useAgent();
-  const [rows, setRows] = useState<agent.Policy[] | null>(null);
-  useEffect(() => {
-    if (!a.checked || !a.online) return;
-    agent.policies().then((r) => setRows([...(r.policies ?? [])].sort((x, y) => Number(y.serial) - Number(x.serial)))).catch(() => setRows([]));
-  }, [a.checked, a.online]);
-  const my = new Set(mine());
-
-  return (
-    <div className="page">
-      <div className="page-inner">
-        <div className="flex items-end justify-between gap-[24px]">
-          <div className="flex flex-col gap-[8px]">
-            <div className="kicker">policies · Hedera {a.network}</div>
-            <h1 className="title" style={{ fontSize: 44 }}>What the pool has promised.</h1>
-          </div>
-          <a href="/" onClick={onLink} className="buy" style={{ width: 'auto', textDecoration: 'none' }}><span>Protect a place</span><span className="num">→</span></a>
-        </div>
-
-        {!a.checked ? <div className="label mt-[32px]">reaching the agent…</div>
-        : !a.online ? <div className="mt-[32px] flex flex-col gap-[10px]"><Pill state="pending">agent offline</Pill><div className="label">Policies live in the agent's book. Start it with <span className="num">npm run serve</span>.</div></div>
-        : rows === null ? <div className="label mt-[32px]">loading…</div>
-        : rows.length === 0 ? <div className="label mt-[32px]">No policies yet. <a href="/" onClick={onLink} className="hs">Pin a place on the atlas<span className="arrow">→</span></a></div>
-        : (
-          <table className="mt-[28px] w-full border-collapse">
-            <thead>
-              <tr className="text-left">
-                {['#', 'place', 'premium', 'cover', 'window', 'state', ''].map((h) => <th key={h} className="label pb-[10px] pr-[16px] font-normal border-b border-line">{h}</th>)}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((p) => {
-                const lapsed = !p.settled && new Date(p.lapsesAt).getTime() < Date.now();
-                const state = p.settled ? 'paid' : lapsed ? 'lapsed' : 'awaiting quorum';
-                const tone = p.settled ? 'ok' : lapsed ? 'refused' : 'pending';
-                return (
-                  <tr key={p.serial} className="border-b border-line hover:bg-bg-1 transition-colors">
-                    <td className="num py-[12px] pr-[16px] text-fg-2">{p.serial}</td>
-                    <td className="py-[12px] pr-[16px] text-fg-0">{placeName(p)}{my.has(String(p.serial)) ? <span className="label ml-[8px]">yours</span> : null}</td>
-                    <td className="num py-[12px] pr-[16px]">{usd(p.premiumUsd)}</td>
-                    <td className="num py-[12px] pr-[16px] text-ok">{usd(p.payoutUsd, 0)}</td>
-                    <td className="num py-[12px] pr-[16px] text-fg-1">{lapsed || p.settled ? p.lapsesAt.slice(0, 10) : `${daysLeft(p.lapsesAt)} days left`}</td>
-                    <td className="py-[12px] pr-[16px]"><Pill state={tone as 'ok' | 'refused' | 'pending'}>{state}</Pill></td>
-                    <td className="py-[12px] text-right"><a href={policyPath(p.serial)} onClick={onLink} className="hs label">open<span className="arrow">→</span></a></td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
-      </div>
-    </div>
-  );
+export function PoliciesPage(){
+  const a=useAgent(), [filter,setFilter]=useState(()=>mine().length?'here':'recent');
+  const [requests,setRequests]=useState<Record<string,agent.RequestStatus>>({});
+  useEffect(()=>{let live=true;const check=async()=>{const result=await Promise.all(pendingRequests(a.network).map(async id=>{try{return [id,await agent.requestStatus(id)] as const;}catch{return [id,{ok:false,reason:'unavailable',message:'Request status is temporarily unavailable.'} as agent.Refusal] as const;}}));if(!live)return;for(const [id,r] of result){if(r.ok&&r.status==='complete'&&r.policy){remember(String(r.policy.serial),a.network);trackRequest(id,a.network,true);void refresh();}}setRequests(Object.fromEntries(result.filter(([,r])=>!r.ok||r.status!=='complete')));};void check();const timer=window.setInterval(()=>void check(),10000);return()=>{live=false;clearInterval(timer);};},[a.network]);
+  const created=new Set(mine(a.network));
+  const rows=[...(a.policies??[])].filter(p=>filter==='all'||filter==='recent'||filter==='here'&&created.has(String(p.serial))||filter==='active'&&['active','confirming'].includes(policyState(p))).sort((x,y)=>Number(y.serial)-Number(x.serial)).slice(0,filter==='recent'?6:undefined);
+  return <div className="page"><div className="page-inner policies-page">
+    <div className="page-title-row"><div><div className="eyebrow">{a.network} demo</div><h1>Policies</h1><p>Every policy, a position.</p></div><a href="/" onClick={onLink} className="buy compact">Create demo cover <span>↗</span></a></div>
+    <div className="policy-filters" aria-label="Filter policies">{[['recent','Recent'],['here','Created here'],['all','All policies'],['active','Committed']].map(([id,label])=><button key={id} className={`chip ${filter===id?'chip-on':''}`} aria-pressed={filter===id} onClick={()=>setFilter(id)}>{label}</button>)}<button className="text-button" onClick={()=>void refresh()}>Refresh ↻</button></div>
+    {Object.entries(requests).map(([id,r])=><div className="notice request-notice" key={id} role="status"><strong>{r.ok?r.status==='creating'?'Creating your cover…':'Request needs review':'Request status unavailable'}</strong><p>{r.message??'Your request is saved. This page will update when the policy is confirmed.'}</p><small className="num">Request {id}</small>{!r.ok&&r.reason==='not_found'?<button className="text-button" onClick={()=>{trackRequest(id,a.network,true);setRequests(v=>Object.fromEntries(Object.entries(v).filter(([key])=>key!==id)));}}>Dismiss</button>:null}</div>)}
+    {a.policiesError?<div className="notice" role="status">{a.policiesError} <button className="text-button" onClick={()=>void refresh()}>Retry</button></div>:null}
+    {!a.checked||a.policies===null&&!a.policiesError?<div className="empty-state">Loading policies…</div>:rows.length===0?<div className="empty-state"><span className="empty-ring"/><h2>{filter==='here'?'No policies created in this browser.':filter==='active'?'No committed policies.':'No policies to show.'}</h2><a className="hs" href="/" onClick={onLink}>Choose a place →</a></div>:<div className="policy-cards">{rows.map(p=><a key={p.serial} href={policyPath(p.serial)} onClick={onLink} className="nft-gallery-link" aria-label={`Open cover NFT ${p.serial}${p.place?` for ${p.place}`:''}`}><PositionNFT policy={p} compact/></a>)}</div>}
+    <p className="demo-footer">Demo beneficiary accounts are managed by the service. “Created here” identifies this browser, not wallet ownership. aUSDd has no cash value.</p>
+  </div></div>;
 }

@@ -1,3 +1,4 @@
+import { proto } from '@hiero-ledger/proto';
 // An x402 facilitator for Hedera, on the network we can actually run on.
 //
 // The public facilitator at api.blocky402.com advertises hedera:mainnet only and
@@ -46,31 +47,45 @@ export function verify(paymentPayload, requirements) {
   if (paymentPayload.network && paymentPayload.network !== requirements.network) return fail('network_mismatch');
 
   const required = BigInt(requirements.amount ?? requirements.maxAmountRequired);
-  let credited = 0n;
-
-  if (isHbar(requirements.asset)) {
-    for (const [account, amount] of tx.hbarTransfers ?? []) {
-      if (sameAccount(account, requirements.payTo)) credited += BigInt(amount.toTinybars().toString());
-    }
-  } else {
-    const perToken = tx.tokenTransfers ?? new Map();
-    for (const [tokenId, transfers] of perToken) {
-      if (tokenId.toString() !== requirements.asset) continue;
-      for (const [account, amount] of transfers) {
-        if (sameAccount(account, requirements.payTo)) credited += BigInt(amount.toString());
-      }
-    }
-  }
-
-  if (credited < required) {
-    return fail('insufficient_amount', `pays ${credited} to ${requirements.payTo}, needs ${required}`);
-  }
-
   const feePayer = requirements.extra?.feePayer;
-  const txPayer = tx.transactionId?.accountId?.toString();
-  if (feePayer && txPayer && !sameAccount(txPayer, feePayer)) {
-    return fail('wrong_fee_payer', `transaction id belongs to ${txPayer}, expected ${feePayer}`);
-  }
+  if (!feePayer || required <= 0n) return fail('invalid_requirements');
+  let credited = 0n;
+  try {
+    const bodies = tx.signableNodeBodyBytesList;
+    if (!bodies.length) return fail('missing_transaction_body');
+    for (const entry of bodies) {
+      const bytes = entry.signableTransactionBodyBytes;
+      const body = proto.TransactionBody.decode(bytes);
+      // Reject unknown fields too: the verifier must understand every byte it signs.
+      if (!Buffer.from(proto.TransactionBody.encode(body).finish()).equals(Buffer.from(bytes))) return fail('unsupported_transaction_fields');
+      if (!body.cryptoTransfer || body.data !== 'cryptoTransfer') return fail('unexpected_operation');
+      if (!sameAccount(entry.transactionId.accountId, feePayer)) return fail('wrong_fee_payer');
+      if (BigInt(body.transactionFee.toString()) > BigInt(requirements.extra?.maxFeeTinybar ?? 100000000)) return fail('excessive_transaction_fee');
+      const transfer = body.cryptoTransfer;
+      let legs;
+      if (isHbar(requirements.asset)) {
+        if (transfer.tokenTransfers?.length) return fail('unexpected_asset');
+        legs = transfer.transfers?.accountAmounts ?? [];
+      } else {
+        if (transfer.transfers?.accountAmounts?.length || transfer.tokenTransfers?.length !== 1) return fail('unexpected_transfer');
+        const token = transfer.tokenTransfers[0];
+        const id = `${token.token.shardNum ?? 0}.${token.token.realmNum ?? 0}.${token.token.tokenNum}`;
+        if (id !== requirements.asset || token.nftTransfers?.length) return fail('unexpected_asset');
+        legs = token.transfers ?? [];
+      }
+      const account = leg => {
+        const id = leg.accountID;
+        if (!id || id.alias?.length || id.accountNum == null) throw new Error('Numeric accounts required');
+        return `${id.shardNum ?? 0}.${id.realmNum ?? 0}.${id.accountNum}`;
+      };
+      if (legs.length !== 2 || legs.some(leg => leg.isApproval)) return fail('unexpected_transfer');
+      const credit = legs.find(leg => BigInt(leg.amount.toString()) === required && sameAccount(account(leg), requirements.payTo));
+      const debit = legs.find(leg => BigInt(leg.amount.toString()) === -required);
+      if (!credit || !debit || sameAccount(account(debit), requirements.payTo)) return fail('incorrect_payment');
+      if (sameAccount(account(debit), feePayer)) return fail('facilitator_debit');
+      credited = required;
+    }
+  } catch (err) { return fail('malformed_payment', err.message); }
 
   return { isValid: true, credited: credited.toString(), asset: requirements.asset ?? 'HBAR' };
 }
@@ -83,6 +98,8 @@ export function verify(paymentPayload, requirements) {
  * unassociated token or an empty balance.
  */
 export async function settle(paymentPayload, requirements, { feePayerId, feePayerKey, network = 'testnet' }) {
+  const check = verify(paymentPayload, requirements);
+  if (!check.isValid) return { success: false, errorReason: check.invalidReason };
   const client = (network === 'mainnet' ? Client.forMainnet() : Client.forTestnet())
     .setOperator(feePayerId, typeof feePayerKey === 'string' ? parseKey(feePayerKey) : feePayerKey);
   try {

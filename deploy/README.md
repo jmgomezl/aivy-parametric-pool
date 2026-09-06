@@ -1,8 +1,8 @@
 # Deploying the oracles
 
 Three services, one per catalogue, each with its own Hedera account and its own
-key. They run as separate processes on purpose: three oracles inside one process
-would make the quorum a formality.
+key. They run as separate processes for isolation. This demo still operates all three;
+separate processes do not establish independent oracle operators.
 
 Live at:
 
@@ -58,3 +58,17 @@ certbot --nginx -d usgs.aivylabs.xyz -d emsc.aivylabs.xyz -d geofon.aivylabs.xyz
 One certificate covers all three. DNS is at Porkbun — when adding records there,
 leave **"Do not delete existing records"** checked. Unchecking it replaces every
 record on aivylabs.xyz, which would take down a dozen unrelated services.
+
+## Signing request binding
+
+`POST /attest-and-sign` takes `scheduleId` and `termsPointer` (`hcs://topic/sequence`).
+Caller-supplied trigger specifications are ignored for signing. Deploy the public
+pool registry containing `poolAccountId` and `termsTopicId` in
+`.artifacts/registry-<network>.json`; never copy private demo keys into that registry.
+The service loads its own signing key from its environment. Policies must use
+version 1 terms and the bound memo hash; older recordings require manual review.
+A policy-binding rejection returns 422 before charging for an attestation.
+
+The services are request-driven. No background earthquake monitor is included.
+Automatic execution occurs only after the required signatures reach Hedera.
+The HTTP listeners default to localhost for the nginx proxy.

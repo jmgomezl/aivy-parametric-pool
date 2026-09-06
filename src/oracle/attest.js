@@ -32,6 +32,9 @@ export async function attest(sourceKey, spec) {
   const judge = (e) => {
     const km = distanceKm(spec.lat, spec.lon, e.lat, e.lon);
     const fails = [];
+    const time=Date.parse(e.time), start=Date.parse(spec.windowStart), end=spec.windowEnd?Date.parse(spec.windowEnd):Date.now();
+    if(!Number.isFinite(time)||time<start||time>end)fails.push('outside the coverage window');
+    if(!Number.isFinite(e.magnitude)||!Number.isFinite(e.depthKm)||!Number.isFinite(km))fails.push('incomplete event data');
     if (e.magnitude < spec.minMagnitude) fails.push(`magnitude ${e.magnitude} below ${spec.minMagnitude}`);
     if (km > spec.radiusKm) fails.push(`${km.toFixed(0)} km away, outside ${spec.radiusKm} km`);
     if (spec.maxDepthKm != null && e.depthKm > spec.maxDepthKm) fails.push(`${e.depthKm} km deep, below ${spec.maxDepthKm} km`);

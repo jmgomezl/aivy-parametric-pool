@@ -102,14 +102,14 @@ export function price(lat: number, lon: number, o: PriceOpts = {}): Priced {
   };
 }
 
-/** What the same cover would have cost at the start of each year: the model re-run with only the record available then. */
-export function priceHistory(nearby: (Quake & { km: number })[], o: PriceOpts = {}, fromYear = 1985, toYear = LAST_YEAR): { year: number; count: number; premiumHbar: number }[] {
+/** Reprice fixed cover using each year’s available record. End-of-year sampling caps the current year at the frozen snapshot. */
+export function priceHistory(nearby: (Quake & { km: number })[], o: PriceOpts = {}, fromYear = 1985, toYear = LAST_YEAR, timing: 'start' | 'end' = 'start'): { year: number; count: number; premiumHbar: number }[] {
   const opts = defaults(o);
   const out = [];
   for (let y = fromYear; y <= toYear; y++) {
-    const atMs = Date.UTC(y, 0, 1);
-    const at = atMs / 86400000;
-    const count = nearby.filter((q) => q.day < at && q.mag >= opts.minMag).length;
+    const atMs = timing === 'end' ? Math.min(Date.UTC(y, 11, 31), new Date(CATALOGUE.fetchedAt).getTime()) : Date.UTC(y, 0, 1);
+    const at = Math.floor(atMs / 86400000);
+    const count = nearby.filter((q) => (timing === 'end' ? q.day <= at : q.day < at) && q.mag >= opts.minMag).length;
     const years = (atMs - SINCE_MS) / (365.25 * 86400000);
     const { lambdaPriced } = rate(count, years);
     const p = 1 - Math.exp(-lambdaPriced * (opts.days / 365.25));

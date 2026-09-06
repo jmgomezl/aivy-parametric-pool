@@ -1,6 +1,6 @@
 // A very small path router. The app has four destinations and no nesting, so
 // pushState plus a listener is the whole thing. Story beats keep their own
-// hash (`/story#3.1`) so the filming machinery stays untouched.
+// hash (`/story#3`) for direct step navigation.
 import { useEffect, useState } from 'react';
 
 export type Route =
@@ -14,7 +14,7 @@ export function parse(pathname: string): Route {
   if (p === '/story') return { name: 'story' };
   if (p === '/policies') return { name: 'policies' };
   const m = /^\/policy\/([^/]+)$/.exec(p);
-  if (m) return { name: 'policy', serial: decodeURIComponent(m[1]) };
+  if (m) {try{return {name:'policy',serial:decodeURIComponent(m[1])};}catch{return {name:'policy',serial:m[1]};}}
   return { name: 'home' };
 }
 

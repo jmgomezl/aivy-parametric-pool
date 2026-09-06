@@ -50,7 +50,7 @@ export function underwrite({
 
   if (hazard.count === 0) {
     return refuse('no_record',
-      'No qualifying earthquake has ever been recorded near here. There is nothing to insure.',
+      'The historical catalogue has no qualifying events near this location. There is not enough evidence to quote cover.',
       { count: 0, source: hazard.source, floor });
   }
 

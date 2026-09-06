@@ -15,10 +15,12 @@ import {
 import { MAX_EXPIRY_SECONDS } from 'hak-scheduled-settlement';
 import { settlementAsset } from '../asset.js';
 
-export async function schedulePayout(client, { poolId, beneficiaryId, payoutUnits, network, days, memo }) {
+export async function schedulePayout(client, { poolId, beneficiaryId, payoutUnits, network, days, memo, expiresAt }) {
   const expirySeconds = Math.min(days * 24 * 3600, MAX_EXPIRY_SECONDS);
   const asset = settlementAsset(network);
   const amount = Math.round(payoutUnits);
+  if (!Number.isSafeInteger(amount) || amount <= 0) throw new Error('Payout units must be a positive integer');
+  const expiry = expiresAt ? new Date(expiresAt) : new Date(Date.now() + expirySeconds * 1000);
 
   const inner = new TransferTransaction();
   if (asset.kind === 'hbar') {
@@ -31,7 +33,7 @@ export async function schedulePayout(client, { poolId, beneficiaryId, payoutUnit
   const res = await new ScheduleCreateTransaction()
     .setScheduledTransaction(inner)
     .setScheduleMemo(memo ?? 'parametric payout')
-    .setExpirationTime(Timestamp.fromDate(new Date(Date.now() + expirySeconds * 1000)))
+    .setExpirationTime(Timestamp.fromDate(expiry))
     .setWaitForExpiry(false) // fire the instant the quorum completes
     .execute(client);
 
@@ -40,7 +42,7 @@ export async function schedulePayout(client, { poolId, beneficiaryId, payoutUnit
     status: 'success',
     scheduleId: receipt.scheduleId.toString(),
     transactionId: res.transactionId.toString(),
-    expiresAt: new Date(Date.now() + expirySeconds * 1000).toISOString(),
+    expiresAt: expiry.toISOString(),
   };
 }
 

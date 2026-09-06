@@ -1,80 +1,124 @@
-# Aivy Parametric Pool
+# Aivy · Earthquake cover
 
-Parametric catastrophe cover that settles **without a smart contract and without a
-keeper**. The payout is a Hedera Scheduled Transaction, pre-signed when the policy
-is bought. Its trigger condition is signature collection: when a quorum of
-independent oracle agents signs, the network executes the transfer itself.
+Choose a place. Commit a fixed payout. Two oracle confirmations release it.
 
-No Solidity anywhere. Native Hedera services only.
+Aivy demonstrates parametric earthquake settlement using native Hedera services.
+The agent pre-signs a Scheduled Transaction at issuance. The pool key requires
+both the agent and two of three oracle keys. When the missing signatures arrive,
+Hedera executes the scheduled transfer without a separate executor transaction.
 
-> **Status: prototype on Hedera testnet.** Not an insurance product, not offered
-> to the public. See [Regulatory position](#regulatory-position).
+**Public UI: funded testnet demo.** No user payment is required. Beneficiary
+accounts are managed by the service. `aUSDd` is an unbacked demo token with no cash
+value; displayed dollars are model outputs. This is a prototype, not live cover.
 
----
+**Event checks are manual.** The oracle services read catalogues when requested.
+Automatic ledger execution does not imply automatic earthquake monitoring.
+The story replays controlled signatures from a recorded mainnet transfer.
 
-## The problem
+## Run locally
 
-A $4 earthquake policy does not exist, anywhere. Not because the risk is
-unpriceable — because the human labour to sell it, price it, and settle it costs
-more than the premium. The product is killed by its own overhead.
-
-Agents collapse that overhead. This repo is the settlement rail that lets them.
-
-## The mechanism
-
-The pool account's key is an **AND** of two branches:
-
-```
-KeyList[                        <- no threshold => every branch required
-  poolAgentKey,                 <- signs ONCE, at policy purchase
-  KeyList[o1, o2, o3] (2)       <- 2-of-3 oracles, sign at trigger time
-]
+```sh
+npm ci
+# Configure .env from .env.example. Provisioning spends testnet assets:
+npm run provision
+npm run serve
+# In another terminal:
+cd ui
+npm ci
+npm run dev
 ```
 
-The naive design puts the oracle keys directly on the pool account. That makes
-the same quorum able to sign *any* transaction out of the treasury — the oracles
-become custodians. Nesting them under an AND means:
+Open http://localhost:5173. Vite proxies `/api` to the local API on port 8791.
+The API binds to localhost by default and refuses public mainnet issuance.
+For hosting, serve the UI with an SPA fallback and proxy `/api` to the backend,
+or build with `VITE_AGENT_URL` pointing to its HTTPS origin. Set `HOST` for the
+intended interface and `TRUST_PROXY=1` only behind a trusted reverse proxy.
 
-- the agent commits at purchase, so **nothing of ours has to be awake later**;
-- at trigger time the only missing signatures are the oracles';
-- **the oracle quorum alone can never move a tinybar.**
+## The experience
 
-## Verified on testnet, day 1
+- **Cover:** search or pin a place, adjust the budget, create demo cover.
+- **Policies:** recent commitments, policies created in this browser, and saved
+  interrupted requests. Browser labels do not represent wallet ownership.
+- **How it works:** six recorded steps: choose, commit, first confirmation,
+  release, receipt, and the blocked oracle-only transfer.
 
-Both directions of that claim are proved on-chain, not asserted:
+Historical exploration is optional. Changing its year or magnitude never changes
+issuable policy terms. Return to cover for a current M6+ quote.
 
-| | schedule | result |
-|---|---|---|
-| agent + 1 oracle | [0.0.10368695](https://hashscan.io/testnet/schedule/0.0.10368695) | pending — quorum not met |
-| agent + 2 oracles | [0.0.10368695](https://hashscan.io/testnet/schedule/0.0.10368695) | **executed itself**, nobody submitted it |
-| all 3 oracles, agent never signed | [0.0.10368699](https://hashscan.io/testnet/schedule/0.0.10368699) | never executed — drain blocked |
+## What is demonstrated
 
-Reproduce: `npm run d1 && node scripts/verify-quorum.js`
+The nested key is `AND(agent, 2-of-3 oracle keys)`. The oracle quorum alone cannot
+spend from the pool. The agent and quorum together still control it: this is a
+specific authorization restriction, not protection from their collusion.
 
-## Pricing
+The oracle adapters use USGS, EMSC and GEOFON data. The demo operates those
+services; source names do not mean those institutions operate our signing keys.
+Separate processes and data sources do not establish independent operators.
 
-Premiums come from the live USGS ComCat catalogue, not from a constant. A Poisson
-rate is estimated as a **density over a wide reference region** and scaled to the
-trigger circle, because counting inside the trigger circle alone rests on n=1 and
-swings the price 12x with the radius. Every input travels with the quote so
-anyone can recompute it.
+Before signing, an oracle binds the configured HCS policy topic, recorded terms,
+issuer signature, memo hash, network, expiry, asset, beneficiary and amount to
+the actual scheduled transfer. Legacy recordings require manual verification.
+The x402 facilitator accepts only the exact payment transfer and refuses extra
+legs, facilitator debits, approvals, unsupported fields and excessive fees.
 
+The policy NFT points to HCS terms. Premium transfers can include a broker split
+in the same transaction. Cross-asset support returns an optional quote; it does
+not bridge or execute an EVM payout.
+
+## Pricing and capacity
+
+A first-order Poisson model estimates shallow M6+ frequency over a 300 km
+reference region, scales to the fixed 100 km trigger circle, and adds uncertainty
+loading. It is reproducible, not actuarial-grade. A location without qualifying
+historical data is declined; no record does not establish zero risk.
+
+The payout requires M6+, distance ≤100 km, depth ≤70 km, and an event inside the
+coverage window. Damage alone does not qualify. Terms last 7–62 days; late event
+reporting or missing oracle service can prevent timely signatures.
+
+The local issuance book reserves aggregate promised payouts before ledger writes,
+under an exclusive filesystem lock. Issuance is refused when existing promises
+plus the request exceed available capital. These are off-ledger reservations:
+funds are not individually escrowed per schedule, and external spending can
+invalidate capacity. Multiple instances must share the same book and lock;
+independent disks are unsupported. The rate limits are process-local.
+
+## Interrupted requests
+
+The browser saves a random request identifier before creation. Policies checks
+`GET /api/requests/:id`; completed requests resolve to the issued policy and
+interrupted requests remain visible for review. Replaying an identifier never
+creates another policy. Issuance checkpoints retain public ledger identifiers.
+
+A failed issuance retains its capital reservation. A crashed process can leave
+`.artifacts/issuance-<network>.lock`; subsequent issuance fails closed. An operator
+must verify that the writer has stopped, inspect the reservation and its HCS,
+NFT, premium and schedule receipts, and reconcile the book before removing the
+lock or releasing capacity. Never blindly delete a reservation: the ledger write
+may have succeeded even when its response was lost. Back up the book first.
+
+## Verification
+
+```sh
+npm test                 # offline pricing, authorization, payment and issuance tests
+npm --prefix ui run build
 ```
-Armenia, Quindio        n= 12  lambda=0.0235/yr  P30d=0.193%   $3.09
-Pasto, Narino           n= 17  lambda=0.0333/yr  P30d=0.273%   $4.37
-Bucaramanga, Santander  n=  4  lambda=0.0078/yr  P30d=0.064%   $1.03
-Tokyo, Japan            n=103  lambda=0.2019/yr  P30d=1.645%  $26.32
+
+The reusable plugin has its own tests in the sibling repository:
+
+```sh
+cd ../hak-scheduled-settlement
+npm test
+npm run typecheck
+npm run build
 ```
-*(30-day cover, $800 payout, 50% target loss ratio — `node scripts/quote.js`)*
 
-Bucaramanga prices low despite its famous seismic nest because the nest is deep
-and the `depth < 70km` filter excludes it. The model is picking up real physics.
-
-This is a transparent, reproducible **first-order** model. It ignores time
-dependence (aftershock clustering, seismic gaps) and understates the tail. It is
-not actuarial-grade and is not presented as such.
-
----
+`d1`, `d2`, `d3`, and `verify-quorum.js` are controlled HBAR ledger demonstrations,
+not offline tests. They spend network assets and update `.artifacts` and
+`LINKS.md`. They are separate from the current app's token issuance flow; d3
+submits controlled signatures rather than verifying a real earthquake. Run in an
+isolated checkout with separate demo accounts if reproducing the historical run.
+The UI's frozen mainnet record is not replaced automatically.
 
 ## Prior work boundary (CONTINUITY track)
 
@@ -115,65 +159,16 @@ What is **new**, built during this event:
 5. **x402-gated oracle services** — the oracle agents are the paid service, not
    just consumers of one.
 
-## How this differs from Etherisc
-
-[Etherisc](https://etherisc.com/) has run decentralized parametric insurance since
-2016 and, with ACRE Africa, covers 22,000 Kenyan farmers. The space is not empty
-and pretending otherwise would be dishonest.
-
-The difference is mechanical, not cosmetic: **Etherisc is a Solidity protocol
-where a keeper calls a contract to release a payout. Here there is no contract and
-no keeper.** Settlement is a ledger primitive — the transaction is already signed
-and waiting, and it runs when the quorum completes. That is what makes the
-per-policy overhead small enough for a $4 premium.
-
-## Regulatory position
-
-This is infrastructure, not a product. The regulated act is *selling a policy to a
-consumer*; the settlement rail is not that. The production path is **fronting** —
-a licensed insurer issues the cover and carries the regulatory risk while this
-provides the rail — which is the same route Etherisc took with ACRE Africa. There
-is no jurisdictional loophole here and none is claimed.
-
-## Cross-asset settlement, and where it stops
-
-A payout lands in the pool's settlement asset on Hedera. A beneficiary may want
-something else, and Uniswap has the liquidity — so the settlement agent prices
-the conversion against it through the Trading API and returns the transaction
-that would execute it.
-
-Then it stops, and says so in the response. That liquidity lives on an EVM chain
-and this payout lives on Hedera; crossing between them needs a bridge, and this
-protocol deliberately does not have one. Building a "simple trustless bridge"
-would mean a handful of signers attesting that something happened on another
-chain — a custodian, which is the thing this whole design exists to remove.
-
-Hashgraph's [Cross-Ledger Protocol](https://hashgraph.com/clpr/) is the right
-answer to this seam: bridgeless messaging over state proofs and threshold
-signatures — the same family of idea as this pool's key. It is not open to
-developers yet, so the boundary stands and is stated rather than papered over.
-
-## Known limits
-
-- **Basis risk.** A M5.8 that destroys your house pays nothing. The product pays
-  on a threshold, not on damage.
-- **Scheduled Transactions expire at 62 days**, so cover is scoped to 30 days.
-  Re-scheduling is deliberately not implemented: it would reintroduce a keeper.
-- **Correlated risk.** Policies in one zone all fire together. Capital is sized to
-  the probable maximum loss of a single event, not to aggregate exposure.
-
 ## Layout
 
-```
-src/pool/keys.js        the AND(agent, k-of-n) key structure — the load-bearing decision
-src/pool/shares.js      HTS share token; treasury is the agent, not the pool
-src/pool/deposit.js     atomic HBAR-in / shares-out
-src/pricing/hazard.js   Poisson rate density over the USGS catalogue
-scripts/d1-bootstrap.js pool + token + deposit, end to end
-scripts/verify-quorum.js the two adversarial proofs above
-research/               live probe results: x402 facilitator, hazard model
-ui/                     the settlement timeline — the mainnet run, quote to payout, filmed at 1920×1080
-LINKS.md                every on-chain artifact produced, as it was produced
-```
+- `src/policy/`: pricing-to-issuance flow, HCS terms, NFT and scheduled transfer.
+- `src/oracle/`: catalogue adapters, event checks and policy-bound signing.
+- `src/x402/`: exact payment verification, settlement and client.
+- `src/book.js`, `src/issuance-lock.js`: durable reservations and serialization.
+- `src/ledger.js`: shared policy status from actual signer identities.
+- `ui/`: map, quotes, policies and recorded demonstration.
+- `deploy/`: oracle deployment configuration.
+- `research/`: model rationale and historical integration notes.
+- `LINKS.md`: historical ledger artifacts.
 
 MIT.

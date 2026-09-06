@@ -1,7 +1,7 @@
-// D3 — THE SPINE. The whole loop, end to end, with no human in it after purchase:
+// D3 — THE SPINE. Controlled replay of signature-gated settlement:
 //
 //   solvency guard refuses -> LP capital arrives -> guard allows -> payout is
-//   scheduled and pre-signed at purchase -> a quake happens -> two independent
+//   scheduled and pre-signed at purchase -> the operator submits controlled signatures -> two
 //   oracles attest -> the network executes the payout by itself.
 import fs from 'node:fs';
 import {
@@ -13,6 +13,9 @@ import { canUnderwrite } from '../src/pool/solvency.js';
 import { deposit } from '../src/pool/deposit.js';
 import { schedulePayout, attest, payoutStatus } from '../src/policy/payout.js';
 import { createFundedAccount } from '../src/accounts.js';
+
+// Historical controlled HBAR demonstration, independent of the app's demo token.
+process.env.SETTLEMENT_TOKEN_ID = 'HBAR';
 
 const log = (s) => console.log(s);
 const hbar = (t) => (t / 1e8).toFixed(4);
@@ -29,7 +32,7 @@ async function main() {
   log(`network: ${NETWORK}   pool: ${poolId}   cover: ${payout} HBAR\n`);
 
   // 1. The guard refuses before there is capital to back the promise.
-  let check = await canUnderwrite(c, poolId, 0, payout * 1e8);
+  let check = await canUnderwrite(c, poolId, 0, Math.round(payout * 1e8), NETWORK);
   log('1. solvency guard');
   log(`   capital ${hbar(check.capital)} HBAR, exposure would be ${hbar(check.exposureAfter)} HBAR`);
   log(`   ${check.ok ? 'ALLOWED' : check.reason}`);
@@ -43,19 +46,19 @@ async function main() {
 
     const dep = await deposit(c, {
       tokenId: TokenId.fromString(a.shareTokenId), treasuryId: agent.id, poolId,
-      lpId, lpKey, hbarAmount: payout,
+      lpId, lpKey, amountUnits: Math.round(payout * 1e8), network: NETWORK,
     });
     log(`\n2. lp ${lpId} deposits ${payout} HBAR -> ${dep.units / 1e8} shares`);
     log(`   ${HASHSCAN('transaction', dep.depositTxId)}`);
 
-    check = await canUnderwrite(c, poolId, 0, payout * 1e8);
+    check = await canUnderwrite(c, poolId, 0, Math.round(payout * 1e8), NETWORK);
     log(`   guard now: ${check.ok ? 'ALLOWED' : check.reason}  (headroom ${hbar(check.headroom)} HBAR)`);
   }
   if (!check.ok) throw new Error('pool still cannot back the policy');
 
   // 3. Purchase time: the payout is scheduled and the agent signs it NOW.
   const sched = await schedulePayout(c, {
-    poolId, beneficiaryId: buyerId, payoutHbar: payout, days: 30,
+    poolId, beneficiaryId: buyerId, payoutUnits: Math.round(payout * 1e8), network: NETWORK, days: 30,
     memo: 'quake payout M6+ Armenia',
   });
   if (sched.status !== 'success') throw new Error(sched.message);
@@ -64,15 +67,15 @@ async function main() {
   log(`   ${HASHSCAN('schedule', sched.scheduleId)}`);
 
   const before = (await new AccountBalanceQuery().setAccountId(buyerId).execute(c)).hbars.toTinybars().toNumber();
-  log(`\n4. ... 30 days of nothing. No keeper, no cron, no contract.`);
+  log(`\n4. Pending transfer. This replay does not wait 30 days or detect an earthquake.`);
   log(`   status: ${(await payoutStatus(c, sched.scheduleId)).executed ? 'executed' : 'pending'}`);
 
   // 5. A quake happens. Independent oracles attest; they never talk to each other.
-  log(`\n5. M6.1 near Armenia — oracles attest independently`);
+  log(`\n5. Controlled signature replay — no live event verification`);
   const one = await attest(c, sched.scheduleId, oracles[0]);
-  log(`   USGS oracle signed  -> ${one.executed ? 'EXECUTED' : 'pending (quorum not met)'}`);
+  log(`   First oracle key signed  -> ${one.executed ? 'EXECUTED' : 'pending (quorum not met)'}`);
   const two = await attest(c, sched.scheduleId, oracles[1]);
-  log(`   EMSC oracle signed  -> ${two.executed ? 'EXECUTED' : 'pending'}`);
+  log(`   Second oracle key signed  -> ${two.executed ? 'EXECUTED' : 'pending'}`);
 
   const after = (await new AccountBalanceQuery().setAccountId(buyerId).execute(c)).hbars.toTinybars().toNumber();
   const paid = after - before;
@@ -80,7 +83,7 @@ async function main() {
 
   log(`\n6. beneficiary balance ${hbar(before)} -> ${hbar(after)} HBAR  (+${hbar(paid)})`);
   if (two.executed) log(`   executed at ${two.executedAt} — nobody submitted this transaction`);
-  log(`\n${ok ? 'SPINE COMPLETE: quake fires the payout, no human in the loop' : 'GATE FAILED'}\n`);
+  log(`\n${ok ? 'REPLAY COMPLETE: second signature released the payout' : 'GATE FAILED'}\n`);
 
   a.d3 = { scheduleId: sched.scheduleId, executed: two.executed, executedAt: two.executedAt, paidTinybar: paid, gatePassed: ok };
   fs.writeFileSync(`.artifacts/${NETWORK}.json`, JSON.stringify(a, null, 2));

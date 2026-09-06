@@ -3,7 +3,7 @@
 // Quoting is free and open. Issuing writes to the ledger and spends the agent's
 // own HBAR, so it is rate-limited and refused outright on mainnet — a refusal is
 // a normal answer here, not an error, and the UI shows the agent's own words.
-const BASE = import.meta.env.VITE_AGENT_URL ?? 'http://localhost:8791';
+const BASE = import.meta.env.VITE_AGENT_URL ?? '';
 
 export type Network = 'testnet' | 'mainnet';
 
@@ -39,6 +39,12 @@ export interface Policy {
   buyerId: string; brokerId: string | null; termsPointer: string;
   saleTxId: string; scheduleId: string; lapsesAt: string; settled: boolean;
   recordedAt?: string; executedAt?: string;
+  state?: 'active' | 'confirming' | 'paid' | 'expired' | 'unavailable';
+  ledger?: { checkedAt: string; available: boolean; agentSigned: boolean; oracles: { name: string; signed: boolean }[]; executedAt: string | null; error?: string };
+  monitoring?: { mode: 'manual' | 'automatic'; lastCheckedAt?: string; message?: string };
+  trigger?: { minMagnitude: number; radiusKm: number; maxDepthKm: number; windowStart?: string; windowEnd?: string };
+  network?: Network;
+
 }
 
 export interface Issued { ok: true; policy: Policy; quote: Quote; hashscan: Record<string, string> }
@@ -62,6 +68,7 @@ async function call<T>(path: string, init?: RequestInit, timeoutMs = 120_000): P
     signal: AbortSignal.timeout(timeoutMs),
   });
   const body = await res.json().catch(() => ({ ok: false, reason: 'unreadable', message: `Agent returned ${res.status}` }));
+  if (!res.ok && !body.reason) throw new Error(body.message ?? `Service returned ${res.status}`);
   return body as T;
 }
 
@@ -71,7 +78,7 @@ export const pool = () => call<Pool>('/api/pool', undefined, 20_000);
 export const quote = (lat: number, lon: number, budgetUsd = 4, days = 30) =>
   call<Quote | Refusal>(`/api/quote?lat=${lat}&lon=${lon}&budget=${budgetUsd}&days=${days}`, undefined, 30_000);
 
-export const buy = (input: { lat: number; lon: number; place?: string | null; budgetUsd?: number; days?: number }) =>
+export const buy = (input: { lat: number; lon: number; place?: string | null; budgetUsd?: number; days?: number; requestId?: string }) =>
   call<Issued | Refusal>('/api/policies', { method: 'POST', body: JSON.stringify(input) });
 
 export const policies = () => call<{ network: Network; policies: Policy[] }>('/api/policies', undefined, 20_000);
@@ -84,3 +91,6 @@ export async function reachable(): Promise<boolean> {
 
 /** A policy's payout, in the unit it settles in. */
 export const payoutLabel = (p: Policy) => p.asset && p.asset !== 'HBAR' ? `${p.payoutHbar.toFixed(2)} ${p.asset}` : `${p.payoutHbar.toFixed(2)} ℏ`;
+
+export type RequestStatus = {ok:true;status:'creating'|'needs_review'|'complete';policy?:Policy;message?:string;place?:string} | Refusal;
+export const requestStatus=(id:string)=>call<RequestStatus>(`/api/requests/${encodeURIComponent(id)}`,undefined,10000);

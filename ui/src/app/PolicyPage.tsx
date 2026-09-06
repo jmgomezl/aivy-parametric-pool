@@ -1,139 +1,51 @@
-// A policy is a destination. Its live state is the same ring as beat 05,
-// holding this visitor's payout, and under it the proof that nobody else can.
 import { useEffect, useState } from 'react';
 import * as agent from '../lib/agent';
-import { Big, C, Lock } from '../components/viz';
-import { Id, Pill } from '../components/ui';
+import { C, Lock } from '../components/viz';
+import { Id } from '../components/ui';
 import { placeName } from '../lib/hazard';
 import { hsPointer } from '../lib/hashscan';
-import { fetchSchedule, useLive } from '../lib/mirror';
 import { onLink } from '../lib/router';
-import { mine, useAgent } from '../lib/store';
+import { mine, policyState, refresh, statusLabel, useAgent } from '../lib/store';
+import { PolicyPosition, LPPreviewControls, type PositionKind } from './PolicyPosition';
 import { OracleProof } from './OracleProof';
 
-const usd = (n: number | undefined, d = 2) => (typeof n === 'number' && Number.isFinite(n) ? `$${n.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d })}` : '—');
-const daysLeft = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000));
-
-export function PolicyPage({ serial }: { serial: string }) {
-  const a = useAgent();
-  const [state, setState] = useState<{ at: 'loading' } | { at: 'ok'; p: agent.Policy } | { at: 'missing'; message: string }>({ at: 'loading' });
-  const [proof, setProof] = useState(false);
-
-  useEffect(() => {
-    if (!a.checked) return;
-    if (!a.online) { setState({ at: 'missing', message: 'The agent is offline, and policies live in its book.' }); return; }
-    let live = true;
-    agent.policy(serial).then((r) => {
-      if (!live) return;
-      if ('ok' in r && r.ok === false) setState({ at: 'missing', message: r.message });
-      else setState({ at: 'ok', p: r as agent.Policy });
-    }).catch(() => live && setState({ at: 'missing', message: 'The agent did not answer.' }));
-    return () => { live = false; };
-  }, [serial, a.checked, a.online]);
-
-  const p = state.at === 'ok' ? state.p : null;
-  const net = a.network;
-  const sched = useLive(() => (p ? fetchSchedule(p.scheduleId, net) : Promise.reject(new Error('no policy'))), [p?.scheduleId, net]);
-
-  if (state.at === 'loading') return <Frame><div className="label">loading policy #{serial}…</div></Frame>;
-  if (state.at === 'missing') return (
-    <Frame>
-      <div className="flex flex-col gap-[14px]">
-        <Pill state="refused">not found</Pill>
-        <div className="text-[22px] text-fg-0">No policy #{serial}.</div>
-        <p className="text-fg-1 max-w-[52ch]">{state.message}</p>
-        <a href="/policies" onClick={onLink} className="hs label self-start">all policies<span className="arrow">→</span></a>
+export function PolicyPage({serial}:{serial:string}){
+  const a=useAgent();
+  const [position,setPosition]=useState<PositionKind>(()=>new URLSearchParams(location.search).get('position')==='lp'?'liquidity':'cover'),[portion,setPortion]=useState(10);
+  const [retry,setRetry]=useState(0);
+  const [lookup,setLookup]=useState<{p?:agent.Policy;error?:string;missing?:boolean}>({});
+  const found=a.policies?.find(p=>String(p.serial)===serial);
+  useEffect(()=>{if(!a.checked||!a.online||found)return;let live=true;agent.policy(serial).then(p=>{if(live)setLookup('ok'in p&&p.ok===false?{missing:p.reason==='not_found',error:p.message}:{p:p as agent.Policy});}).catch(()=>{if(live)setLookup({error:'The policy service is temporarily unavailable.'});});return()=>{live=false;};},[a.checked,a.online,serial,found,retry]);
+  const p=found??lookup.p;
+  if(!p)return <div className="page"><div className="page-inner empty-state"><h1>{lookup.missing?'Policy not found':a.checked&&(!a.online||lookup.error)?'Policy temporarily unavailable':'Loading policy…'}</h1><p>{lookup.error??(!a.online&&a.checked?'Please retry when the service reconnects.':'Checking the latest record.')}</p><a className="hs" href="/policies" onClick={onLink}>← All policies</a><button className="chip" onClick={()=>{setLookup({});setRetry(v=>v+1);void refresh();}}>Retry</button></div></div>;
+  const state=policyState(p), paid=state==='paid', expired=state==='expired', ledger=p.ledger;
+  const oracles=ledger?.oracles??[];
+  const signed=oracles.filter(o=>o.signed).length;
+  return <div className="page"><div className="page-inner policy-detail">
+    <a className="back-link" href="/policies" onClick={onLink}>← Policies</a>
+    <div className="policy-detail-grid">
+      <div className="policy-main"><div className="eyebrow">Policy #{serial} · {a.network}{mine(a.network).includes(serial)?' · created here':''}</div><h1>{placeName(p)}</h1>
+        <div className={`state-label state-${state}`} role="status"><span className="status-dot"/>{statusLabel(p)}</div>
+        <div className="policy-payout"><span>{paid?'Payout executed':expired?'Cover ended':'Scheduled payout'}</span><strong className="num">{p.payoutHbar.toLocaleString(undefined,{maximumFractionDigits:2})}</strong><small>{p.asset??'HBAR'} · demo beneficiary</small></div>
+        {position==='liquidity'?<LPPreviewControls policy={p} portion={portion} onPortion={setPortion}/>:null}
+        <div className="demo-note"><span className="status-dot bg-pending"/><span>Funded demo<strong>{p.asset==='aUSDd'?'aUSDd is unbacked and has no cash value.':'Testnet assets have no cash value; recorded mainnet transfers are labeled separately.'}</strong></span></div>
+        <div className="trigger-chips"><span>M{p.trigger?.minMagnitude??6}+</span><span>Within {p.trigger?.radiusKm??100} km</span><span>Depth ≤{p.trigger?.maxDepthKm??70} km</span></div>
+        <dl className="facts"><div><dt>{paid?'Paid on':'Cover ends'}</dt><dd>{new Date(p.executedAt??p.lapsesAt).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'})}</dd></div><div><dt>Modeled premium</dt><dd>${p.premiumUsd.toFixed(2)} once</dd></div></dl>
+        <p className="trigger-note">{paid?'The scheduled transfer executed after the required signatures arrived.':expired?'The coverage window has ended. This alone does not prove that no qualifying event occurred.':'The network executes when the agent and two oracle keys have signed. Damage alone does not trigger a payout.'}</p>
       </div>
-    </Frame>
-  );
-
-  const pol = p!;
-  const executed = sched.status === 'ok' ? sched.data.executedAt : pol.settled ? pol.executedAt ?? 'yes' : null;
-  const lapsed = !executed && new Date(pol.lapsesAt).getTime() < Date.now();
-  const oracleSigs = sched.status === 'ok' ? Math.max(0, Math.min(3, sched.data.signatures - 1)) : 0;
-  const stateName = executed ? 'paid' : lapsed ? 'lapsed' : 'awaiting quorum';
-  const tone = executed ? 'ok' : lapsed ? 'refused' : 'pending';
-  const yours = mine().includes(String(pol.serial));
-
-  return (
-    <Frame>
-      <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-[56px] items-start">
-        <div className="flex flex-col gap-[26px]">
-          <div className="flex flex-col gap-[10px]">
-            <div className="kicker">policy #{pol.serial}{yours ? ' · yours' : ''}</div>
-            <h1 className="title" style={{ fontSize: 44 }}>{placeName(pol)}</h1>
-            <div className="flex items-center gap-[12px]">
-              <Pill state={tone as 'ok' | 'refused' | 'pending'} lg>{stateName}</Pill>
-              <span className="label">{executed ? `executed ${typeof executed === 'string' && executed !== 'yes' ? executed.slice(0, 19).replace('T', ' ') + ' UTC' : ''}` : lapsed ? `window closed ${pol.lapsesAt.slice(0, 10)}` : `${daysLeft(pol.lapsesAt)} days left · lapses ${pol.lapsesAt.slice(0, 10)}`}</span>
-            </div>
-          </div>
-
-          <p className="text-[17px] leading-[1.5] text-fg-1 max-w-[52ch]" style={{ textWrap: 'pretty' }}>
-            {executed
-              ? <>An M6+ earthquake was attested within 100 km and {usd(pol.payoutUsd, 0)} was paid to the beneficiary by the network itself.</>
-              : lapsed
-                ? <>The {daysLeft(pol.lapsesAt) ? '' : ''}window closed without a qualifying earthquake. The signed payout simply expired; nothing had to be cancelled.</>
-                : <>Until {pol.lapsesAt.slice(0, 10)}, an M6+ earthquake within 100 km pays {usd(pol.payoutUsd, 0)} to the beneficiary automatically. The payout is already signed and on the ledger, waiting for two of three oracle keys.</>}
-          </p>
-
-          <div className="grid grid-cols-2 gap-x-[24px] gap-y-[18px]">
-            <Big label="premium paid" value={usd(pol.premiumUsd)} size={30} />
-            <Big label="cover" value={usd(pol.payoutUsd, 0)} size={30} tone="ok" />
-            <Big label="settles as" value={agent.payoutLabel(pol)} size={22} tone="dim" />
-            <Big label="trigger" value="M6+ · 100 km" size={22} tone="dim" />
-          </div>
-
-          <div className="flex flex-col">
-            <Row k="beneficiary"><Id kind="account" id={pol.buyerId} size="sm" network={net} /></Row>
-            <Row k="payout · pre-signed schedule"><Id kind="schedule" id={pol.scheduleId} size="sm" network={net} /></Row>
-            <Row k="premium · atomic transfer"><Id kind="transaction" id={pol.saleTxId} size="sm" network={net} /></Row>
-            <Row k="terms · on HCS"><Id kind="topic" id={pol.termsPointer} href={hsPointer(pol.termsPointer, net)} size="sm" network={net} /></Row>
-            <Row k="ledger now">
-              <span className="label num whitespace-nowrap">{sched.status === 'ok' ? `${sched.data.signatures} of 3 signatures · ${sched.data.executedAt ? 'executed' : 'not executed'}` : sched.status === 'loading' ? 'checking…' : 'mirror node unavailable'}</span>
-            </Row>
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center gap-[10px]">
-          <svg viewBox="0 0 520 400" width="100%" style={{ maxWidth: 520 }}>
-            <Lock
-              cx={260} cy={190} r={120}
-              agent oracles={[oracleSigs >= 1, oracleSigs >= 2, oracleSigs >= 3]} threshold={2}
-              names={['SGC', 'USGS ComCat', 'EMSC']}
-              state={executed ? 'ok' : lapsed ? 'lapsed' : 'pending'}
-              centre={
-                <g>
-                  <text x={260} y={184} textAnchor="middle" className="num" fill={executed ? C.ok : C.fg0} fontSize={30}>{agent.payoutLabel(pol)}</text>
-                  <text x={260} y={210} textAnchor="middle" className="label" fill={C.fg2} fontSize={13}>{executed ? 'paid' : lapsed ? 'never claimed' : 'held for you'}</text>
-                </g>
-              }
-            />
-          </svg>
-          <div className="label">nothing watches this · no contract, no keeper, no server</div>
-        </div>
+      <div className="policy-visual"><PolicyPosition policy={p} kind={position} onKind={setPosition} portion={portion} onPortion={setPortion}/>
+        <details className="nft-settlement-details"><summary>Settlement confirmations <span>{ledger?.available?`${signed}/2`:'—'}</span></summary>
+        <svg viewBox="0 0 520 420" width="100%" role="img" aria-label={ledger?.available?`${ledger.agentSigned?'Agent signed':'Agent signature missing'}; ${signed} of 2 required oracle confirmations`:'Signature status unavailable'}>
+          {ledger?.available?<Lock cx={260} cy={180} r={112} agent={ledger?.agentSigned??false} oracles={oracles.length?oracles.map(o=>o.signed):[false,false,false]} names={[]} state={paid?'ok':expired?'lapsed':'pending'} centre={<g><text x={260} y={177} textAnchor="middle" fill={paid?C.ok:C.fg0} fontSize={36} className="num">{paid?'✓':ledger?.available?`${signed}/2`:'—'}</text><text x={260} y={204} textAnchor="middle" fill={C.fg1} fontSize={14}>{paid?'paid':'confirmations'}</text></g>}/>:<g><circle cx={260} cy={180} r={100} fill="none" stroke={C.line}/><text x={260} y={180} textAnchor="middle" fill={C.fg1} fontSize={16}>Unable to verify</text></g>}
+        </svg>
+        <div className="oracle-key-list">{oracles.length?oracles.map(o=><div key={o.name}><span className={o.signed?'text-ok':'muted'}>{o.signed?'✓':'○'}</span><span>{o.name}</span></div>):<span className="muted">Signer identities unavailable</span>}</div>
+        <ol className="settlement-steps" aria-label="Settlement progress"><li className={ledger?.agentSigned?'done':''}>Committed</li><li className={signed>=2?'done':''}>2 confirmations</li><li className={paid?'done':''}>Paid</li></ol>
+        <div className="ledger-freshness" role="status">{a.policiesError??(ledger?.available?`Ledger checked ${new Date(ledger.checkedAt).toLocaleTimeString()}`:'Ledger status unavailable')} <button className="text-button" onClick={()=>void refresh()}>Refresh ↻</button></div>
+        {!paid&&!expired?<div className="monitor-note"><strong>{p.monitoring?.mode==='automatic'?'Oracle checks enabled':'Event checks: manual demo'}</strong><span>{p.monitoring?.message??'The payout waits on the ledger. Oracle services must be asked to verify an event.'}</span></div>:null}
+        </details>
       </div>
-
-      <div className="mt-[40px] border-t border-line pt-[22px]">
-        <button type="button" className="flex items-center gap-[14px] text-left" onClick={() => setProof((v) => !v)}>
-          <span className="num text-fg-2">{proof ? '−' : '+'}</span>
-          <span className="text-[19px] text-fg-0">Can the oracles steal this?</span>
-          <span className="label">no — proved with two real schedules on Hedera mainnet</span>
-        </button>
-        {proof ? <div className="mt-[22px]"><OracleProof /></div> : null}
-      </div>
-    </Frame>
-  );
-}
-
-function Row({ k, children }: { k: string; children: React.ReactNode }) {
-  return (
-    <div className="flex items-baseline justify-between gap-[16px] py-[8px] border-b border-line last:border-b-0">
-      <span className="label">{k}</span>
-      <span className="text-right">{children}</span>
     </div>
-  );
-}
-
-function Frame({ children }: { children: React.ReactNode }) {
-  return <div className="page"><div className="page-inner">{children}</div></div>;
+    <details className="proof-details"><summary>View on Hedera <span>↗</span></summary><dl className="facts"><div><dt>Demo beneficiary</dt><dd><Id kind="account" id={p.buyerId} network={a.network}/></dd></div><div><dt>Scheduled payout</dt><dd><Id kind="schedule" id={p.scheduleId} network={a.network}/></dd></div><div><dt>Premium transfer</dt><dd><Id kind="transaction" id={p.saleTxId} network={a.network}/></dd></div><div><dt>Recorded terms</dt><dd><Id kind="topic" id={p.termsPointer} href={hsPointer(p.termsPointer,a.network)} network={a.network}/></dd></div></dl></details>
+    <details className="proof-details"><summary>How funds are protected <span>+</span></summary><p>The oracle quorum cannot spend without the agent's signature. This recorded mainnet experiment proves that specific key restriction.</p><OracleProof/></details>
+  </div></div>;
 }
