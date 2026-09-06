@@ -72,3 +72,20 @@ A policy-binding rejection returns 422 before charging for an attestation.
 The services are request-driven. No background earthquake monitor is included.
 Automatic execution occurs only after the required signatures reach Hedera.
 The HTTP listeners default to localhost for the nginx proxy.
+
+## Quorum website
+
+`quorum.aivylabs.xyz` uses `/opt/aivy-quorum/ui/dist` and a dedicated
+`aivy-quorum` PM2 process on `127.0.0.1:8792`. Port 8791 belongs to a separate
+checkout service on this VPS. Use `quorum.config.cjs` and `nginx-quorum.conf`.
+Build the UI locally, then deploy the committed source plus `ui/dist`; record
+its Git SHA in `REVISION` on the server. Keep `.env`, `.artifacts`, and dependencies
+out of Git. The server needs only the testnet operator environment, a public
+`registry-testnet.json` with private keys removed, and the current policy book.
+Never replace an existing VPS policy book during a routine code deployment.
+
+The website hostname needs an A record to the VPS before certbot can issue TLS.
+Verify `/api/health`, `/api/pool`, `/api/policies`, SPA deep links, and hashed
+assets after deployment. Preserve the previous source and UI as a rollback.
+The local and VPS issuer must not write concurrently against separate copies
+of the same pool's book; use the VPS as the single issuer after migration.
