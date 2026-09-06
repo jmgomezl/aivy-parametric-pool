@@ -11,7 +11,7 @@ import { onLink } from '../lib/router';
 import { mine, useAgent } from '../lib/store';
 import { OracleProof } from './OracleProof';
 
-const usd = (n: number, d = 2) => `$${n.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d })}`;
+const usd = (n: number | undefined, d = 2) => (typeof n === 'number' && Number.isFinite(n) ? `$${n.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d })}` : '—');
 const daysLeft = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000));
 
 export function PolicyPage({ serial }: { serial: string }) {
@@ -68,6 +68,14 @@ export function PolicyPage({ serial }: { serial: string }) {
             </div>
           </div>
 
+          <p className="text-[17px] leading-[1.5] text-fg-1 max-w-[52ch]" style={{ textWrap: 'pretty' }}>
+            {executed
+              ? <>An M6+ earthquake was attested within 100 km and {usd(pol.payoutUsd, 0)} was paid to the beneficiary by the network itself.</>
+              : lapsed
+                ? <>The {daysLeft(pol.lapsesAt) ? '' : ''}window closed without a qualifying earthquake. The signed payout simply expired; nothing had to be cancelled.</>
+                : <>Until {pol.lapsesAt.slice(0, 10)}, an M6+ earthquake within 100 km pays {usd(pol.payoutUsd, 0)} to the beneficiary automatically. The payout is already signed and on the ledger, waiting for two of three oracle keys.</>}
+          </p>
+
           <div className="grid grid-cols-2 gap-x-[24px] gap-y-[18px]">
             <Big label="premium paid" value={usd(pol.premiumUsd)} size={30} />
             <Big label="cover" value={usd(pol.payoutUsd, 0)} size={30} tone="ok" />
@@ -80,8 +88,8 @@ export function PolicyPage({ serial }: { serial: string }) {
             <Row k="payout · pre-signed schedule"><Id kind="schedule" id={pol.scheduleId} size="sm" network={net} /></Row>
             <Row k="premium · atomic transfer"><Id kind="transaction" id={pol.saleTxId} size="sm" network={net} /></Row>
             <Row k="terms · on HCS"><Id kind="topic" id={pol.termsPointer} href={hsPointer(pol.termsPointer, net)} size="sm" network={net} /></Row>
-            <Row k="mirror node">
-              <span className="label num">{sched.status === 'ok' ? `${sched.data.signatures} signatures · executed ${sched.data.executedAt ? 'yes' : 'no'}` : sched.status === 'loading' ? 'checking…' : 'unavailable'}</span>
+            <Row k="ledger now">
+              <span className="label num whitespace-nowrap">{sched.status === 'ok' ? `${sched.data.signatures} of 3 signatures · ${sched.data.executedAt ? 'executed' : 'not executed'}` : sched.status === 'loading' ? 'checking…' : 'mirror node unavailable'}</span>
             </Row>
           </div>
         </div>
@@ -101,7 +109,7 @@ export function PolicyPage({ serial }: { serial: string }) {
               }
             />
           </svg>
-          <div className="label num">watchers: none · no contract · no keeper</div>
+          <div className="label">nothing watches this · no contract, no keeper, no server</div>
         </div>
       </div>
 
@@ -109,7 +117,7 @@ export function PolicyPage({ serial }: { serial: string }) {
         <button type="button" className="flex items-center gap-[14px] text-left" onClick={() => setProof((v) => !v)}>
           <span className="num text-fg-2">{proof ? '−' : '+'}</span>
           <span className="text-[19px] text-fg-0">Can the oracles steal this?</span>
-          <span className="label">two real schedules, Hedera mainnet</span>
+          <span className="label">no — proved with two real schedules on Hedera mainnet</span>
         </button>
         {proof ? <div className="mt-[22px]"><OracleProof /></div> : null}
       </div>

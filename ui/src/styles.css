@@ -519,3 +519,59 @@ input[type='range'].slider.slider-accent::-webkit-slider-thumb {
   margin: 0 auto;
   padding: 48px 40px 80px;
 }
+
+/* ------------------------------------------------------------ flow steps */
+.steps {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.step-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-family: var(--mono);
+  color: var(--fg-3);
+}
+.step-dot .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--fg-3);
+  transition:
+    background-color var(--t-med) var(--ease),
+    border-color var(--t-med) var(--ease);
+}
+.step-done { color: var(--fg-2); }
+.step-done .dot { background: var(--ok); border-color: var(--ok); }
+.step-now { color: var(--fg-0); }
+.step-now .dot { border-color: var(--fg-0); background: var(--fg-0); }
+.step-refused { color: var(--refused); }
+.step-refused .dot { border-color: var(--refused); background: var(--refused); }
+
+/* ---------------------------------------------------------------- welcome */
+.welcome-veil {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(10, 11, 13, 0.55);
+  animation: enter var(--t-med) var(--ease) both;
+}
+.welcome {
+  width: min(680px, calc(100% - 64px));
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 34px 36px;
+  border-radius: 16px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-1);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+}

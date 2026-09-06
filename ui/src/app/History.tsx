@@ -3,8 +3,13 @@ import { C } from '../components/viz';
 import { MODEL, priceHistory, type PriceOpts, type Priced } from '../lib/hazard';
 
 /** What the same cover would have cost at the start of each year, on the frozen record. */
-export function History({ nearby, opts, markYear, width = 380 }: { nearby: Priced['nearby']; opts: PriceOpts; markYear: number; width?: number }) {
-  const series = useMemo(() => priceHistory(nearby, opts), [nearby, opts]);
+export function History({ nearby, opts, markYear, width = 380, normalize = false }: { nearby: Priced['nearby']; opts: PriceOpts; markYear: number; width?: number; normalize?: boolean }) {
+  const raw = useMemo(() => priceHistory(nearby, opts), [nearby, opts]);
+  const series = useMemo(() => {
+    if (!normalize) return raw;
+    const last = raw.at(-1)?.premiumHbar || 1;
+    return raw.map((s) => ({ ...s, premiumHbar: (s.premiumHbar / last) * 100 }));
+  }, [raw, normalize]);
   const w = width, h = 96, pad = 4;
   const max = Math.max(1e-9, ...series.map((s) => s.premiumHbar));
   const y0 = series[0].year, yN = series.at(-1)!.year;

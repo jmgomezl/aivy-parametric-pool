@@ -36,7 +36,7 @@ function placeCapitals(view: View): (Capital & { x: number; y: number })[] {
   return placed;
 }
 
-export function AtlasMap({ pin, onPin, onState, markers = [], onMarker, places = PLACES, hint }: {
+export function AtlasMap({ pin, onPin, onState, markers = [], onMarker, places = PLACES, hint, preview }: {
   pin: Pin | null;
   onPin: (p: Pin) => void;
   onState?: (s: MapState) => void;
@@ -44,6 +44,8 @@ export function AtlasMap({ pin, onPin, onState, markers = [], onMarker, places =
   onMarker?: (id: string) => void;
   places?: Place[];
   hint?: string;
+  /** what the cursor would buy, shown beside it */
+  preview?: (lat: number, lon: number) => { text: string; tone: 'ok' | 'dim' } | null;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [view, setView] = useState<View>(HOME);
@@ -112,8 +114,8 @@ export function AtlasMap({ pin, onPin, onState, markers = [], onMarker, places =
         <input type="range" className="slider slider-accent flex-1 max-w-[520px]" min={FIRST_YEAR} max={LAST_YEAR} step={1} value={year} onChange={(e) => { setPlaying(false); setYear(Number(e.target.value)); }} onKeyDown={(e) => e.stopPropagation()} />
         <span className="label">{!live ? `the record as of ${year}` : ''}{view.k > 1.02 ? `${!live ? ' · ' : ''}zoom ×${view.k.toFixed(1)}` : ''}</span>
         {view.k > 1.02 ? <button type="button" className="chip" onClick={(e) => { setView(HOME); e.currentTarget.blur(); }}>reset</button> : null}
-        <span className="ml-auto label">{hint}</span>
       </div>
+      {hint ? <div className="absolute left-1/2 top-[64px] -translate-x-1/2 label pointer-events-none">{hint}</div> : null}
 
       {/* map */}
       <div className="absolute inset-x-0 top-[52px] bottom-[52px] grid place-items-center">
@@ -164,11 +166,15 @@ export function AtlasMap({ pin, onPin, onState, markers = [], onMarker, places =
                 <ellipse cx={f.x} cy={f.y} rx={kmToPxX(MODEL.triggerRadiusKm, focus.lat, view)} ry={kmToPxY(MODEL.triggerRadiusKm, view)} fill="none" stroke={C.fg0} strokeWidth={1.2} />
                 <line x1={f.x - 14} x2={f.x + 14} y1={f.y} y2={f.y} stroke={C.fg0} strokeWidth={1} />
                 <line x1={f.x} x2={f.x} y1={f.y - 14} y2={f.y + 14} stroke={C.fg0} strokeWidth={1} />
-                {hover ? (
-                  <text x={f.x + 18} y={f.y + 26} className="label" fill={C.fg1} fontSize={12} style={{ paintOrder: 'stroke', stroke: 'rgba(10,11,13,0.85)', strokeWidth: 3 }}>
-                    {nearby.length} M{minMag}+ within 300 km
-                  </text>
-                ) : null}
+                {hover ? (() => {
+                  const pv = preview?.(hover.lat, hover.lon);
+                  return (
+                    <g>
+                      {pv ? <text x={f.x + 18} y={f.y + 24} className="num" fill={pv.tone === 'ok' ? C.ok : C.fg2} fontSize={14} style={{ paintOrder: 'stroke', stroke: 'rgba(10,11,13,0.9)', strokeWidth: 4 }}>{pv.text}</text> : null}
+                      <text x={f.x + 18} y={f.y + (pv ? 42 : 24)} className="label" fill={C.fg2} fontSize={12} style={{ paintOrder: 'stroke', stroke: 'rgba(10,11,13,0.9)', strokeWidth: 3 }}>{nearby.length} M{minMag}+ within 300 km · click to quote</text>
+                    </g>
+                  );
+                })() : null}
               </>
             ) : null}
             {hover && p ? <circle cx={p.x} cy={p.y} r={4} fill={C.ok} /> : null}

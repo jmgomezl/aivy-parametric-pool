@@ -3,14 +3,13 @@ import { Id } from '../components/ui';
 import { onLink, type Route } from '../lib/router';
 import { useAgent } from '../lib/store';
 
-const fmt = (n: number) => n.toLocaleString(undefined, { maximumFractionDigits: n >= 1000 ? 0 : 2 });
+const fmt = (n: number | undefined) => (typeof n === 'number' && Number.isFinite(n) ? n.toLocaleString(undefined, { maximumFractionDigits: n >= 1000 ? 0 : 2 }) : '—');
 
 export function Chrome({ route }: { route: Route }) {
   const a = useAgent();
   const p = a.pool;
-  const sym = p?.asset.symbol ?? '';
   const nav = [
-    { href: '/', label: 'Atlas', on: route.name === 'home' },
+    { href: '/', label: 'Map', on: route.name === 'home' },
     { href: '/policies', label: 'Policies', on: route.name === 'policies' || route.name === 'policy' },
     { href: '/story', label: 'Story', on: false },
   ];
@@ -25,20 +24,24 @@ export function Chrome({ route }: { route: Route }) {
         </nav>
       </div>
 
-      <div className="flex items-center gap-[26px] text-[14px]">
+      <div className="flex items-center gap-[22px] text-[14px]">
         {p ? (
-          <div className="flex items-baseline gap-[22px]">
-            <Vital label="capital" value={`${fmt(p.capital)} ${sym}`} />
-            <Vital label="committed" value={`${fmt(p.committed)} ${sym}`} />
-            <Vital label="headroom" value={`${fmt(p.headroom)} ${sym}`} tone={p.headroom > 0 ? 'ok' : 'refused'} />
-            <Vital label="live policies" value={String(p.livePolicies)} />
-          </div>
+          <span className="flex items-baseline gap-[16px]" title="what the pool holds, what it has promised, and what it can still promise">
+            <span className="label">pool</span>
+            <Vital label="holds" value={`${fmt(p.capital)} ${p.asset?.symbol ?? ''}`} />
+            <Vital label="promised" value={fmt(p.committed)} />
+            <Vital label="can still promise" value={fmt(p.headroom)} tone={(p.headroom ?? 0) > 0 ? 'ok' : 'refused'} />
+            <Vital label="live" value={String(p.livePolicies ?? '—')} />
+          </span>
         ) : null}
         <span className="flex items-center gap-[8px] text-fg-2">
           <span className={`inline-block h-[7px] w-[7px] rounded-full ${!a.checked ? 'bg-fg-3' : a.online ? 'bg-ok' : 'bg-pending'}`} />
-          {!a.checked ? 'agent' : a.online ? <>agent · Hedera {a.network}</> : <span className="text-pending">agent offline · frozen catalogue</span>}
+          {!a.checked ? 'agent' : a.online ? <>agent · Hedera {a.network}</> : <span className="text-pending">agent offline · estimates only</span>}
         </span>
-        {p ? <span className="text-fg-2">pool <Id kind="account" id={p.poolAccountId} size="sm" network={p.network} /></span> : null}
+        {p ? <Id kind="account" id={p.poolAccountId} size="sm" network={p.network} /> : null}
+        {route.name === 'home' ? (
+          <button type="button" className="icon-btn" title="what is this?" onClick={() => window.dispatchEvent(new Event('aivy:help'))}><span className="mono text-[13px]">?</span></button>
+        ) : null}
       </div>
     </header>
   );
@@ -46,7 +49,7 @@ export function Chrome({ route }: { route: Route }) {
 
 function Vital({ label, value, tone }: { label: string; value: string; tone?: 'ok' | 'refused' }) {
   return (
-    <span className="flex items-baseline gap-[8px]">
+    <span className="flex items-baseline gap-[6px]">
       <span className="label">{label}</span>
       <span className={`num text-[15px] ${tone === 'ok' ? 'text-ok' : tone === 'refused' ? 'text-refused' : 'text-fg-0'}`}>{value}</span>
     </span>

@@ -8,7 +8,7 @@ import { placeName } from '../lib/hazard';
 import { onLink, policyPath } from '../lib/router';
 import { mine, useAgent } from '../lib/store';
 
-const usd = (n: number, d = 2) => `$${n.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d })}`;
+const usd = (n: number | undefined, d = 2) => (typeof n === 'number' && Number.isFinite(n) ? `$${n.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d })}` : '—');
 const daysLeft = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000));
 
 export function PoliciesPage() {
@@ -28,7 +28,7 @@ export function PoliciesPage() {
             <div className="kicker">policies · Hedera {a.network}</div>
             <h1 className="title" style={{ fontSize: 44 }}>What the pool has promised.</h1>
           </div>
-          {a.pool ? <div className="label num">{a.pool.livePolicies} live · {a.pool.committed.toLocaleString(undefined, { maximumFractionDigits: 0 })} {a.pool.asset.symbol} committed</div> : null}
+          <a href="/" onClick={onLink} className="buy" style={{ width: 'auto', textDecoration: 'none' }}><span>Protect a place</span><span className="num">→</span></a>
         </div>
 
         {!a.checked ? <div className="label mt-[32px]">reaching the agent…</div>

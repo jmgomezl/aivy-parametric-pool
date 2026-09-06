@@ -22,7 +22,11 @@ export async function refresh() {
     const h = await agent.health();
     let pool: agent.Pool | null = state.pool;
     let poolAt = state.poolAt;
-    try { pool = await agent.pool(); poolAt = new Date().toISOString(); } catch { /* keep the last reading */ }
+    try {
+      const next = await agent.pool();
+      // a 5xx mid-restart comes back as JSON too; only a real reading replaces the last one
+      if (next && typeof next.capital === 'number') { pool = next; poolAt = new Date().toISOString(); }
+    } catch { /* keep the last reading */ }
     state = { checked: true, online: Boolean(h.ok), network: h.network, writesAllowed: h.writesAllowed, pool, poolAt };
   } catch {
     state = { ...state, checked: true, online: false };
