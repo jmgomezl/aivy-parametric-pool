@@ -102,3 +102,29 @@ inputs. Build and 32 tests pass, including exact units, quote caching/coalescing
 expiry, bounds, sanitization, malformed results and API request limits. Public
 snapshot evidence is in docs/evidence/uniswap-quotes.json. No approval, swap,
 Hedera transaction or wallet signature was submitted for this integration.
+
+## Technical agent review and hardening
+
+Added durable pre-ledger attempt budgets, seeded from known policies/reservations,
+with strict configuration validation and hashed IP identifiers. Fixed proxy
+identity handling, bounded JSON parsing, exact issuance field validation and
+sanitized public errors. Oracle query specs are bounded, and duplicate catalogue
+votes do not count twice. The x402 client requires explicit payment authorization
+and does not retry ambiguous payments. Registry files are written privately.
+
+The policy's optional Agent guardrails & proof section reads `/api/guardrails`;
+`docs/AGENT-SECURITY.md` documents the deterministic execution boundary, tests,
+shared-host hot-key limitation and requirements for production custody.
+
+Validation: 41 tests pass locally and in the isolated VPS runtime, including
+signing/decoding cases after patched protobuf, WebSocket and gRPC dependencies.
+Production dependency installation (123 packages, development and unused peers
+omitted) reports zero known vulnerabilities. Quorum's four processes run on an
+isolated Node 22.23.2 interpreter; other applications were untouched.
+
+Live checks confirmed HTTP 400/413 refusals, three unpaid oracle HTTP 402
+challenges, successful Uniswap quoting and an oversized cover refusal before any
+reservation/write. The restored rolling budget remains $19,651.86 used; it was
+not reset. Evidence: `docs/evidence/agent-guardrails.json`. The new disclosure fits
+320px without horizontal overflow. No new policy or payment was made by this
+security review. This is not an independent security audit or certification.

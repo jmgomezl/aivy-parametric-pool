@@ -73,3 +73,18 @@ API behavior follows the [Uniswap integration guide](https://developers.uniswap.
 [Recorded API evidence](evidence/uniswap-quotes.json) preserves actual Base and
 Unichain quote IDs and routes from the verification run. These are expired price
 snapshots, not transaction receipts; use the UI to request current prices.
+
+## Technical judge: agent protection
+
+Open any policy → **Agent guardrails & proof**. Explain that the public agent is a
+deterministic workflow; an LLM does not authorize payouts. Show runtime budgets,
+then the recorded agent-plus-quorum control and oracle-only blocked transfer.
+[Security architecture](AGENT-SECURITY.md) identifies the tested controls and the
+shared-host hot-key boundary that remains before production.
+
+Creation budgets now persist across restarts and count interrupted attempts.
+Before recording, read `/api/guardrails`; choose a smaller cover if the rolling
+budget is low, or demonstrate an existing NFT. Do not reset the journal merely
+to make a recording pass. On September 6 at 07:07 UTC, approximately $348 remained;
+Medellín at a $2 budget or Tokyo at $4 fit that snapshot. Limits may change as
+visitors create policies and earlier attempts age out of the rolling window.

@@ -1,0 +1,33 @@
+{
+  "checkedAt": "2026-09-06T07:07:40.021Z",
+  "runtime": {
+    "network": "testnet",
+    "execution": "deterministic",
+    "publicWrites": true,
+    "limits": {
+      "perIpPerHour": 3,
+      "policiesPerDay": 100,
+      "usdPerDay": 20000
+    },
+    "budget": {
+      "policies": 17,
+      "usd": 19651.86166467901,
+      "limits": {
+        "policies": 100,
+        "usd": 20000
+      }
+    },
+    "checkedAt": "2026-09-06T07:07:39.991Z",
+    "custody": "Shared demo host; separate keys are not independent operators.",
+    "authorization": "Agent AND 2 of 3 oracle keys",
+    "signing": "Fixed scheduled transfer; oracle verifies recorded terms and transfer bytes."
+  },
+  "quotaRefusal": {
+    "requestedCover": 68999.45189736951,
+    "reason": "daily_cover_cap",
+    "message": "The rolling 24-hour demo budget has $348.14 of cover remaining. Choose a smaller payout or view an existing policy.",
+    "requestLookupStatus": 404,
+    "budgetUnchanged": true
+  },
+  "note": "Read-only and guaranteed refusal checks. No new policy, oracle payment or mainnet transaction was submitted."
+}
