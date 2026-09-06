@@ -61,6 +61,12 @@ const termsFor = (path) => requirements({
   feePayer: FEE_PAYER_ID,
 });
 
+// A k-of-n quorum means the last oracles to answer are, by design, too late:
+// the payout executed the moment the k-th signature landed. That is the system
+// working, not a failure, and it must not read as an error — the oracle still
+// did its job, still got paid, and still put its verdict on record.
+const ALREADY_SETTLED = /SCHEDULE_ALREADY_EXECUTED|INVALID_SCHEDULE_ID|SCHEDULE_ALREADY_DELETED/i;
+
 async function signSchedule(scheduleId) {
   const client = (NETWORK === 'mainnet' ? Client.forMainnet() : Client.forTestnet())
     .setOperator(AccountId.fromString(ORACLE_ID), parseKey(ORACLE_KEY));
@@ -71,6 +77,12 @@ async function signSchedule(scheduleId) {
     const res = await tx.execute(client);
     await res.getReceipt(client);
     return { signed: true, transactionId: res.transactionId.toString() };
+  } catch (err) {
+    const detail = String(err?.message ?? err);
+    if (ALREADY_SETTLED.test(detail)) {
+      return { signed: false, alreadySettled: true, reason: 'The quorum was reached before this signature arrived; the payout has already executed.' };
+    }
+    return { signed: false, error: detail.slice(0, 200) };
   } finally { client.close(); }
 }
 

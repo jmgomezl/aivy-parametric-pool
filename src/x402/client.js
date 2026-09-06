@@ -58,7 +58,12 @@ export async function buildPayment({ requirements, payerId, payerKey, network = 
  * Fetch a resource, paying if it asks. The whole point of x402: the caller writes
  * one line and the payment happens inside it.
  */
-export async function fetchPaid(url, { payerId, payerKey, network = 'mainnet', init = {} } = {}) {
+// A payment carries a transaction id minted from the clock, so two built in the
+// same instant can collide, and a node can be busy. Those are worth rebuilding
+// the payment for; being told the amount is wrong is not.
+const RETRYABLE = /DUPLICATE_TRANSACTION|TRANSACTION_EXPIRED|BUSY|PLATFORM_NOT_ACTIVE|transaction_failed/i;
+
+export async function fetchPaid(url, { payerId, payerKey, network = 'mainnet', init = {}, attempts = 3 } = {}) {
   const first = await fetch(url, init);
   if (first.status !== 402) return { response: first, paid: false };
 
@@ -66,10 +71,23 @@ export async function fetchPaid(url, { payerId, payerKey, network = 'mainnet', i
   const requirements = (body.accepts ?? [])[0];
   if (!requirements) throw new Error('402 with no payment requirements to satisfy.');
 
-  const { header } = await buildPayment({ requirements, payerId, payerKey, network });
-  const response = await fetch(url, {
-    ...init,
-    headers: { ...(init.headers ?? {}), 'X-PAYMENT': header },
-  });
-  return { response, paid: true, requirements };
+  let last;
+  for (let attempt = 0; attempt < attempts; attempt++) {
+    // A fresh payment each time: the transaction id is what collided.
+    const { header } = await buildPayment({ requirements, payerId, payerKey, network });
+    const response = await fetch(url, {
+      ...init,
+      headers: { ...(init.headers ?? {}), 'X-PAYMENT': header },
+    });
+    if (response.status !== 402) return { response, paid: true, requirements, attempts: attempt + 1 };
+
+    // Read the refusal without consuming the body we may still want to return.
+    const clone = response.clone();
+    const refusal = await clone.json().catch(() => ({}));
+    last = response;
+    const why = `${refusal.error ?? ''} ${refusal.detail ?? ''}`;
+    if (!RETRYABLE.test(why)) return { response, paid: false, requirements, refusal };
+    await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+  }
+  return { response: last, paid: false, requirements, exhausted: true };
 }
