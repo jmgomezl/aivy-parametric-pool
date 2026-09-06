@@ -959,3 +959,27 @@ small { font-size:12px; color:var(--fg-2); }
 .premium-history-interactive:focus-visible {outline:1px solid var(--ok);outline-offset:4px;}
 .premium-history>small {display:block;}
 .premium-history>small+small {margin-top:4px;}
+/* LP essentials: contribution, premium income, and visible capital risk. */
+.lp-preview-heading {display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px;}
+.lp-preview-heading h3 {margin:0;font-size:18px;}
+.lp-preview-heading>span {font-size:10px;border:1px solid #d7df8944;color:#d7df89;border-radius:20px;padding:5px 9px;}
+.lp-preview-controls .lp-income {border-top:1px solid var(--line);padding-top:20px;margin-top:18px;}
+.lp-estimate-note {font-size:11px;color:var(--fg-2);margin-top:12px;}
+.lp-scenario-heading {display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;border-top:1px solid var(--line);padding-top:20px;margin-top:20px;font-size:12px;}
+.lp-scenario-heading small {font-size:10px;color:#dc9b88;}
+.lp-scenarios {display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:16px;}
+.lp-scenarios>div {display:flex;flex-direction:column;gap:9px;min-width:0;}
+.lp-scenarios>div>span {font-size:11px;color:var(--fg-1);}
+.lp-scenarios strong {font-size:19px;font-weight:450;overflow-wrap:anywhere;}
+.lp-scenarios strong small {font-size:10px;color:var(--fg-2);}
+.lp-scenarios>div>small {font-size:10px;color:var(--fg-2);line-height:1.5;}
+.lp-scenario-bar {display:flex;height:7px;border-radius:4px;background:#ffffff0a;overflow:hidden;}
+.lp-scenario-loss .lp-scenario-bar {background:repeating-linear-gradient(135deg,#dc9b8814 0 3px,transparent 3px 6px);}
+.lp-scenario-bar i {background:var(--ok);}.lp-scenario-bar b {background:#d7df89;}
+.lp-preview-controls .lp-assumptions {margin-top:14px;}
+.lp-preview-controls .lp-assumptions+.lp-assumptions {margin-top:0;}
+.lp-preview-controls .lp-assumptions summary {justify-content:space-between;border-bottom:1px solid var(--line);}
+.lp-preview-disclosure {font-size:10px;color:var(--fg-2);line-height:1.6;margin-top:14px;}
+.lp-policy-terms {border-top:1px solid var(--line);margin-top:20px;font-size:12px;}
+.lp-policy-terms>summary {display:flex;justify-content:space-between;cursor:pointer;min-height:48px;align-items:center;color:var(--fg-2);}
+@media(max-width:400px){.lp-scenarios {gap:12px;}.lp-scenarios strong {font-size:17px;}.lp-scenarios strong small {display:block;margin-top:5px;}.lp-preview-heading h3 {font-size:17px;}}

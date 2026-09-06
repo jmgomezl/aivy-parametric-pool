@@ -21,6 +21,10 @@ export function PolicyPage({serial}:{serial:string}){
   const state=policyState(p), paid=state==='paid', expired=state==='expired', ledger=p.ledger;
   const oracles=ledger?.oracles??[];
   const signed=oracles.filter(o=>o.signed).length;
+  const policyTerms=<>        <div className="demo-note"><span className="status-dot bg-pending"/><span>Funded demo<strong>{p.asset==='aUSDd'?'aUSDd is unbacked and has no cash value.':'Testnet assets have no cash value; recorded mainnet transfers are labeled separately.'}</strong></span></div>
+        <div className="trigger-chips"><span>M{p.trigger?.minMagnitude??6}+</span><span>Within {p.trigger?.radiusKm??100} km</span><span>Depth ≤{p.trigger?.maxDepthKm??70} km</span></div>
+        <dl className="facts"><div><dt>{paid?'Paid on':'Cover ends'}</dt><dd>{new Date(p.executedAt??p.lapsesAt).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'})}</dd></div><div><dt>Modeled premium</dt><dd>${p.premiumUsd.toFixed(2)} once</dd></div></dl>
+        <p className="trigger-note">{paid?'The scheduled transfer executed after the required signatures arrived.':expired?'The coverage window has ended. This alone does not prove that no qualifying event occurred.':'The network executes when the agent and two oracle keys have signed. Damage alone does not trigger a payout.'}</p></>;
   return <div className="page"><div className="page-inner policy-detail">
     <a className="back-link" href={position==='liquidity'?'/policies?view=fund':'/policies'} onClick={onLink}>← {position==='liquidity'?'Funding previews':'Policies'}</a>
     <div className="policy-detail-grid">
@@ -28,10 +32,7 @@ export function PolicyPage({serial}:{serial:string}){
         <div className={`state-label state-${state}`} role="status"><span className="status-dot"/>{statusLabel(p)}</div>
         <div className="policy-payout"><span>{paid?'Payout executed':expired?'Cover ended':'Scheduled payout'}</span><strong className="num">{p.payoutHbar.toLocaleString(undefined,{maximumFractionDigits:2})}</strong><small>{p.asset??'HBAR'} · demo beneficiary</small></div>
         {position==='liquidity'?<LPPreviewControls policy={p} portion={portion} onPortion={setPortion}/>:null}
-        <div className="demo-note"><span className="status-dot bg-pending"/><span>Funded demo<strong>{p.asset==='aUSDd'?'aUSDd is unbacked and has no cash value.':'Testnet assets have no cash value; recorded mainnet transfers are labeled separately.'}</strong></span></div>
-        <div className="trigger-chips"><span>M{p.trigger?.minMagnitude??6}+</span><span>Within {p.trigger?.radiusKm??100} km</span><span>Depth ≤{p.trigger?.maxDepthKm??70} km</span></div>
-        <dl className="facts"><div><dt>{paid?'Paid on':'Cover ends'}</dt><dd>{new Date(p.executedAt??p.lapsesAt).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'})}</dd></div><div><dt>Modeled premium</dt><dd>${p.premiumUsd.toFixed(2)} once</dd></div></dl>
-        <p className="trigger-note">{paid?'The scheduled transfer executed after the required signatures arrived.':expired?'The coverage window has ended. This alone does not prove that no qualifying event occurred.':'The network executes when the agent and two oracle keys have signed. Damage alone does not trigger a payout.'}</p>
+        {position==='liquidity'?<details className="lp-policy-terms"><summary>Policy terms <span>+</span></summary>{policyTerms}</details>:policyTerms}
       </div>
       <div className="policy-visual"><PolicyPosition policy={p} kind={position} onKind={kind=>{setPosition(kind);history.replaceState(null,'',`/policy/${serial}${kind==='liquidity'?'?position=lp':''}`);}} portion={portion} onPortion={setPortion}/>
         <details className="nft-settlement-details"><summary>Settlement confirmations <span>{ledger?.available?`${signed}/2`:'—'}</span></summary>
