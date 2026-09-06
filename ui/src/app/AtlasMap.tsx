@@ -49,7 +49,7 @@ export function AtlasMap({ pin, onPin, onState, markers = [], onMarker, days = M
   const results = useMemo(() => {
     const coordinate=/^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/.exec(search);
     if(coordinate){const lat=Number(coordinate[1]),lon=Number(coordinate[2]);if(Math.abs(lat)<=90&&Math.abs(lon)<=180)return [{lat,lon,name:`${lat.toFixed(2)}, ${lon.toFixed(2)}`}];}
-    return search.trim()?cities.filter(c=>c.name.toLocaleLowerCase().includes(search.toLocaleLowerCase().trim())).slice(0,6):PLACES.slice(0,3);
+    return search.trim()?cities.filter(c=>c.name.toLocaleLowerCase().includes(search.toLocaleLowerCase().trim())).slice(0,6):PLACES.slice(1,4);
   },[search]);
   const selected = pin ? project(pin.lon, pin.lat, view) : null;
   const land = useMemo(() => landPath(view), [view]);
@@ -61,7 +61,7 @@ export function AtlasMap({ pin, onPin, onState, markers = [], onMarker, days = M
       </form>
       {searching ? <div className="search-results"><div className="eyebrow">{search ? 'Matching places' : 'Try a place'}</div>{results.map(p => <button key={p.name} onClick={() => choose(p)}><span>{p.name}</span><span aria-hidden="true">↗</span></button>)}{!results.length ? <p>No matching city. Enter latitude, longitude or choose the map.</p> : null}<button className="search-dismiss" onClick={() => setSearching(false)}>Close search</button></div> : null}
     </div>
-    {!pin && !searching ? <div className="suggested-places"><span>Try</span>{PLACES.slice(0,3).map(p=><button key={p.name} className="chip" onClick={()=>choose(p)}>{p.name.split(',')[0]} ↗</button>)}</div> : null}
+    {!pin && !searching ? <div className="suggested-places"><span>Try</span>{PLACES.slice(1,4).map(p=><button key={p.name} className="chip" onClick={()=>choose(p)}>{p.name.split(',')[0]} ↗</button>)}</div> : null}
     <div className="map-frame">
       <Heat view={view} toDay={dayOf(now)} minMag={minMag} />
       <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} className="map-svg" aria-label="Recorded earthquakes and selected coverage area. Use city search to choose a location with the keyboard."

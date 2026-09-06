@@ -77,3 +77,8 @@ centered on each policy. A local azimuthal equidistant projection preserves the
 coverage radius from the pin; the map includes a scale bar and country borders.
 These are generalized geographic outlines, not street-level maps. This changes
 the app presentation only, not the NFT's onchain metadata or coverage terms.
+
+The default Global demos gallery features real testnet policies for Mexico City,
+San Francisco (California), and Tokyo. Their public IDs and receipts are tracked
+in `src/data/global-demos.json`; the cards still read current policy and signature
+state from the API. Existing policies remain in Recent, Created here, and All policies.

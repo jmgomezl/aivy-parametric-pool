@@ -148,6 +148,8 @@ export const sourceUrl = (lat: number, lon: number, minMag = MODEL.minMagnitude)
 export interface Place { name: string; lat: number; lon: number }
 export const PLACES: Place[] = [
   { name: 'Armenia, Quindío', lat: 4.53, lon: -75.68 },
+  { name: 'Mexico City', lat: 19.4326, lon: -99.1332 },
+  { name: 'San Francisco, California', lat: 37.7749, lon: -122.4194 },
   { name: 'Tokyo', lat: 35.68, lon: 139.69 },
   { name: 'Istanbul', lat: 41.01, lon: 28.98 },
   { name: 'San Francisco', lat: 37.77, lon: -122.42 },
