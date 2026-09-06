@@ -128,3 +128,10 @@ reservation/write. The restored rolling budget remains $19,651.86 used; it was
 not reset. Evidence: `docs/evidence/agent-guardrails.json`. The new disclosure fits
 320px without horizontal overflow. No new policy or payment was made by this
 security review. This is not an independent security audit or certification.
+
+### Visual audit — September 6, 2026
+
+- Replaced the two remaining active circular signature diagrams: recorded mainnet controls and live policy settlement confirmations. Shared responsive signature gates now show the required agent key AND two oracle signatures, then the separately observed transfer outcome.
+- Preserved the distinct 1 HBAR executed / 5 HBAR blocked control records and receipt links. Unknown ledger evidence stays explicitly unverified; the diagram does not infer execution from signatures.
+- Reviewed active illustration paths across Cover, Policies, NFT/LP positions, premium history and the six-scene walkthrough. Geographic maps and current walkthrough visuals remain appropriate. Legacy rings in unrouted `beats` files are not served by the active app.
+- Verified desktop (1280px) and narrow mobile (320px) proof and live confirmations with no horizontal overflow. UI TypeScript/production build passed; existing large-bundle warning remains.

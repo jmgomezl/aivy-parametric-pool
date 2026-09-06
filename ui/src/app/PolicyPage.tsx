@@ -2,7 +2,7 @@ import { AgentGuardrails } from './AgentGuardrails';
 import { PayoutConversion } from './PayoutConversion';
 import { useEffect, useState } from 'react';
 import * as agent from '../lib/agent';
-import { C, Lock } from '../components/viz';
+import { SignatureGate } from '../components/SignatureGate';
 import { Id } from '../components/ui';
 import { placeName } from '../lib/hazard';
 import { hsPointer } from '../lib/hashscan';
@@ -42,12 +42,11 @@ export function PolicyPage({serial}:{serial:string}){
         {position==='cover'?<PayoutConversion usd={p.payoutUsd}/>:null}
       </div>
       <div className="policy-visual"><PolicyPosition policy={p} kind={position} onKind={kind=>{setPosition(kind);const query=new URLSearchParams(location.search);if(kind==='liquidity')query.set('position','lp');else query.delete('position');history.replaceState(null,'',`/policy/${serial}${query.size?'?'+query:''}`);}} portion={portion} onPortion={setPortion}/>
-        <details className="nft-settlement-details"><summary>Settlement confirmations <span>{ledger?.available?`${signed}/2`:'—'}</span></summary>
-        <svg viewBox="0 0 520 420" width="100%" role="img" aria-label={ledger?.available?`${ledger.agentSigned?'Agent signed':'Agent signature missing'}; ${signed} of 2 required oracle confirmations`:'Signature status unavailable'}>
-          {ledger?.available?<Lock cx={260} cy={180} r={112} agent={ledger?.agentSigned??false} oracles={oracles.length?oracles.map(o=>o.signed):[false,false,false]} names={[]} state={paid?'ok':expired?'lapsed':'pending'} centre={<g><text x={260} y={177} textAnchor="middle" fill={paid?C.ok:C.fg0} fontSize={36} className="num">{paid?'✓':ledger?.available?`${signed}/2`:'—'}</text><text x={260} y={204} textAnchor="middle" fill={C.fg1} fontSize={14}>{paid?'paid':'confirmations'}</text></g>}/>:<g><circle cx={260} cy={180} r={100} fill="none" stroke={C.line}/><text x={260} y={180} textAnchor="middle" fill={C.fg1} fontSize={16}>Unable to verify</text></g>}
-        </svg>
-        <div className="oracle-key-list">{oracles.length?oracles.map(o=><div key={o.name}><span className={o.signed?'text-ok':'muted'}>{o.signed?'✓':'○'}</span><span>{o.name}</span></div>):<span className="muted">Signer identities unavailable</span>}</div>
-        <ol className="settlement-steps" aria-label="Settlement progress"><li className={ledger?.agentSigned?'done':''}>Committed</li><li className={signed>=2?'done':''}>2 confirmations</li><li className={paid?'done':''}>Paid</li></ol>
+        <details className="nft-settlement-details"><summary>Settlement confirmations <span>{ledger?.available?`${signed} signed · 2 required`:'—'}</span></summary>
+        <SignatureGate agent={ledger?.available ? ledger.agentSigned ?? null : null}
+          oracles={oracles.map(o=>({name:o.name,signed:ledger?.available?o.signed:null}))}
+          outcome={!ledger?.available?'Unable to verify':paid?'Transferred':expired?'Cover ended':'Awaiting payout'}
+          reason={!ledger?.available?'Refresh to check the ledger.':paid?'Scheduled transfer executed.':expired?'Coverage window ended.':'The network waits for the required signatures.'}/>
         <div className="ledger-freshness" role="status">{a.policiesError??(ledger?.available?`Ledger checked ${new Date(ledger.checkedAt).toLocaleTimeString()}`:'Ledger status unavailable')} <button className="text-button" onClick={()=>void refresh()}>Refresh ↻</button></div>
         {!paid&&!expired?<div className="monitor-note"><strong>{p.monitoring?.mode==='automatic'?'Oracle checks enabled':'Event checks: manual demo'}</strong><span>{p.monitoring?.message??'The payout waits on the ledger. Oracle services must be asked to verify an event.'}</span></div>:null}
         </details>
