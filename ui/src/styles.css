@@ -900,7 +900,7 @@ small { font-size:12px; color:var(--fg-2); }
 
 /* Quiet entry points connect cover, funding, and verifiable settlement. */
 .journey-links {display:flex;gap:24px;flex-wrap:wrap;margin-top:20px;font-size:13px;}
-.journey-links a {min-height:44px;display:inline-flex;align-items:center;gap:16px;text-decoration:none;color:var(--fg-1);}
+.journey-links a {pointer-events:auto;min-height:44px;display:inline-flex;align-items:center;gap:16px;text-decoration:none;color:var(--fg-1);}
 .journey-links a:first-child {color:#d7df89;}
 .policy-view-tabs {margin:24px 0 12px;max-width:460px;}
 .funding-note {font-size:12px;color:var(--fg-2);margin-bottom:20px;}
