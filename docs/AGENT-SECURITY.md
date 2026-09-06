@@ -95,3 +95,17 @@ and ledger keys rather than natural-language instructions:
 [OWASP Prompt Injection](https://genai.owasp.org/llmrisk/llm01-prompt-injection/).
 The network-signature behavior is described in
 [Hedera scheduled transactions](https://docs.hedera.com/hedera/core-concepts/scheduled-transaction).
+
+### Deployed runtime
+
+Use Node 22 or newer. The VPS uses a project-specific Node 22.23.2 installation
+under `/opt/quorum-runtime`; its archive was checked against Node.js's official
+HTTPS SHA-256 manifest. Only Quorum's four PM2 processes select this interpreter.
+Other applications and the system Node installation remain untouched.
+
+The lockfile pins patched protobuf 7/8, WebSocket 8 and gRPC 1.x versions.
+The production dependency tree is installed with `--omit=dev --omit=peer` after
+explicitly declaring the modern Agent Kit needed by the settlement plugin. The
+older unused automatically installed Agent Kit peer is omitted. Audit the actual
+installed tree on every deployment; a clean advisory scan is not proof that the
+application has no vulnerabilities.
