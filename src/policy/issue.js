@@ -80,12 +80,15 @@ async function issueLocked(deps, { lat, lon, place, budgetUsd = 4, days = 30, br
 
   // The guard is an invariant, not an exception: a promise the pool cannot keep
   // must never be made, because pre-signed payouts have no queue between them.
-  const denied = deps.beforeWrite?.(quote);
+  const denied = await deps.beforeWrite?.(quote);
   if (denied) return {ok:false,...denied};
   await deps.reconcile?.();
   const committed = committedTinybar(network);
   const guard = await check(client, poolId, committed, quote.settled.payoutUnits, network);
   if (!guard.ok) return { ok: false, reason: 'exceeds_capital', message: guard.reason, guard };
+
+  const budgetDenied = await deps.beforeLedgerWrite?.(quote);
+  if (budgetDenied) return {ok:false,...budgetDenied};
 
   const lapsesAt = new Date(Date.now() + days * 86400_000).toISOString();
   reserve(network, {requestId, payoutUnits:quote.settled.payoutUnits, lapsesAt,place:place??null,lat,lon,status:'creating'});

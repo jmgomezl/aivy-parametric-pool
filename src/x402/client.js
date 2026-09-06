@@ -8,13 +8,15 @@
 // idea as this project's payout, at a much smaller scale.
 import { Client, Hbar, PrivateKey, AccountId, TokenId, TransferTransaction, TransactionId } from '@hiero-ledger/sdk';
 import { parseKey } from '../config.js';
+import { validatePaymentTerms } from './payment-policy.js';
 
 export const X402_VERSION = 2;
 
 const isHbar = (asset) => !asset || String(asset).toUpperCase() === 'HBAR';
 
 /** Build and partially sign the payment. Returns the header value to retry with. */
-export async function buildPayment({ requirements, payerId, payerKey, network = 'mainnet' }) {
+export async function buildPayment({ requirements, payerId, payerKey, network, policy }) {
+  validatePaymentTerms(requirements,{network,policy});
   const feePayer = requirements.extra?.feePayer;
   if (!feePayer) throw new Error('Payment requirements carry no facilitator feePayer.');
 
@@ -27,7 +29,7 @@ export async function buildPayment({ requirements, payerId, payerKey, network = 
   // (x402-foundation/x402, mechanisms/hedera/src/signer.ts): no node pinning and
   // no memo. Pinning a node would stop the facilitator submitting to another,
   // and anything the reference omits is something verification may reject.
-  const tx = new TransferTransaction();
+  const tx = new TransferTransaction().setMaxTransactionFee(new Hbar(1));
 
   if (!asset || isHbar(asset)) {
     tx.addHbarTransfer(from, Hbar.fromTinybars((-amount).toString())).addHbarTransfer(to, Hbar.fromTinybars(amount.toString()));
@@ -58,36 +60,21 @@ export async function buildPayment({ requirements, payerId, payerKey, network = 
  * Fetch a resource, paying if it asks. The whole point of x402: the caller writes
  * one line and the payment happens inside it.
  */
-// A payment carries a transaction id minted from the clock, so two built in the
-// same instant can collide, and a node can be busy. Those are worth rebuilding
-// the payment for; being told the amount is wrong is not.
-const RETRYABLE = /DUPLICATE_TRANSACTION|TRANSACTION_EXPIRED|BUSY|PLATFORM_NOT_ACTIVE|transaction_failed/i;
-
-export async function fetchPaid(url, { payerId, payerKey, network = 'mainnet', init = {}, attempts = 3 } = {}) {
-  const first = await fetch(url, init);
+// Sign once. A lost response may follow a successful charge; a fresh payment
+// on an ambiguous failure could double-charge the caller.
+export async function fetchPaid(url, { payerId, payerKey, network, policy, init = {} } = {}) {
+  if(url!==policy?.resource)throw new Error('Resource is not authorized by the payment policy.');
+  const first = await fetch(url, {...init,redirect:'error',signal:AbortSignal.timeout(30_000)});
   if (first.status !== 402) return { response: first, paid: false };
-
   const body = await first.json();
   const requirements = (body.accepts ?? [])[0];
-  if (!requirements) throw new Error('402 with no payment requirements to satisfy.');
-
-  let last;
-  for (let attempt = 0; attempt < attempts; attempt++) {
-    // A fresh payment each time: the transaction id is what collided.
-    const { header } = await buildPayment({ requirements, payerId, payerKey, network });
-    const response = await fetch(url, {
-      ...init,
-      headers: { ...(init.headers ?? {}), 'X-PAYMENT': header },
-    });
-    if (response.status !== 402) return { response, paid: true, requirements, attempts: attempt + 1 };
-
-    // Read the refusal without consuming the body we may still want to return.
-    const clone = response.clone();
-    const refusal = await clone.json().catch(() => ({}));
-    last = response;
-    const why = `${refusal.error ?? ''} ${refusal.detail ?? ''}`;
-    if (!RETRYABLE.test(why)) return { response, paid: false, requirements, refusal };
-    await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+  validatePaymentTerms(requirements,{network,policy});
+  const { header } = await buildPayment({ requirements, payerId, payerKey, network, policy });
+  try {
+    const response = await fetch(url, {...init,redirect:'error',signal:AbortSignal.timeout(30_000),headers:{...(init.headers??{}),'X-PAYMENT':header}});
+    const receipt=await response.clone().json().catch(()=>null);
+    return {response,paid:receipt?.payment?.success===true,requirements,paymentSubmitted:true,uncertain:receipt?.payment?.success!==true};
+  } catch {
+    throw new Error('Payment outcome is uncertain. Check the receipt before any new payment; no automatic retry was made.');
   }
-  return { response: last, paid: false, requirements, exhausted: true };
 }

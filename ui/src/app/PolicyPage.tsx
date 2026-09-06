@@ -1,3 +1,4 @@
+import { AgentGuardrails } from './AgentGuardrails';
 import { PayoutConversion } from './PayoutConversion';
 import { useEffect, useState } from 'react';
 import * as agent from '../lib/agent';
@@ -54,6 +55,6 @@ export function PolicyPage({serial}:{serial:string}){
     </div>
     <details className="proof-details"><summary>View on Hedera <span>↗</span></summary><dl className="facts"><div><dt>Demo beneficiary</dt><dd><Id kind="account" id={p.buyerId} network={a.network}/></dd></div><div><dt>Scheduled payout</dt><dd><Id kind="schedule" id={p.scheduleId} network={a.network}/></dd></div><div><dt>Premium transfer</dt><dd><Id kind="transaction" id={p.saleTxId} network={a.network}/></dd></div><div><dt>Recorded terms</dt><dd><Id kind="topic" id={p.termsPointer} href={hsPointer(p.termsPointer,a.network)} network={a.network}/></dd></div></dl></details>
     <a href="/story#2" onClick={onLink} className="settlement-story-link">See confirmations become a payout <span>Recorded mainnet demo →</span></a>
-    <details className="proof-details"><summary>How funds are protected <span>+</span></summary><p>The oracle quorum cannot spend without the agent's signature. This recorded mainnet experiment proves that specific key restriction.</p><OracleProof/></details>
+    <details className="proof-details"><summary>Agent guardrails & proof <span>+</span></summary><AgentGuardrails/><p>The oracle quorum cannot spend without the agent's signature. This recorded mainnet experiment proves that specific key restriction.</p><OracleProof/></details>
   </div></div>;
 }

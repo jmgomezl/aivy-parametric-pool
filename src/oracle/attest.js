@@ -11,10 +11,18 @@
 // deserves to see.
 import { SOURCES, distanceKm } from './sources.js';
 
+export function validateAttestationSpec(spec, now=Date.now()) {
+  if(!spec||typeof spec!=='object'||Array.isArray(spec)||!Number.isFinite(spec.lat)||Math.abs(spec.lat)>90||!Number.isFinite(spec.lon)||Math.abs(spec.lon)>180||!Number.isFinite(spec.radiusKm)||spec.radiusKm<1||spec.radiusKm>300||!Number.isFinite(spec.minMagnitude)||spec.minMagnitude<0||spec.minMagnitude>10||!Number.isFinite(spec.maxDepthKm??70)||(spec.maxDepthKm??70)<0||(spec.maxDepthKm??70)>700)throw new Error('Invalid attestation conditions.');
+  const start=Date.parse(spec.windowStart),end=spec.windowEnd?Date.parse(spec.windowEnd):now;
+  if(!Number.isFinite(start)||!Number.isFinite(end)||end<=start||end>now+1000||end-start>366*86400000)throw new Error('Attestation window must be a past interval of at most 366 days.');
+  return {lat:spec.lat,lon:spec.lon,radiusKm:spec.radiusKm,minMagnitude:spec.minMagnitude,maxDepthKm:spec.maxDepthKm??70,windowStart:new Date(start).toISOString(),windowEnd:new Date(end).toISOString()};
+}
+
 /**
  * @param spec  { lat, lon, radiusKm, minMagnitude, maxDepthKm, windowStart, windowEnd }
  */
 export async function attest(sourceKey, spec) {
+  spec=validateAttestationSpec(spec);
   const source = SOURCES[sourceKey];
   if (!source) throw new Error(`Unknown source "${sourceKey}". Known: ${Object.keys(SOURCES).join(', ')}`);
 
@@ -88,6 +96,6 @@ export async function attestAll(spec, keys = Object.keys(SOURCES)) {
 
 /** Does a quorum of catalogues agree the trigger fired? */
 export function quorumReached(attestations, threshold = 2) {
-  const yes = attestations.filter((a) => a.triggered);
+  const yes = [...new Set(attestations.filter(a=>a.triggered===true&&!a.unavailable&&Object.hasOwn(SOURCES,a.sourceKey)).map(a=>a.sourceKey))];
   return { reached: yes.length >= threshold, agreeing: yes.length, threshold, total: attestations.length };
 }

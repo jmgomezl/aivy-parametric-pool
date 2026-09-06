@@ -19,7 +19,9 @@ import { createFundedAccount } from './accounts.js';
 import { quotePolicy, issuePolicy, isIssuing } from './policy/issue.js';
 import { readPolicies, mirrorGet } from './ledger.js';
 import { policies, reservations, settle, request } from './book.js';
-import { checkWrite, recordWrite, budgetToday, LIMITS } from './guards.js';
+import { withIssuanceLock } from './issuance-lock.js';
+import { createWriteGuard, LIMITS } from './guards.js';
+import { clientIp, readJsonBody, policyInput, HttpError } from './http-safety.js';
 import { associate } from './pool/shares.js';
 import { settlementAsset, fromUnits } from './asset.js';
 import { quoteCrossAsset, STABLES } from './settlement/crossAsset.js';
@@ -35,16 +37,7 @@ const json = (res, status, body) => {
   res.end(JSON.stringify(body, null, 2));
 };
 
-const ipOf = (req) =>
-  (process.env.TRUST_PROXY === '1' ? req.headers['x-forwarded-for']?.split(',')[0] ?? req.socket.remoteAddress : req.socket.remoteAddress) ?? 'unknown';
-
 const num = (v, fallback) => (v == null || v === '' || Number.isNaN(Number(v)) ? fallback : Number(v));
-
-const body = (req) => new Promise((resolve, reject) => {
-  let data = '';
-  req.on('data', (c) => { data += c; if (data.length > 8192) reject(new Error('body too large')); });
-  req.on('end', () => { try { resolve(data ? JSON.parse(data) : {}); } catch { reject(new Error('invalid JSON')); } });
-});
 
 async function main() {
   await assertOperatorKey();
@@ -54,6 +47,8 @@ async function main() {
   for (const key of ['poolAccountId', 'shareTokenId', 'policyTokenId', 'termsTopicId']) {
     if (!reg[key]) throw new Error(`${NETWORK} is not provisioned (${key} missing). Run: npm run provision`);
   }
+  const writeGuard=createWriteGuard({network:NETWORK,seed:()=>[...policies(NETWORK),...reservations(NETWORK)]});
+  await withIssuanceLock(NETWORK,()=>writeGuard.initialize());
   const poolId = AccountId.fromString(reg.poolAccountId);
   const identities = {agentPublicKey:agent.key.publicKey.toStringRaw(),oraclePublicKeys:reg.oraclePublicKeys,oracleSources:reg.oracleSources??['usgs','emsc','sgc']};
   const currentPolicies = () => readPolicies(NETWORK,policies(NETWORK),identities);
@@ -66,14 +61,15 @@ async function main() {
 
   const server = http.createServer(async (req, res) => {
     if (req.method === 'OPTIONS') return json(res, 204, {});
-    const url = new URL(req.url, `http://${req.headers.host}`);
-    const route = url.pathname.replace(/\/$/, '');
-
     try {
+      const url = new URL(req.url, 'http://localhost');
+      const route = url.pathname.replace(/\/$/, '');
       if (route === '/api/places' && req.method === 'GET') {
         try { return json(res,200,{places:await searchPlaces(url.searchParams.get('q')),source:'Photon / OpenStreetMap'}); }
         catch(error) { return json(res,error.status??503,{ok:false,reason:'search_unavailable',message:error.status===400?error.message:'Worldwide search is unavailable. Try again or enter coordinates.'}); }
       }
+
+      if (route === '/api/guardrails' && req.method === 'GET') return json(res,200,{network:NETWORK,execution:'deterministic',publicWrites:NETWORK==='testnet',limits:LIMITS,budget:writeGuard.budget(),checkedAt:new Date().toISOString(),custody:'Shared demo host; separate keys are not independent operators.',authorization:'Agent AND 2 of 3 oracle keys',signing:'Fixed scheduled transfer; oracle verifies recorded terms and transfer bytes.'});
 
       if (route === '/api/activity' && req.method === 'GET') return json(res, 200, { network: NETWORK, payments: paymentActivity(NETWORK), checkedAt: new Date().toISOString() });
 
@@ -95,7 +91,7 @@ async function main() {
           capitalHbar: fromUnits(capital, asset), committedHbar: fromUnits(committed, asset),
           headroomHbar: fromUnits(capital - committed, asset),
           livePolicies: rows.filter(p=>p.state==='active'||p.state==='confirming').length,
-          budgetToday: budgetToday(),
+          budgetToday: writeGuard.budget(),
           hashscan: HASHSCAN('account', reg.poolAccountId),
         });
       }
@@ -148,15 +144,11 @@ async function main() {
       }
 
       if (route === '/api/policies' && req.method === 'POST') {
-        const input = await body(req);
-        const lat = num(input.lat), lon = num(input.lon);
-        if (lat == null || lon == null) return json(res, 400, { ok: false, message: 'lat and lon are required' });
-
         if (NETWORK !== 'testnet') return json(res,403,{ok:false,reason:'mainnet_writes_disabled',message:'The public demo creates policies on testnet only.'});
-        if (input.requestId && !/^[a-zA-Z0-9-]{16,80}$/.test(input.requestId)) return json(res,400,{ok:false,reason:'invalid_input',message:'Invalid request identifier.'});
+        const input = policyInput(await readJsonBody(req));
         const result = await issuePolicy({...deps,
-          beforeWrite:quote=>checkWrite({network:NETWORK,ip:ipOf(req),usd:quote.payout}),
-          afterWrite:quote=>recordWrite({ip:ipOf(req),usd:quote.payout}),
+          beforeWrite:quote=>writeGuard.check({ip:clientIp(req),usd:quote.payout}),
+          beforeLedgerWrite:quote=>writeGuard.admit({ip:clientIp(req),usd:quote.payout}),
           createBuyer:async quote=>{
             const asset=settlementAsset(NETWORK);
             const buyer=await createFundedAccount(c,NETWORK,1,'demo beneficiary');
@@ -168,7 +160,7 @@ async function main() {
             }
             return buyer;
           }
-        },{lat,lon,place:typeof input.place==='string'?input.place.slice(0,100):null,budgetUsd:num(input.budgetUsd,4),days:num(input.days,30),requestId:input.requestId});
+        },input);
         if(!result.ok)return json(res,200,result);
         return json(res, 201, {
           ...result, policy:publicPolicy(result.policy),
@@ -182,13 +174,16 @@ async function main() {
 
       return json(res, 404, { ok: false, message: `No route ${route}` });
     } catch (err) {
-      return json(res, 500, { ok: false, reason:err.reason??'service_unavailable', message: err.message ?? String(err) });
+      console.warn('Agent request refused:', err.reason ?? err.name);
+      return json(res, err instanceof HttpError?err.status:503, { ok:false, reason:err instanceof HttpError?err.reason:'service_unavailable', message:err instanceof HttpError?err.message:'The service could not complete this request. Check Policies before retrying an interrupted creation.' });
     }
   });
 
+  server.requestTimeout=30_000;
+  server.headersTimeout=10_000;
   server.listen(PORT, process.env.HOST ?? '127.0.0.1', () => {
     console.log(`underwriting agent on :${PORT}  network=${NETWORK}`);
-    console.log(`  writes ${NETWORK === 'mainnet' && !LIMITS.allowMainnetWrites ? 'DISABLED (mainnet)' : 'enabled'}` +
+    console.log(`  writes ${NETWORK !== 'testnet' ? 'DISABLED (mainnet)' : 'enabled'}` +
       `  · ${LIMITS.perIpPerHour}/ip/hour · ${LIMITS.policiesPerDay}/day · $${LIMITS.usdPerDay.toLocaleString()}/day`);
   });
 }

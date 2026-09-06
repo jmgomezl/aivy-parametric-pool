@@ -21,7 +21,8 @@ export function load(network) {
 export function save(network, patch) {
   const next = { ...load(network), ...patch, network, updatedAt: new Date().toISOString() };
   fs.mkdirSync(path.dirname(file(network)), { recursive: true });
-  fs.writeFileSync(file(network), JSON.stringify(next, null, 2));
+  fs.writeFileSync(file(network), JSON.stringify(next, null, 2), {mode:0o600});
+  fs.chmodSync(file(network),0o600);
   return next;
 }
 

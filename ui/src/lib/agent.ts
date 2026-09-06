@@ -116,3 +116,10 @@ export interface ConversionQuote {
 }
 export const conversionPath = (usd: number, chainId: number) => `/api/settle-quote?usd=${usd.toFixed(2)}&chainId=${chainId}`;
 export const conversionQuote = (usd: number, chainId: number) => call<ConversionQuote | Refusal>(conversionPath(usd, chainId), undefined, 25_000);
+
+export interface Guardrails {
+  network: Network; execution: 'deterministic'; publicWrites: boolean;
+  limits: { perIpPerHour: number; policiesPerDay: number; usdPerDay: number };
+  budget: { policies: number; usd: number }; checkedAt: string;
+}
+export const guardrails = () => call<Guardrails | Refusal>('/api/guardrails', undefined, 10_000);

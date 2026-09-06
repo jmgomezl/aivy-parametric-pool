@@ -13,7 +13,7 @@ if (challenge.status !== 402) throw new Error(`Expected 402; got ${challenge.sta
 const terms = (await challenge.json()).accepts?.[0];
 if (terms?.network !== 'hedera:testnet' || terms.amount !== '1000' || terms.asset !== '0.0.10374011' || terms.payTo !== '0.0.10386832' || terms.extra?.feePayer !== '0.0.7231440' || terms.resource !== url) throw new Error('Unexpected payment requirements; stopped before signing.');
 const payer = {id:registry.x402PayerId,key:registry.x402PayerKey};
-const {header} = await buildPayment({requirements:terms,payerId:payer.id,payerKey:payer.key,network:NETWORK});
+const {header} = await buildPayment({requirements:terms,payerId:payer.id,payerKey:payer.key,network:NETWORK,policy:{resource:url,payTo:'0.0.10386832',feePayer:'0.0.7231440',asset:'0.0.10374011',maxAmount:'1000'}});
 const response = await fetch(url,{...init,headers:{...init.headers,'X-PAYMENT':header}});
 const body = await response.json();
 if (!response.ok || !body.payment?.success) throw new Error(JSON.stringify({status:response.status,body}));

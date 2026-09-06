@@ -175,3 +175,9 @@ What is **new**, built during this event:
 - `LINKS.md`: historical ledger artifacts.
 
 MIT.
+
+## Agent security
+
+See [guardrails and trust boundaries](docs/AGENT-SECURITY.md) for the deterministic
+execution path, durable attempt budgets, term-bound oracle signing, x402 payment
+authorization, adversarial tests and the shared-host custody limitation.

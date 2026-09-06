@@ -17,7 +17,8 @@ import http from 'node:http';
 import { ScheduleId, ScheduleSignTransaction, Client, AccountId } from '@hiero-ledger/sdk';
 import { parseKey } from '../config.js';
 import { SOURCES } from './sources.js';
-import { attest } from './attest.js';
+import { attest, validateAttestationSpec } from './attest.js';
+import { readJsonBody, HttpError, requestPath } from '../http-safety.js';
 import { charge, requirements } from '../x402/gate.js';
 import { settlementAsset } from '../asset.js';
 import { load } from '../registry.js';
@@ -46,12 +47,6 @@ const json = (res, status, body) => {
   res.writeHead(status, { 'content-type': 'application/json', 'access-control-allow-origin': '*', 'access-control-allow-headers': 'content-type,x-payment' });
   res.end(JSON.stringify(body, null, 2));
 };
-
-const readBody = (req) => new Promise((resolve, reject) => {
-  let d = '';
-  req.on('data', (c) => { d += c; if (d.length > 8192) reject(new Error('body too large')); });
-  req.on('end', () => { try { resolve(d ? JSON.parse(d) : {}); } catch { reject(new Error('invalid JSON')); } });
-});
 
 const termsFor = (path) => requirements({
   amount: PRICE,
@@ -90,9 +85,8 @@ async function signSchedule(scheduleId) {
 
 const server = http.createServer(async (req, res) => {
   if (req.method === 'OPTIONS') return json(res, 204, {});
-  const path = new URL(req.url, `http://${req.headers.host}`).pathname.replace(/\/$/, '') || '/';
-
   try {
+    const path = requestPath(req);
     if (path === '/') {
       return json(res, 200, {
         oracle: source.name, operator: source.operator, account: ORACLE_ID,
@@ -104,7 +98,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     if ((path === '/attest' || path === '/attest-and-sign') && req.method === 'POST') {
-      const body = await readBody(req);
+      const body = await readJsonBody(req);
       let spec;
       if(path==='/attest-and-sign'){
         // Caller-provided trigger conditions are never used for signing.
@@ -112,9 +106,7 @@ const server = http.createServer(async (req, res) => {
         try { ({spec}=await verifiedPolicy({network:NETWORK,scheduleId:body.scheduleId,termsPointer:body.termsPointer,poolId:registry.poolAccountId,termsTopicId:registry.termsTopicId})); }
         catch(error){return json(res,422,{error:'policy_verification_failed',message:error.message});}
       }else spec=body.spec??body;
-      for (const k of ['lat', 'lon', 'radiusKm', 'minMagnitude', 'windowStart']) {
-        if (spec[k] == null) return json(res, 400, { error: `spec.${k} is required` });
-      }
+      try {spec=validateAttestationSpec(spec);}catch(error){return json(res,400,{error:'invalid_input',message:error.message});}
 
       const gate = await charge({
         header: req.headers['x-payment'],
@@ -138,10 +130,12 @@ const server = http.createServer(async (req, res) => {
 
     return json(res, 404, { error: `No route ${path}` });
   } catch (err) {
-    return json(res, 500, { error: String(err.message ?? err) });
+    return json(res,err instanceof HttpError?err.status:503,{error:err instanceof HttpError?'invalid_input':'oracle_unavailable',message:err instanceof HttpError?err.message:'The oracle could not complete this request. Payment confirmation may need review.'});
   }
 });
 
+server.requestTimeout=30_000;
+server.headersTimeout=10_000;
 server.listen(PORT, process.env.HOST ?? '127.0.0.1', () => {
   console.log(`${source.name} oracle on :${PORT}  (${source.operator})`);
   console.log(`  paid to ${ORACLE_ID} · ${PRICE} ${asset.symbol} per attestation · ${caip2}`);
