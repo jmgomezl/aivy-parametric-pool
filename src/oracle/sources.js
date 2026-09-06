@@ -18,6 +18,32 @@ export function distanceKm(lat1, lon1, lat2, lon2) {
 
 const kmToDeg = (km) => km / 111.19;
 
+// A truncated body is as much a transient failure as a 502, and it arrives as a
+// SyntaxError rather than a status code. EMSC in particular cuts responses short
+// under load, so parsing lives inside the retry rather than after it.
+async function getJson(url, timeout) {
+  for (let attempt = 0; ; attempt++) {
+    try { return await (await get(url, timeout, attempt >= 2 ? 2 : 0)).json(); }
+    catch (err) {
+      if (attempt >= 2 || err.fatal) throw err;
+      await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
+    }
+  }
+}
+
+async function getText(url, timeout) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      const body = await (await get(url, timeout, attempt >= 2 ? 2 : 0)).text();
+      if (!body.trim()) throw new Error('empty response');
+      return body;
+    } catch (err) {
+      if (attempt >= 2 || err.fatal) throw err;
+      await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
+    }
+  }
+}
+
 // These are public research services, not commercial APIs; they rate-limit and
 // drop connections under load. A catalogue that blinks is a missing vote, and a
 // missing vote can cost a policyholder a payout — so we retry before giving up.
@@ -40,7 +66,7 @@ async function usgs({ lat, lon, radiusKm, minMagnitude, since, until }) {
   const url = `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson` +
     `&minmagnitude=${minMagnitude}&latitude=${lat}&longitude=${lon}&maxradiuskm=${radiusKm}` +
     `&starttime=${since}${until ? `&endtime=${until}` : ''}`;
-  const { features } = await (await get(url)).json();
+  const { features } = await getJson(url);
   return {
     url,
     events: features.map((f) => ({
@@ -60,7 +86,7 @@ async function emsc({ lat, lon, radiusKm, minMagnitude, since, until }) {
   const url = `https://www.seismicportal.eu/fdsnws/event/1/query?format=json` +
     `&minmag=${minMagnitude}&lat=${lat}&lon=${lon}&maxradius=${kmToDeg(radiusKm).toFixed(4)}` +
     `&start=${since}${until ? `&end=${until}` : ''}&limit=1000`;
-  const body = await (await get(url)).json();
+  const body = await getJson(url);
   return {
     url,
     events: (body.features ?? []).map((f) => ({
@@ -82,7 +108,7 @@ async function geofon({ lat, lon, radiusKm, minMagnitude, since, until }) {
   const url = `https://geofon.gfz-potsdam.de/fdsnws/event/1/query?format=text` +
     `&minmagnitude=${minMagnitude}&latitude=${lat}&longitude=${lon}&maxradius=${kmToDeg(radiusKm).toFixed(4)}` +
     `&starttime=${since}${until ? `&endtime=${until}` : ''}&limit=1000`;
-  const text = await (await get(url)).text();
+  const text = await getText(url);
   const events = text.split('\n')
     .filter((l) => l && !l.startsWith('#'))
     .map((line) => {

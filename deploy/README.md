@@ -1,4 +1,4 @@
-# Deploying the oracles
+# Deploying Quorum
 
 Three services, one per catalogue, each with its own Hedera account and its own
 key. They run as separate processes for isolation. This demo still operates all three;
@@ -8,6 +8,7 @@ Live at:
 
 | | |
 |---|---|
+| https://quorum.aivylabs.xyz | the app, and the underwriting agent under `/api` |
 | https://usgs.aivylabs.xyz | USGS ComCat · United States Geological Survey |
 | https://emsc.aivylabs.xyz | EMSC · European-Mediterranean Seismological Centre |
 | https://geofon.aivylabs.xyz | GEOFON · GFZ Potsdam |
@@ -19,12 +20,29 @@ Live at:
 
 ```
 /opt/aivy-oracles/          src/, package.json, .env (0600), ecosystem.config.cjs
-/etc/nginx/sites-available/ usgs.aivylabs, emsc.aivylabs, geofon.aivylabs
-pm2                         aivy-oracle-{usgs,emsc,geofon}, saved
+/opt/aivy-oracles/.artifacts/registry-testnet.json   ids only, no key material
+/var/www/quorum/            the built UI
+/etc/nginx/sites-available/ quorum, usgs, emsc, geofon .aivylabs
+pm2                         aivy-oracle-{usgs,emsc,geofon}, quorum-agent, saved
 ```
 
+The agent and the oracles share one checkout, so the 775 MB of node_modules is
+installed once.
+
 **Only testnet keys are on the server.** The mainnet key stays on the laptop, in
-a gitignored file, and nothing in this deployment can reach it.
+a gitignored file, and nothing in this deployment can reach it. The registry
+copied up is filtered: anything whose name ends in `Key` or `Keys` is stripped,
+so `oraclePrivateKeys` and `x402PayerKey` never leave the laptop either.
+
+## The UI
+
+```bash
+cd ui && VITE_AGENT_URL=https://quorum.aivylabs.xyz npm run build
+# then copy dist/ to /var/www/quorum
+```
+
+nginx serves it and proxies `/api/` to the agent on 8814, so the app and its
+agent share an origin and the browser needs no CORS.
 
 ## Deploy
 
