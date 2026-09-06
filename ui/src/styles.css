@@ -983,3 +983,25 @@ small { font-size:12px; color:var(--fg-2); }
 .lp-policy-terms {border-top:1px solid var(--line);margin-top:20px;font-size:12px;}
 .lp-policy-terms>summary {display:flex;justify-content:space-between;cursor:pointer;min-height:48px;align-items:center;color:var(--fg-2);}
 @media(max-width:400px){.lp-scenarios {gap:12px;}.lp-scenarios strong {font-size:17px;}.lp-scenarios strong small {display:block;margin-top:5px;}.lp-preview-heading h3 {font-size:17px;}}
+
+/* Optional payout utility: a live market quote, separate from ledger execution. */
+.payout-conversion {border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:24px;}
+.payout-conversion>summary {display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:58px;font-size:13px;}
+.conversion-brand {color:#f09bc7;font-size:12px;white-space:nowrap;}
+.conversion-body {padding:4px 0 20px;}
+.conversion-top {display:flex;justify-content:space-between;align-items:center;gap:12px;color:var(--fg-2);font-size:11px;}
+.conversion-top select {font:inherit;color:var(--fg-1);background:var(--bg-1);border:1px solid var(--line);border-radius:18px;padding:9px 12px;min-height:40px;}
+.conversion-context,.conversion-boundary,.conversion-proof p {font-size:11px;color:var(--fg-2);line-height:1.6;}
+.conversion-context {margin:18px 0 12px;}
+.conversion-amounts {display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:12px;}
+.conversion-amounts>div {display:flex;flex-direction:column;gap:6px;min-width:0;}
+.conversion-amounts strong {font:clamp(19px,2.1vw,28px) var(--mono);letter-spacing:-.04em;overflow-wrap:anywhere;}
+.conversion-amounts>div:last-child strong {color:#f09bc7;}
+.conversion-amounts span {font-size:11px;color:var(--fg-2);}
+.conversion-status {display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0;font-size:10px;color:var(--fg-2);}
+.conversion-status button {min-height:44px;white-space:nowrap;font-size:11px;}
+.conversion-boundary {margin:12px 0 0;}
+.conversion-proof {margin-top:12px;border-top:1px solid var(--line);}
+.conversion-proof>summary {display:flex;justify-content:space-between;align-items:center;min-height:44px;font-size:11px;color:var(--fg-1);}
+.conversion-proof .facts {margin:4px 0;}.conversion-proof .facts dd {overflow-wrap:anywhere;text-align:right;}
+.conversion-id {overflow-wrap:anywhere;font-family:var(--mono);}

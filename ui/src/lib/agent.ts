@@ -105,3 +105,14 @@ export async function findPlaces(query: string, signal: AbortSignal): Promise<{n
   if(!res.ok||!Array.isArray(data.places))throw new Error('Place search unavailable');
   return data.places;
 }
+
+export interface ConversionQuote {
+  ok: true; provider: string; network: 'mainnet';
+  from: { symbol: string; address: string; amount: string; decimals: number; usd: number };
+  to: { symbol: string; amount: string; decimals: number };
+  chain: { id: number; name: string }; quoteId: string | null;
+  quotedAt: string; expiresAt: string; gasFeeUsd: string | null;
+  route: unknown; boundary: string; approved: false; broadcast: false;
+}
+export const conversionPath = (usd: number, chainId: number) => `/api/settle-quote?usd=${usd.toFixed(2)}&chainId=${chainId}`;
+export const conversionQuote = (usd: number, chainId: number) => call<ConversionQuote | Refusal>(conversionPath(usd, chainId), undefined, 25_000);

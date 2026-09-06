@@ -121,3 +121,19 @@ Reduced-motion preferences disable scene and transfer animation. All narrative
 values come from the frozen mainnet record; the recording uses SGC as its third
 key label while current deployed services use GEOFON. Scope details distinguish
 live testnet creation, recorded mainnet execution and proposed policy LPs.
+
+## Uniswap payout conversion
+
+Cover quotes and cover policy details expose **Payout in ETH? · Uniswap**.
+Opening it requests a real Uniswap Trading API quote for the modeled USD amount
+as hypothetical USDC, on Base or Unichain mainnet. The frontend shows ETH output,
+quote time/expiry, and a disclosure with quote ID, estimated extra gas, and a
+link to the latest API response and route. Refresh never executes a swap.
+Demo aUSDd cannot be redeemed, and Hedera funds are not bridged.
+
+`GET /api/settle-quote?usd=800&chainId=8453` uses the existing
+`hak-uniswap-plugin` quote tool (including unsigned calldata). Set
+`UNISWAP_API_KEY` server-side only. Successful quotes are cached for 30 seconds;
+requests are coalesced, capped at 60 new quotes/minute and 16 in flight.
+Amounts are bounded, networks/output are allowlisted, and upstream errors are
+sanitized. No wallet keys, approvals, signatures, or broadcasts are required.

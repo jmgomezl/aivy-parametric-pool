@@ -136,7 +136,8 @@ What existed before the event, and does **not** count as new work:
 - **hak-saucerswap-plugin, hak-pyth-plugin** — endorsed third-party plugins in the
   Hedera Agent Kit docs.
 - **hak-uniswap-plugin** — Uniswap Trading API plugin with allowance handling and a
-  Ledger threshold gate, proven on Sepolia. Reused here for cross-asset settlement.
+  Ledger threshold gate, proven on Sepolia. Reused here for live USDC-to-ETH
+  conversion quotes on Base and Unichain. The UI does not bridge or execute swaps.
 - **Aivy Settlement Layer (ETHGlobal Lisbon, July 2026)** — a prior continuity
   build on aivy-studio that also used HTS pools and Scheduled Transactions. The
   overlap is the *substrate*; what is new here is stated below.

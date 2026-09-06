@@ -57,3 +57,14 @@ in the gitignored local registry. It spends testnet tokens and facilitator fees,
 performs one historical `/attest` query and writes public result JSON under
 `.artifacts`. It never calls `/attest-and-sign`. Do not rerun merely to inspect
 existing evidence, and do not copy the private registry into the repository or VPS.
+
+## Optional Uniswap demonstration (15 seconds)
+
+On a cover policy, open **Payout in ETH? · Uniswap**. Show the live USDC-to-ETH
+quote, switch Base → Unichain, and open **Verify Uniswap quote**. Explain:
+“If the modeled payout were held as USDC, this is its current ETH conversion.
+Uniswap supplies the real mainnet liquidity quote; our demo does not bridge
+Hedera funds or execute the swap.” The quote ID and API route are inspectable.
+This is a live API integration, not a completed onchain swap or a Uniswap LP NFT.
+
+API behavior follows the [Uniswap integration guide](https://developers.uniswap.org/docs/trading/swapping-api/start-building/integration-guide).

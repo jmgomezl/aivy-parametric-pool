@@ -109,19 +109,19 @@ async function main() {
       }
 
       // What a payout would convert into elsewhere. A quote, and it says so.
-      if (route === '/api/settle-quote') {
-        const usd = num(url.searchParams.get('usd'), null);
+      if (route === '/api/settle-quote' && req.method === 'GET') {
+        const usd = Number(url.searchParams.get('usd'));
         if (usd == null) return json(res, 400, { ok: false, message: 'usd is required' });
         try {
           const q = await quoteCrossAsset({
             payoutUsd: usd,
-            chainId: num(url.searchParams.get('chainId'), 8453),
+            chainId: Number(url.searchParams.get('chainId') ?? 8453),
             tokenOut: url.searchParams.get('tokenOut') ?? undefined,
           });
           return json(res, 200, q);
         } catch (err) {
           return json(res, 200, {
-            ok: false, reason: 'quote_unavailable', message: err.message,
+            ok: false, reason: err.reason ?? 'quote_unavailable', message: err.message,
             chains: Object.entries(STABLES).map(([id, s]) => ({ chainId: Number(id), chain: s.chain })),
           });
         }

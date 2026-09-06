@@ -1,3 +1,4 @@
+import { PayoutConversion } from './PayoutConversion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as agent from '../lib/agent';
 import { coverForBudget, placeName, sourceUrl } from '../lib/hazard';
@@ -54,6 +55,7 @@ export function QuotePanel({ pin, map, budget, days, onBudget, onDays, onClose, 
 
       </section>}
       {!busy?<section className="quote-inputs"><Slider label="Budget" value={budget} min={1} max={50} unit="" format={dollars} onChange={v=>{requestId.current=crypto.randomUUID();onBudget(v);}}/><details><summary>Duration <span className="num">{days} days</span></summary><Slider label="Days of cover" value={days} min={7} max={62} unit="days" onChange={v=>{requestId.current=crypto.randomUUID();onDays(v);}}/></details></section>:null}
+      {q&&!estimating&&!busy?<PayoutConversion usd={q.payout}/>:null}
       <details className="quote-why"><summary>Coverage & pricing details</summary><p>A qualifying earthquake must be M6+, within 100 km and no deeper than 70 km during the coverage window. Damage alone does not trigger a payout.</p><dl className="facts"><div><dt>Events within 300 km</dt><dd>{q&&!estimating?q.hazard.count:estimate.priced.count}</dd></div><div><dt>Modeled chance in {days} days</dt><dd>{((q&&!estimating?q.probability:estimate.priced.probability)*100).toFixed(2)}%</dd></div><div><dt>Historical record</dt><dd>Since 1970</dd></div></dl><p>A first-order historical model, not an actuarial assessment. No recorded events means insufficient evidence, not zero risk.</p><a className="hs" href={q&&!estimating?q.hazard.source:sourceUrl(pin.lat,pin.lon,map.minMag)} target="_blank" rel="noreferrer">View source data ↗</a></details>
     </>}
   </aside>;

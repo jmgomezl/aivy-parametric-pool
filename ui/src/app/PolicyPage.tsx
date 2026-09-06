@@ -1,3 +1,4 @@
+import { PayoutConversion } from './PayoutConversion';
 import { useEffect, useState } from 'react';
 import * as agent from '../lib/agent';
 import { C, Lock } from '../components/viz';
@@ -37,6 +38,7 @@ export function PolicyPage({serial}:{serial:string}){
         <div className="policy-payout"><span>{paid?'Payout executed':expired?'Cover ended':'Scheduled payout'}</span><strong className="num">{p.payoutHbar.toLocaleString(undefined,{maximumFractionDigits:2})}</strong><small>{p.asset??'HBAR'} · demo beneficiary</small></div>
         {position==='liquidity'?<LPPreviewControls policy={p} portion={portion} onPortion={setPortion}/>:null}
         {position==='liquidity'?<details className="lp-policy-terms"><summary>Policy terms <span>+</span></summary>{policyTerms}</details>:policyTerms}
+        {position==='cover'?<PayoutConversion usd={p.payoutUsd}/>:null}
       </div>
       <div className="policy-visual"><PolicyPosition policy={p} kind={position} onKind={kind=>{setPosition(kind);const query=new URLSearchParams(location.search);if(kind==='liquidity')query.set('position','lp');else query.delete('position');history.replaceState(null,'',`/policy/${serial}${query.size?'?'+query:''}`);}} portion={portion} onPortion={setPortion}/>
         <details className="nft-settlement-details"><summary>Settlement confirmations <span>{ledger?.available?`${signed}/2`:'—'}</span></summary>
