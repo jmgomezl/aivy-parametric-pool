@@ -1005,3 +1005,7 @@ small { font-size:12px; color:var(--fg-2); }
 .conversion-proof>summary {display:flex;justify-content:space-between;align-items:center;min-height:44px;font-size:11px;color:var(--fg-1);}
 .conversion-proof .facts {margin:4px 0;}.conversion-proof .facts dd {overflow-wrap:anywhere;text-align:right;}
 .conversion-id {overflow-wrap:anywhere;font-family:var(--mono);}
+
+.skip-content {position:fixed;top:12px;left:20px;z-index:100;padding:12px 18px;border-radius:8px;background:var(--bg-2);color:var(--fg-0);transform:translateY(-160%);}
+.skip-content:focus {transform:translateY(0);}
+#main-content:focus {outline:none;}

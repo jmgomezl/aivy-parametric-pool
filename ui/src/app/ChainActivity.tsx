@@ -40,7 +40,7 @@ export function ChainActivity({ serial, story = false }: { serial?: string; stor
   const [payments, setPayments] = useState<PaymentReceipt[]>([]), [paymentState, setPaymentState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [checkedAt, setCheckedAt] = useState('');
   const policies = [...(a.policies ?? [])].sort((x, y) => Number(y.serial) - Number(x.serial));
-  const p = policies.find(p => p.serial === (serial ?? selected)) ?? policies[0];
+  const p = serial ? policies.find(p => String(p.serial) === serial) : policies.find(p => String(p.serial) === selected) ?? policies[0];
   useEffect(() => { setSelected(''); setTab(story ? 'mainnet' : 'live'); }, [serial, story]);
   useEffect(() => {
     if (!open || tab !== 'x402') return;
@@ -51,13 +51,13 @@ export function ChainActivity({ serial, story = false }: { serial?: string; stor
   }, [open, tab]);
   const proofs = p ? policyProofs(p, a.network, a.pool?.policyTokenId) : [];
   return <section className="chain-activity" aria-label="Blockchain activity">
-    <button className="chain-toggle" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}><span className="chain-toggle-title"><span aria-hidden="true">◈</span> Onchain <span className="chain-scope">{story ? 'Mainnet · recorded settlement' : p ? `${!a.online ? 'Last known' : a.network === 'testnet' ? 'Testnet' : 'Mainnet'} · Policy #${p.serial} · ${p.ledger?.available ? p.state === 'paid' ? 'Paid' : `${p.ledger.oracles.filter(o=>o.signed).length}/2 oracle signatures` : 'Proofs available'}` : 'Testnet + mainnet proofs'}</span></span><span>{open ? 'Close −' : 'Verify ↗'}</span></button>
+    <button className="chain-toggle" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}><span className="chain-toggle-title"><span aria-hidden="true">◈</span> Onchain <span className="chain-scope">{story ? 'Mainnet · recorded settlement' : p ? `${!a.online ? 'Last known' : a.network === 'testnet' ? 'Testnet' : 'Mainnet'} · Policy #${p.serial} · ${p.ledger?.available ? p.state === 'paid' ? 'Paid' : `${p.ledger.oracles.filter(o=>o.signed).length}/2 oracle signatures` : 'Proofs available'}` : serial ? `Policy #${serial} · receipts unavailable` : 'Testnet + mainnet proofs'}</span></span><span>{open ? 'Close −' : 'Verify ↗'}</span></button>
     {open ? <div id={id} className="chain-panel">
       <div className="chain-tabs" role="group" aria-label="Evidence source">{([['live','Live cover'],['mainnet','Mainnet record'],['x402','x402']] as const).map(([value,label]) => <button key={value} aria-pressed={tab===value} onClick={()=>setTab(value)}>{label}</button>)}</div>
       {tab === 'live' ? <>
         <div className="chain-context"><p><strong>{a.network === 'testnet' ? 'Testnet' : 'Mainnet'}</strong> · {a.online ? 'Current policy records' : 'Last available records'}</p>{p && !serial ? <label>Policy <select aria-label="Policy to verify" value={p.serial} onChange={e=>setSelected(e.target.value)}>{policies.map(p=><option key={p.serial} value={p.serial}>#{p.serial} · {p.place ?? 'Earthquake cover'}</option>)}</select></label> : null}</div>
         {a.policiesError ? <p className="chain-note" role="status">{a.policiesError}</p> : null}
-        {proofs.length ? <div className="chain-receipts">{proofs.map(proof=><Receipt key={proof.label} proof={proof} network={a.network}/>)}</div> : <p className="chain-note">{a.checked ? 'No policy receipts available yet.' : 'Reading policy records…'}</p>}
+        {proofs.length ? <div className="chain-receipts">{proofs.map(proof=><Receipt key={proof.label} proof={proof} network={a.network}/>)}</div> : <p className="chain-note">{a.checked ? serial ? 'No receipts available for this policy.' : 'No policy receipts available yet.' : 'Reading policy records…'}</p>}
         <p className="chain-note">Quote & risk checks: offchain. Cover issuance: onchain. LP preview: not minted.</p>
         {p?.ledger?.checkedAt ? <small className="chain-freshness">Signatures checked {new Date(p.ledger.checkedAt).toLocaleTimeString()}</small> : null}
       </> : tab === 'mainnet' ? <>

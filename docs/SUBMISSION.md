@@ -8,17 +8,18 @@ Live: https://quorum.aivylabs.xyz/
 App: https://github.com/jmgomezl/aivy-parametric-pool
 Reusable plugin: https://github.com/jmgomezl/hak-scheduled-settlement
 
-## Three-minute walkthrough
+## 3-minute 15-second walkthrough
 
 | Time | Screen / action | Explain |
 | --- | --- | --- |
 | 0:00–0:20 | Cover homepage | Fixed earthquake payouts can be committed before an event. |
 | 0:20–0:45 | Search Medellin; Explore data | The historical chart holds payout at $800; premiums vary with the record. Return to cover for current terms. |
 | 0:45–1:15 | Create funded testnet cover; view policy | A real NFT, published terms, premium transfer and scheduled payout. Demo assets have no cash value. Cut network waiting from the recording. |
-| 1:15–1:45 | Fund a policy → Mexico City → contribution slider | Proposed open participation: anyone could back a policy and share premiums. Show term income, annual premium rate and the loss scenario. This is a preview, not an enabled deposit. |
-| 1:45–2:25 | Watch a payout / How it works | Replay commit → one confirmation → two confirmations → executed transfer. This is a controlled mainnet recording, not a live earthquake claim. Open the actual transfer receipt. |
-| 2:25–2:45 | Onchain → x402 | A real testnet payment gates a historical catalogue query. Show the payment receipt. A negative event result is valid; payment does not mean claim approval. |
-| 2:45–3:00 | Final story step / source repository | Oracle keys alone cannot spend. Explain the reusable plugin and the new hackathon work. |
+| 1:15–1:35 | Cover policy → Payout in ETH? · Uniswap | Live USDC-equivalent conversion on Base or Unichain mainnet. Show quote ID. No bridge or swap executes. |
+| 1:35–2:00 | Fund a policy → Tokyo → contribution slider | Proposed participation: back a policy and share premiums. Show income and full capital at risk. Preview only; no deposit. |
+| 2:00–2:40 | How it works | Replay commit → one confirmation → two confirmations → executed transfer. Controlled mainnet recording, not a live earthquake claim. Open the actual receipt. |
+| 2:40–3:00 | Onchain → x402 | Real testnet payment gates a historical catalogue query. A negative event result is valid; payment does not mean claim approval. |
+| 3:00–3:15 | Final story step / repository | Oracle keys alone cannot spend. Explain the reusable plugin and new hackathon work. |
 
 ## Evidence and scope
 
