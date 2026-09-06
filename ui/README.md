@@ -71,3 +71,9 @@ The deployed self-hosted x402 facilitator settles on testnet. Blocky's public
 it is not the deployed payment path. No mainnet x402 payment is claimed.
 `/api/activity` reads a bounded, network-specific receipt journal written only
 following successful payment consensus. Historical payments are not inferred.
+
+The NFT and LP-preview cards show a bundled Natural Earth geographic overview,
+centered on each policy. A local azimuthal equidistant projection preserves the
+coverage radius from the pin; the map includes a scale bar and country borders.
+These are generalized geographic outlines, not street-level maps. This changes
+the app presentation only, not the NFT's onchain metadata or coverage terms.
