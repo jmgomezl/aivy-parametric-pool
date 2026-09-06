@@ -18,7 +18,7 @@ export const MIRROR = `https://${NETWORK}.mirrornode.hedera.com/api/v1`;
 // returns the wrong key. Guessing therefore fails silently and surfaces much
 // later as INVALID_SIGNATURE, so the type is explicit and shape-derived, and
 // assertOperatorKey() below checks it against the ledger before anything runs.
-function parseKey(raw, hint) {
+export function parseKey(raw, hint) {
   const hex = raw.replace(/^0x/, '');
   const type = hint ?? (hex.startsWith('302e') || hex.startsWith('3030') ? 'DER' : 'ECDSA');
   const method = { DER: 'fromStringDer', ECDSA: 'fromStringECDSA', ED25519: 'fromStringED25519' }[type.toUpperCase()];
