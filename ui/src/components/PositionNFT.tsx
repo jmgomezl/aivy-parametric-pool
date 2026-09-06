@@ -14,7 +14,7 @@ export function PositionNFT({policy:p,kind='cover',contribution=100,compact=fals
  const percentage=p.payoutHbar>0?Math.min(100,contribution/p.payoutHbar*100):0;
  return <article className={`position-nft ${lp?'position-nft-lp':''} ${compact?'position-nft-compact':''}`} aria-label={`${lp?'Liquidity position preview':'Cover NFT'} for ${name}, ${number(amount)} ${asset}`}>
    <div className="nft-frame" aria-hidden="true"/>
-   <header className="nft-header"><span className="nft-brand">◉ AIVY</span><span>{lp?'LP · PREVIEW':'COVER NFT'} <span className="num">/{String(p.serial).padStart(4,'0')}</span></span></header>
+   <header className="nft-header"><span className="nft-brand">◉ AIVY QUORUM</span><span>{lp?'LP · PREVIEW':'COVER NFT'} <span className="num">/{String(p.serial).padStart(4,'0')}</span></span></header>
    <div className="nft-location"><h2>{parts[0]}</h2><span>{parts.slice(1).join(',').trim()||'Earthquake cover'}</span></div>
    <div className="nft-traits"><span>M{p.trigger?.minMagnitude??6}+</span><span>{p.trigger?.radiusKm??100} KM</span><span>{asset}</span></div>
    <CoverageMap lat={p.lat} lon={p.lon} radiusKm={p.trigger?.radiusKm??100} name={name} lp={lp}/>

@@ -1,8 +1,8 @@
-# Aivy · Earthquake cover
+# Aivy Quorum · Earthquake cover
 
 Choose a place. Commit a fixed payout. Two oracle confirmations release it.
 
-Aivy demonstrates parametric earthquake settlement using native Hedera services.
+Aivy Quorum demonstrates parametric earthquake settlement using native Hedera services.
 The agent pre-signs a Scheduled Transaction at issuance. The pool key requires
 both the agent and two of three oracle keys. When the missing signatures arrive,
 Hedera executes the scheduled transfer without a separate executor transaction.

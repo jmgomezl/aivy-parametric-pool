@@ -1,4 +1,4 @@
-# Aivy UI
+# Aivy Quorum UI
 
 A compact earthquake-cover demo: **Cover · Policies · How it works**.
 

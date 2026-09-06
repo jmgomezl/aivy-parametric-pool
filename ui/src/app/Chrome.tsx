@@ -9,7 +9,7 @@ export function Chrome({ route }: { route: Route }) {
   const a = useAgent(), p = a.pool;
   const used = p && p.capital > 0 ? Math.min(100, Math.max(0, p.committed / p.capital * 100)) : 0;
   return <><header className="chrome">
-    <a href="/" onClick={onLink} className="brand" aria-label="Aivy home"><span className="brand-mark" aria-hidden="true">◉</span> Aivy<span className="brand-caption">earthquake cover</span></a>
+    <a href="/" onClick={onLink} className="brand" aria-label="Aivy Quorum home"><span className="brand-mark" aria-hidden="true">◉</span> Aivy Quorum<span className="brand-caption">earthquake cover</span></a>
     <nav aria-label="Main navigation" className="main-nav">
       {[['/', 'Cover', route.name === 'home'], ['/policies', 'Policies', route.name === 'policies' || route.name === 'policy'], ['/story', 'How it works', route.name === 'story']].map(([href, label, active]) => <a key={String(href)} href={String(href)} onClick={onLink} className={`navlink ${active ? 'navlink-on' : ''}`} aria-current={active ? 'page' : undefined}>{label}</a>)}
     </nav>
