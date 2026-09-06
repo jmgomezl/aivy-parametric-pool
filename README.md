@@ -12,6 +12,11 @@ modeled payout could buy in ETH.
 **Judge shortcuts:** [Hedera](#why-hedera) · [Uniswap](#why-uniswap) ·
 [Novelty](#what-is-new) · [Security](#security-by-architecture) · [Evidence](#verify-in-one-minute)
 
+![Choosing a place, pricing it from the earthquake record, and committing the payout on Hedera](docs/media/quorum-flow.gif)
+
+*Pick a place, the agent prices it from 56 years of seismic record, and the payout
+is committed on Hedera — in about twenty seconds, unedited.*
+
 > Public cover is a **funded testnet demo**. `aUSDd` has no cash value; dollars are
 > model outputs. Event checks are manually requested. Mainnet settlement is a
 > labeled recording; per-policy funding is a preview.
@@ -37,13 +42,28 @@ needs; the payout path does not require a custom settlement smart contract.
 
 ```mermaid
 flowchart LR
-  Terms[HCS: fixed policy terms] --> Check[Oracle verifies terms and transfer]
-  Agent[Agent pre-signs at issuance] --> Schedule[Scheduled payout]
-  Check --> Votes[2 of 3 oracle signatures]
+  Terms["📜 HCS<br/>fixed policy terms"] --> Check["🔍 Oracle verifies<br/>terms and transfer"]
+  Agent["✍️ Agent pre-signs<br/>at issuance"] --> Schedule["⏳ Scheduled payout<br/>waiting on the ledger"]
+  Check --> Votes["🗝️ 2 of 3<br/>oracle signatures"]
   Votes --> Schedule
-  Schedule --> Result[Hedera executes fixed transfer]
-  Terms -. receipt pointer .-> NFT[HTS cover NFT]
+  Schedule --> Result["⚡ Hedera executes<br/>the fixed transfer"]
+  Terms -. receipt pointer .-> NFT["🎟️ HTS cover NFT"]
+
+  classDef record fill:#1c2333,stroke:#64748b,stroke-width:1.5px,color:#e2e8f0
+  classDef commit fill:#0d3b2e,stroke:#34d399,stroke-width:2px,color:#a7f3d0
+  classDef oracle fill:#3a2c08,stroke:#f5b301,stroke-width:2px,color:#fde68a
+  classDef ledger fill:#0b2f40,stroke:#38bdf8,stroke-width:2px,color:#bae6fd
+  classDef result fill:#064e3b,stroke:#10b981,stroke-width:3px,color:#d1fae5
+  classDef outside fill:#2b1830,stroke:#c084fc,stroke-width:1.5px,color:#f3e8ff
+  class Terms,NFT record
+  class Agent commit
+  class Check,Votes oracle
+  class Schedule ledger
+  class Result result
 ```
+
+> Nothing polls and nothing wakes up. The payout already exists, already carries
+> the agent's signature, and the network runs it the moment the quorum completes.
 
 | Component used | Why it fits | Implementation |
 | --- | --- | --- |
@@ -65,11 +85,26 @@ live liquidity quote, rather than displaying a static exchange-rate estimate.
 
 ```mermaid
 flowchart LR
-  Model[Modeled USD payout] --> Equivalent[Hypothetical same amount of USDC]
-  Equivalent --> Server[Server: allowlisted quote tool]
-  Server --> API[Uniswap Trading API]
-  API --> View[ETH estimate, route, gas and expiry]
+  Model["💵 Modeled<br/>USD payout"] --> Equivalent["🪙 The same amount<br/>as USDC"]
+  Equivalent --> Server["🛡️ Server<br/>allowlisted quote tool"]
+  Server --> API["🦄 Uniswap<br/>Trading API"]
+  API --> View["📊 ETH estimate<br/>route, gas, expiry"]
+
+  classDef record fill:#1c2333,stroke:#64748b,stroke-width:1.5px,color:#e2e8f0
+  classDef commit fill:#0d3b2e,stroke:#34d399,stroke-width:2px,color:#a7f3d0
+  classDef oracle fill:#3a2c08,stroke:#f5b301,stroke-width:2px,color:#fde68a
+  classDef ledger fill:#0b2f40,stroke:#38bdf8,stroke-width:2px,color:#bae6fd
+  classDef result fill:#064e3b,stroke:#10b981,stroke-width:3px,color:#d1fae5
+  classDef outside fill:#2b1830,stroke:#c084fc,stroke-width:1.5px,color:#f3e8ff
+  class Model,Equivalent record
+  class Server commit
+  class API outside
+  class View ledger
 ```
+
+> A quote, and it says so in the response. The payout is on Hedera and the
+> liquidity is on an EVM chain; crossing needs a bridge this protocol
+> deliberately does not have.
 
 | Component used | Purpose in this app |
 | --- | --- |
@@ -105,6 +140,11 @@ event work and the Agent Kit contribution. [AI assistance is disclosed](docs/AI-
 
 ## Verify in one minute
 
+![Policies: every cover issued, with its ledger proofs](docs/media/04-policies.png)
+
+*Every policy the demo has issued, each with its schedule, its terms on HCS and
+its transfers — all linking out to HashScan.*
+
 | Judge action | Evidence / scope |
 | --- | --- |
 | Open **How it works → Release** | Recorded **4 HBAR mainnet** transfer, with receipt. Controlled signatures, not a real earthquake claim. |
@@ -121,12 +161,26 @@ code and ledger keys, not by a system prompt.
 
 ```mermaid
 flowchart LR
-  Input[Untrusted input] --> Validate[Typed allowlist]
-  Validate --> Budget[Durable budgets and lock]
-  Budget --> Reserve[Balance check and reservation]
-  Reserve --> Sign[Exact transaction authority]
-  Sign --> Gate[Ledger signature gate]
+  Input["🌐 Untrusted<br/>input"] --> Validate["✅ Typed<br/>allowlist"]
+  Validate --> Budget["⏱️ Durable budgets<br/>and issuance lock"]
+  Budget --> Reserve["🏦 Balance check<br/>and reservation"]
+  Reserve --> Sign["✍️ Exact transaction<br/>authority"]
+  Sign --> Gate["🔐 Ledger<br/>signature gate"]
+
+  classDef record fill:#1c2333,stroke:#64748b,stroke-width:1.5px,color:#e2e8f0
+  classDef commit fill:#0d3b2e,stroke:#34d399,stroke-width:2px,color:#a7f3d0
+  classDef oracle fill:#3a2c08,stroke:#f5b301,stroke-width:2px,color:#fde68a
+  classDef ledger fill:#0b2f40,stroke:#38bdf8,stroke-width:2px,color:#bae6fd
+  classDef result fill:#064e3b,stroke:#10b981,stroke-width:3px,color:#d1fae5
+  classDef outside fill:#2b1830,stroke:#c084fc,stroke-width:1.5px,color:#f3e8ff
+  class Input outside
+  class Validate,Budget,Reserve commit
+  class Sign ledger
+  class Gate result
 ```
+
+> Every layer narrows what the next one may do. By the last, the only thing the
+> agent can authorize is the exact transfer already written in the terms.
 
 | Before a signature | Protection |
 | --- | --- |
@@ -187,6 +241,19 @@ readiness is claimed.** See the [full threat boundaries](docs/AGENT-SECURITY.md)
 for the architecture rationale and remaining work.
 
 ## Design: understand first, inspect deeper
+
+<table>
+<tr>
+<td width="50%"><img src="docs/media/01-atlas.png" alt="The atlas: every recorded shallow M6+ earthquake since 1970"></td>
+<td width="50%"><img src="docs/media/03-story.png" alt="How it works: a six-scene walk through one recorded mainnet settlement"></td>
+</tr>
+<tr>
+<td><b>The atlas.</b> Nothing here is drawn. The fault lines emerge from plotting
+6,311 real shallow M6+ events, so the map is the evidence rather than a picture of it.</td>
+<td><b>How it works.</b> Six scenes over one real mainnet settlement — choose,
+commit, confirm, release, verify, protect — labelled as a recording, not live.</td>
+</tr>
+</table>
 
 **Cover → Policies → How it works.** Three destinations, with technical evidence
 one disclosure away.
@@ -249,6 +316,12 @@ intended interface and `TRUST_PROXY=1` only behind a trusted reverse proxy.
 <summary>Pricing, recovery and reproduction checks</summary>
 
 ## Pricing and capacity
+
+![The quote panel: Armenia, Quindío priced at four dollars for eight hundred and four dollars of cover](docs/media/02-quote.png)
+
+*Armenia, Quindío: $4 buys $804 of 30-day cover. The premium is not a constant —
+it comes from the USGS catalogue for that exact point, and the source query is one
+click away under "Coverage & pricing details".*
 
 A first-order Poisson model estimates shallow M6+ frequency over a 300 km
 reference region, scales to the fixed 100 km trigger circle, and adds uncertainty
