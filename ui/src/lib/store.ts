@@ -17,7 +17,14 @@ let state: AgentState = { checked: false, online: false, network: 'testnet', wri
 const subs = new Set<(s: AgentState) => void>();
 const emit = () => subs.forEach((f) => f(state));
 
-export async function refresh() {
+let inflight: Promise<void> | null = null;
+export function refresh(): Promise<void> {
+  if (inflight) return inflight; // several components mount at once; one round trip serves them all
+  inflight = doRefresh().finally(() => { inflight = null; });
+  return inflight;
+}
+
+async function doRefresh() {
   try {
     const h = await agent.health();
     let pool: agent.Pool | null = state.pool;
