@@ -1,4 +1,3 @@
-import { PracticeWallet } from './PracticeWallet';
 import { ChainActivity } from './ChainActivity';
 import { Id } from '../components/ui';
 import { onLink, type Route } from '../lib/router';
@@ -14,7 +13,7 @@ export function Chrome({ route }: { route: Route }) {
     <nav aria-label="Main navigation" className="main-nav">
       {[['/', 'Cover', route.name === 'home'], ['/policies', 'Policies', route.name === 'policies' || route.name === 'policy'], ['/story', 'How it works', route.name === 'story']].map(([href, label, active]) => <a key={String(href)} href={String(href)} onClick={onLink} className={`navlink ${active ? 'navlink-on' : ''}`} aria-current={active ? 'page' : undefined}>{label}</a>)}
     </nav>
-    <div className="chrome-status"><PracticeWallet/>
+    <div className="chrome-status">
       <span className={`network-label ${a.checked && !a.online ? 'text-pending' : ''}`}><span className={`status-dot ${a.online ? 'bg-ok' : 'bg-pending'}`} />{route.name==='story'?'Mainnet recording':!a.checked ? 'Connecting' : !a.online ? 'Estimates only' : `${a.network === 'testnet' ? 'Testnet demo' : 'Mainnet · read only'}`}</span>
       {p && route.name!=='story' ? <details className="pool-summary">
         <summary><span className="capacity-mini"><span style={{ width: `${used}%` }} /></span><span>Pool capacity</span></summary>
