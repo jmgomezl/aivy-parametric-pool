@@ -1,62 +1,147 @@
 # Aivy Quorum · Earthquake cover
 
-Choose a place. Commit a fixed payout. Two oracle confirmations release it.
+**Choose a place. Fix the payout. Let verified signatures release it.**
 
-Aivy Quorum demonstrates parametric earthquake settlement using native Hedera services.
-The agent pre-signs a Scheduled Transaction at issuance. The pool key requires
-both the agent and two of three oracle keys. When the missing signatures arrive,
-Hedera executes the scheduled transfer without a separate executor transaction.
+A parametric earthquake-cover prototype: a deterministic agent prices and commits
+a payout; oracle keys verify the event; Hedera executes the pre-signed transfer
+when its signature requirements are met. Uniswap adds a live view of what the
+modeled payout could buy in ETH.
 
-**Public UI: funded testnet demo.** No user payment is required. Beneficiary
-accounts are managed by the service. `aUSDd` is an unbacked demo token with no cash
-value; displayed dollars are model outputs. This is a prototype, not live cover.
+[Try the demo](https://quorum.aivylabs.xyz) · [Watch the mechanism](https://quorum.aivylabs.xyz/story) · [Recording guide](docs/SUBMISSION.md)
 
-**Event checks are manual.** The oracle services read catalogues when requested.
-Automatic ledger execution does not imply automatic earthquake monitoring.
-The story replays controlled signatures from a recorded mainnet transfer.
+**Judge shortcuts:** [Hedera](#why-hedera) · [Uniswap](#why-uniswap) ·
+[Novelty](#what-is-new) · [Security](#security-by-architecture) · [Evidence](#verify-in-one-minute)
 
-See [the submission walkthrough](docs/SUBMISSION.md) and [AI assistance disclosure](docs/AI-ASSISTANCE.md).
+> Public cover is a **funded testnet demo**. `aUSDd` has no cash value; dollars are
+> model outputs. Event checks are manually requested. Mainnet settlement is a
+> labeled recording; per-policy funding is a preview.
 
-## Start here, judges
+## The problem and the improvement
 
-[Open the app](https://quorum.aivylabs.xyz) ·
-[3-minute walkthrough](docs/SUBMISSION.md) ·
-[Security architecture](docs/AGENT-SECURITY.md) ·
-[Implementation and visual audit](AUDIT-IMPLEMENTATION.md)
+Parametric cover replaces damage assessment with a measurable trigger. A remaining
+engineering problem is connecting **the promised terms, event verification and
+payment authority** so a reviewer can check what was actually authorized.
 
-Security is part of the implementation: authorization, admission budgets and
-payment constraints are enforced in code before signing, with the signature
-threshold independently enforced by Hedera. The interface exposes evidence on
-demand so these checks are inspectable without crowding the primary journey.
-
-| Capability | What actually runs |
+| Question | Quorum's implementation |
 | --- | --- |
-| Create cover, premium transfer and cover NFT | Funded **Hedera testnet** demo; service-managed beneficiary; `aUSDd` has no cash value. |
-| Scheduled settlement story | **Recorded mainnet** demonstration: 4 HBAR executed. Separate authorization controls show 1 HBAR transferred and 5 HBAR blocked. Controlled signatures, not a live earthquake claim. |
-| Paid oracle access (x402) | Verified **testnet** payment through our self-hosted facilitator; paying for data does not approve a claim. [Payment evidence](docs/evidence/x402-testnet.json). |
-| Uniswap conversion | **Live Trading API quotes** for hypothetical USDC→ETH on Base or Unichain mainnet. No bridge, token approval, wallet signature or swap execution. [Quote evidence](docs/evidence/uniswap-quotes.json). |
-| Per-policy funding | **Concept preview** showing contribution, premium share and capital at risk. No per-policy deposit or LP NFT is issued; existing LP primitives use fungible shares in a shared pool. |
+| What was promised? | Fixed beneficiary, asset, amount and earthquake conditions, published to HCS and linked from a cover NFT. |
+| Who may release it? | Agent **AND** two of three oracle keys; each oracle checks terms against the actual scheduled transfer. |
+| Who sends the final payout? | Hedera executes when required signatures arrive; no separate keeper/executor transaction for this transfer. |
+| What could that payout mean in ETH? | A live Uniswap USDC→ETH quote, explicitly separate from settlement. |
+
+## Why Hedera
+
+**The obligation is a native Scheduled Transaction.** Hedera's scheduling and
+nested keys directly express the fixed-transfer authorization this prototype
+needs; the payout path does not require a custom settlement smart contract.
+
+```mermaid
+flowchart LR
+  Terms[HCS: fixed policy terms] --> Check[Oracle verifies terms and transfer]
+  Agent[Agent pre-signs at issuance] --> Schedule[Scheduled payout]
+  Check --> Votes[2 of 3 oracle signatures]
+  Votes --> Schedule
+  Schedule --> Result[Hedera executes fixed transfer]
+  Terms -. receipt pointer .-> NFT[HTS cover NFT]
+```
+
+| Component used | Why it fits | Implementation |
+| --- | --- | --- |
+| **Scheduled Transactions + nested KeyList/ThresholdKey** | Prepare the exact payout now; release it only with agent + oracle quorum authorization. | [Payout](src/policy/payout.js), [reusable settlement plugin](https://github.com/jmgomezl/hak-scheduled-settlement) |
+| **Hedera Consensus Service (HCS)** | Publish ordered policy terms; hash-bind them to the schedule so oracles verify the same obligation. | [Terms](src/policy/terms.js), [binding](src/policy/binding.js) |
+| **Hedera Token Service (HTS)** | Issue a cover receipt NFT and transfer the demo settlement token; premium and broker split can settle atomically. | [NFT](src/policy/collection.js), [premium transfer](src/policy/purchase.js) |
+| **Mirror Node + HashScan** | Read actual signer/transaction evidence and let judges independently inspect receipts. | [Ledger reader](src/ledger.js), [recorded evidence](ui/src/data/mainnet.json) |
+| **Hedera Agent Kit plugin** | Extract the scheduling primitive for reuse beyond this earthquake UI. | [Dependency](package.json), [plugin repository](https://github.com/jmgomezl/hak-scheduled-settlement) |
+
+**Boundary:** the ledger enforces signatures, not earthquake truth or every
+underwriting rule. Oracle software checks conditions. Separate keys on our demo
+host do not prove independent operators.
+
+## Why Uniswap
+
+**A payout amount is more useful when a beneficiary can inspect its purchasing
+power in another asset.** “Payout in ETH?” connects the modeled cover amount to a
+live liquidity quote, rather than displaying a static exchange-rate estimate.
+
+```mermaid
+flowchart LR
+  Model[Modeled USD payout] --> Equivalent[Hypothetical same amount of USDC]
+  Equivalent --> Server[Server: allowlisted quote tool]
+  Server --> API[Uniswap Trading API]
+  API --> View[ETH estimate, route, gas and expiry]
+```
+
+| Component used | Purpose in this app |
+| --- | --- |
+| **Trading API via `hak-uniswap-plugin` → `uniswap_quote`** | Fetch a real USDC→ETH quote on **Base (8453)** or **Unichain (130)** mainnet. |
+| **Server-side quote adapter** | Convert exact token units, allowlist assets/chains, bound requests, cache/coalesce calls and keep the API key private. |
+| **Optional conversion panel** | Show quote ID, route, estimated gas, timestamp, expiry and refresh alongside the cover amount. |
+
+[Adapter](src/settlement/crossAsset.js) · [UI](ui/src/app/PayoutConversion.tsx) ·
+[Tests](tests/cross-asset.test.js) · [Real API responses](docs/evidence/uniswap-quotes.json)
+
+**Implemented: live quotes.** No bridge, approval, swap or ETH payout is executed.
+The diagram is a data flow; Hedera funds do not move to EVM. `aUSDd` is not USDC.
+The proposed per-policy LP receipt is also **not a Uniswap liquidity position**.
+
+## What is new
+
+The contribution is the integration of **hazard pricing → fixed obligation →
+policy-bound oracle signatures → native scheduled execution**, with evidence a
+judge can inspect at each step. It is not a claim to invent parametric insurance,
+NFT receipts or multisignatures.
+
+| Built during this event | Improvement contributed |
+| --- | --- |
+| **Reusable signature-gated settlement plugin** | Extracts the fixed-transfer primitive from the demo into Hedera Agent Kit tooling. |
+| **Hazard-priced issuance with durable guards** | Turns a map location into explicit terms while checking budgets, capacity and retry safety before ledger writes. |
+| **Policy-bound, x402-paid oracle services** | Connects paid catalogue access with constrained signing; payment itself never authorizes a claim. |
+| **Verifiable, geographic cover UX** | Makes location, payout, funding risk and chain evidence understandable through maps, receipts and signature diagrams. |
+
+The Uniswap plugin predates this event; its live payout-quote integration here is
+new. Earlier Aivy work also used HTS pools and scheduling. The detailed
+[continuity disclosure](#prior-work-boundary-continuity-track) identifies reuse,
+event work and the Agent Kit contribution. [AI assistance is disclosed](docs/AI-ASSISTANCE.md).
+
+## Verify in one minute
+
+| Judge action | Evidence / scope |
+| --- | --- |
+| Open **How it works → Release** | Recorded **4 HBAR mainnet** transfer, with receipt. Controlled signatures, not a real earthquake claim. |
+| Open a policy → **Agent guardrails & proof** | Runtime limits plus separate mainnet controls: [1 HBAR transferred](https://hashscan.io/mainnet/schedule/0.0.10843723), [5 HBAR blocked](https://hashscan.io/mainnet/schedule/0.0.10843725) without the agent signature. |
+| Open **Payout in ETH? → Uniswap** | Live mainnet quote; switch Base/Unichain and inspect route/quote ID. [Saved evidence](docs/evidence/uniswap-quotes.json). |
+| Open **Onchain / Verify** | Testnet NFT, transfers and paid oracle evidence. [x402 payment receipt](docs/evidence/x402-testnet.json); self-hosted facilitator. |
+| Open **LP preview** | Proposed per-policy contribution, premium share and capital-at-risk outcomes. No deposit or LP NFT is issued; actual LP primitives use shared-pool fungible shares. |
 
 ## Security by architecture
 
-**The deployed agent is deterministic. No LLM decides, authorizes or signs a
-public policy.** A future AI planner must call the constrained policy service
-without receiving raw keys, a shell or arbitrary transaction-signing authority.
-User input and external catalogue data are treated as data, never instructions.
+**The deployed agent is deterministic: no LLM decides or signs a public policy.**
+A future planner must stay outside the signing boundary. Security is enforced in
+code and ledger keys, not by a system prompt.
 
 ```mermaid
-flowchart TD
-  Input[Untrusted browser input] --> Validate[Typed and bounded request allowlist]
-  Validate --> Admission[Issuance lock, idempotency and durable budgets]
-  Admission --> Reserve[Fresh balance check and persistent capital reservation]
-  Reserve --> Commit[Agent commits exact terms and scheduled transfer]
-  Data[External earthquake catalogues] --> Verify[Oracle verifies published terms and transfer bytes]
-  Commit --> Gate[Hedera: agent AND 2 of 3 oracle keys]
-  Verify --> Gate
-  Gate --> Execute[Network executes the fixed transfer]
+flowchart LR
+  Input[Untrusted input] --> Validate[Typed allowlist]
+  Validate --> Budget[Durable budgets and lock]
+  Budget --> Reserve[Balance check and reservation]
+  Reserve --> Sign[Exact transaction authority]
+  Sign --> Gate[Ledger signature gate]
 ```
 
-### Guardrails and where to inspect them
+| Before a signature | Protection |
+| --- | --- |
+| Public request | Testnet-only issuance, bounded JSON and fields; no caller-selected beneficiary or raw transaction. |
+| Spending admission | Default **3 attempts/IP/hour · 100 attempts/24h · $20k modeled cover/24h**; survives restart. |
+| Interrupted issuance | Idempotent request IDs, retained reservations, fail-closed locks and reconciliation. |
+| Oracle / x402 / Uniswap | Exact terms/transfer verification; explicitly bounded payments; quote-only Uniswap authority. |
+| Runtime | Private key/config files, loopback services behind TLS, patched minimal dependencies. |
+
+**Evidence:** 41 offline tests passed locally and on the VPS in the September 6
+review; UI build passed. A [live refusal check](docs/evidence/agent-guardrails.json)
+confirmed an oversized request caused no ledger write. [Current runtime limits](https://quorum.aivylabs.xyz/api/guardrails).
+
+<details>
+<summary>All guardrails, implementation links and verification details</summary>
 
 | Protection | Implemented behavior | Source / evidence |
 | --- | --- | --- |
@@ -83,7 +168,9 @@ oversized request refused before reservation or ledger work, with no request
 record and unchanged budget. Snapshot usage is historical; the live endpoint
 shows current usage. The security review did not create a policy or send a payment.
 
-### What these controls do not guarantee
+</details>
+
+### Trust boundary
 
 This is a prototype with hot keys under one VPS/administrative trust domain.
 Separate keys and catalogue sources do not mean independent oracle operators.
@@ -98,6 +185,44 @@ across hosts. The x402 facilitator has no production fee-sponsorship abuse budge
 or automatic refund system. **No independent security audit or production
 readiness is claimed.** See the [full threat boundaries](docs/AGENT-SECURITY.md)
 for the architecture rationale and remaining work.
+
+## Design: understand first, inspect deeper
+
+**Cover → Policies → How it works.** Three destinations, with technical evidence
+one disclosure away.
+
+| Visual | What it teaches |
+| --- | --- |
+| **World map + geographic NFTs** | Where cover applies; worldwide search and Mexico/California/Tokyo demos. |
+| **Interactive premium history** | Premium variation for a fixed **$800 modeled payout**; click/drag/keyboard year selection and red/green annual change. |
+| **LP contribution + two outcomes** | Premium share and principal at risk, explicitly labeled as a preview. |
+| **Signatures → transfer → receipt** | Who signed, why execution happened or was blocked, and where to verify it. |
+| **Responsive disclosures** | Minimal main copy, mobile stacking, keyboard focus and reduced motion; 320px through desktop reviewed. |
+
+<details>
+<summary>All design improvements and browser verification</summary>
+
+| Improvement | What the visitor sees / why it matters |
+| --- | --- |
+| Global discovery | Debounced Photon/OpenStreetMap city and municipality search, keyboard selection, coordinate entry, map pinning, zoom/pan, and Mexico, California and Tokyo demos. Unaccented “Medellin” was verified. Search coverage depends on the upstream catalogue. |
+| Geographic NFT identity | Aivy Quorum branding, local map, approximate 100 km protected area, terms, payout and network replace abstract artwork. Cover NFTs and proposed LP receipts remain visually distinct. |
+| Understandable pricing history | Premium-over-time chart holds the modeled payout at **$800**, with the selected year and red/green annual variation. Click, tap or drag the chart—or use the keyboard/timeline—to choose a year. Historical exploration cannot change issued terms; returning to Cover restores the current M6+ quote. |
+| Visual funding preview | Contribution slider, premium share and two claim outcomes show how capital might participate. Annual premium rate is gross, before claims/costs; contributed principal can be used for a payout. Formula and assumptions expand on demand. Preview/unminted labels remain visible. |
+| A clearer six-scene story | Geographic terms → capital commitment → named signatures → transfer animation → NFT/receipts → blocked authorization control. Direct step links and previous/next controls keep the recorded mainnet demonstration navigable. |
+| Explicit signature evidence | Old circular diagrams were replaced with **agent key AND oracle threshold → observed result**. “3 signed · 2 required” avoids ambiguous counts. Missing agent signature explains the blocked control; unknown ledger status remains unverified. |
+| Quiet blockchain visibility | Optional Onchain/Verify panel and contextual receipt links expose NFT mint/delivery, transfers, agent/oracle actions and x402 evidence. Testnet, recorded mainnet, live API quotes and proposed funding are labeled separately. Unknown or invalid policies do not borrow another policy's receipts. |
+| Optional Uniswap detail | “Payout in ETH? · Uniswap” expands to network, quote ID, timestamp/expiry, refresh, estimated gas and route evidence. A real quote is visible without implying redemption or a completed swap. |
+| Recovery and navigation | Saved request IDs, interrupted-request review, honest loading/refusal/offline states and retry links. Location persists on refresh, gallery filters survive detail round trips, invalid routes offer recovery, and “Created here” means this browser—not wallet ownership. |
+| Responsive and accessible controls | Mobile layouts stack; story navigation remains accessible; maps/charts have text descriptions, controls support keyboard use, focus is visible for keyboard interaction, and reduced-motion preferences are respected. Recent reviews covered 320 px mobile through desktop without horizontal overflow in the checked flows. |
+
+The [implementation audit](AUDIT-IMPLEMENTATION.md) records the delivered changes
+and checks; the [recording-readiness review](docs/FINAL-UX-REVIEW.md) covers the
+end-to-end demo. The latest visual review checked the active Cover, Policies,
+NFT/LP, historical chart and story illustration paths. Legacy ring components in
+unrouted source files are not used by the active app. These are documented
+browser checks, not a claim of exhaustive device or accessibility certification.
+
+</details>
 
 ## Run locally
 
@@ -120,51 +245,8 @@ For hosting, serve the UI with an SPA fallback and proxy `/api` to the backend,
 or build with `VITE_AGENT_URL` pointing to its HTTPS origin. Set `HOST` for the
 intended interface and `TRUST_PROXY=1` only behind a trusted reverse proxy.
 
-## Design: simple to use, possible to verify
-
-The primary journey has three destinations: **Cover**, **Policies**, and
-**How it works**. Details expand where they are relevant. The goal is minimal
-primary copy with visible scope and risk, rather than hiding qualifications.
-
-| Improvement | What the visitor sees / why it matters |
-| --- | --- |
-| Global discovery | Debounced Photon/OpenStreetMap city and municipality search, keyboard selection, coordinate entry, map pinning, zoom/pan, and Mexico, California and Tokyo demos. Unaccented “Medellin” was verified. Search coverage depends on the upstream catalogue. |
-| Geographic NFT identity | Aivy Quorum branding, local map, approximate 100 km protected area, terms, payout and network replace abstract artwork. Cover NFTs and proposed LP receipts remain visually distinct. |
-| Understandable pricing history | Premium-over-time chart holds the modeled payout at **$800**, with the selected year and red/green annual variation. Click, tap or drag the chart—or use the keyboard/timeline—to choose a year. Historical exploration cannot change issued terms; returning to Cover restores the current M6+ quote. |
-| Visual funding preview | Contribution slider, premium share and two claim outcomes show how capital might participate. Annual premium rate is gross, before claims/costs; contributed principal can be used for a payout. Formula and assumptions expand on demand. Preview/unminted labels remain visible. |
-| A clearer six-scene story | Geographic terms → capital commitment → named signatures → transfer animation → NFT/receipts → blocked authorization control. Direct step links and previous/next controls keep the recorded mainnet demonstration navigable. |
-| Explicit signature evidence | Old circular diagrams were replaced with **agent key AND oracle threshold → observed result**. “3 signed · 2 required” avoids ambiguous counts. Missing agent signature explains the blocked control; unknown ledger status remains unverified. |
-| Quiet blockchain visibility | Optional Onchain/Verify panel and contextual receipt links expose NFT mint/delivery, transfers, agent/oracle actions and x402 evidence. Testnet, recorded mainnet, live API quotes and proposed funding are labeled separately. Unknown or invalid policies do not borrow another policy's receipts. |
-| Optional Uniswap detail | “Payout in ETH? · Uniswap” expands to network, quote ID, timestamp/expiry, refresh, estimated gas and route evidence. A real quote is visible without implying redemption or a completed swap. |
-| Recovery and navigation | Saved request IDs, interrupted-request review, honest loading/refusal/offline states and retry links. Location persists on refresh, gallery filters survive detail round trips, invalid routes offer recovery, and “Created here” means this browser—not wallet ownership. |
-| Responsive and accessible controls | Mobile layouts stack; story navigation remains accessible; maps/charts have text descriptions, controls support keyboard use, focus is visible for keyboard interaction, and reduced-motion preferences are respected. Recent reviews covered 320 px mobile through desktop without horizontal overflow in the checked flows. |
-
-The [implementation audit](AUDIT-IMPLEMENTATION.md) records the delivered changes
-and checks; the [recording-readiness review](docs/FINAL-UX-REVIEW.md) covers the
-end-to-end demo. The latest visual review checked the active Cover, Policies,
-NFT/LP, historical chart and story illustration paths. Legacy ring components in
-unrouted source files are not used by the active app. These are documented
-browser checks, not a claim of exhaustive device or accessibility certification.
-
-## What is demonstrated
-
-The nested key is `AND(agent, 2-of-3 oracle keys)`. The oracle quorum alone cannot
-spend from the pool. The agent and quorum together still control it: this is a
-specific authorization restriction, not protection from their collusion.
-
-The oracle adapters use USGS, EMSC and GEOFON data. The demo operates those
-services; source names do not mean those institutions operate our signing keys.
-Separate processes and data sources do not establish independent operators.
-
-Before signing, an oracle binds the configured HCS policy topic, recorded terms,
-issuer signature, memo hash, network, expiry, asset, beneficiary and amount to
-the actual scheduled transfer. Legacy recordings require manual verification.
-The x402 facilitator accepts only the exact payment transfer and refuses extra
-legs, facilitator debits, approvals, unsupported fields and excessive fees.
-
-The policy NFT points to HCS terms. Premium transfers can include a broker split
-in the same transaction. Cross-asset support returns an optional quote; it does
-not bridge or execute an EVM payout.
+<details>
+<summary>Pricing, recovery and reproduction checks</summary>
 
 ## Pricing and capacity
 
@@ -222,7 +304,15 @@ submits controlled signatures rather than verifying a real earthquake. Run in an
 isolated checkout with separate demo accounts if reproducing the historical run.
 The UI's frozen mainnet record is not replaced automatically.
 
+</details>
+
 ## Prior work boundary (CONTINUITY track)
+
+Earlier Aivy infrastructure and the Uniswap plugin are reused; the conditional
+settlement plugin and this earthquake application are event work.
+
+<details>
+<summary>Full prior-work disclosure and upstream contribution</summary>
 
 **Everything in this repository was written during ETHOnline 2026 (from
 2026-09-04).** The repo has no pre-event commits.
@@ -262,6 +352,11 @@ What is **new**, built during this event:
 5. **x402-gated oracle services** — the oracle agents are the paid service, not
    just consumers of one.
 
+</details>
+
+<details>
+<summary>Repository map</summary>
+
 ## Layout
 
 - `src/policy/`: pricing-to-issuance flow, HCS terms, NFT and scheduled transfer.
@@ -275,5 +370,8 @@ What is **new**, built during this event:
 - `deploy/`: oracle deployment configuration.
 - `research/`: model rationale and historical integration notes.
 - `LINKS.md`: historical ledger artifacts.
+
+
+</details>
 
 MIT.
