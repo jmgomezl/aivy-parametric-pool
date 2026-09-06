@@ -86,3 +86,19 @@ same-page navigation synchronizes the view with the URL. Invalid paths show
 recovery links. Browser checks confirmed return-to-cover, recent funding gallery
 round trips, canonical Policies navigation, and the missing-page recovery.
 Production build and all 26 tests pass. No new blockchain writes were made.
+
+## Live Uniswap integration
+
+Reused Kickoff's Uniswap API credential in ignored local and server environment
+files only. Real Base and Unichain mainnet quotes now work through the existing
+plugin. Added an optional “Payout in ETH? · Uniswap” disclosure to current cover
+quotes and cover policy details, using the modeled payout as hypothetical USDC.
+Timestamp, expiry, refresh, quote ID, network, estimated extra gas and the latest
+API route response are visible without implying a bridge or executed swap.
+
+Verified production quotes on both networks, 320px layout without overflow,
+homepage/policy entry points, network switching, expiry, refresh and invalid
+inputs. Build and 32 tests pass, including exact units, quote caching/coalescing,
+expiry, bounds, sanitization, malformed results and API request limits. Public
+snapshot evidence is in docs/evidence/uniswap-quotes.json. No approval, swap,
+Hedera transaction or wallet signature was submitted for this integration.

@@ -68,3 +68,7 @@ Hedera funds or execute the swap.” The quote ID and API route are inspectable.
 This is a live API integration, not a completed onchain swap or a Uniswap LP NFT.
 
 API behavior follows the [Uniswap integration guide](https://developers.uniswap.org/docs/trading/swapping-api/start-building/integration-guide).
+
+[Recorded API evidence](evidence/uniswap-quotes.json) preserves actual Base and
+Unichain quote IDs and routes from the verification run. These are expired price
+snapshots, not transaction receipts; use the UI to request current prices.
