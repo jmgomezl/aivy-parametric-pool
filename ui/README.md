@@ -82,3 +82,11 @@ The default Global demos gallery features real testnet policies for Mexico City,
 San Francisco (California), and Tokyo. Their public IDs and receipts are tracked
 in `src/data/global-demos.json`; the cards still read current policy and signature
 state from the API. Existing policies remain in Recent, Created here, and All policies.
+
+Worldwide place search uses Photon/OpenStreetMap through `/api/places`. It searches
+cities, towns, villages, localities, districts and counties rather than only the
+bundled capitals. Results include state and country; accented and unaccented
+queries share a bounded server cache. Requests are debounced, canceled when stale,
+and limited upstream. The public Photon service has no availability guarantee;
+local suggestions (including Medellín) and direct coordinates remain available.
+Coverage follows OpenStreetMap, not an exhaustive guarantee of every municipality.

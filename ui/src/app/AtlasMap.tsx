@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+import { findPlaces } from '../lib/agent';
 import { History } from './History';
 import capitalsData from '../data/capitals.json';
 import { CATALOGUE, FIRST_YEAR, LAST_YEAR, MODEL, PLACES, dayOf, placeName } from '../lib/hazard';
@@ -9,7 +10,9 @@ import { H, HOME, W, base, clampView, kmToPxX, kmToPxY, pan, project, unproject,
 export interface Pin { lat: number; lon: number; name?: string }
 export interface MapState { hover: Pin | null; year: number; live: boolean; now: Date; minMag: number; exploring: boolean }
 export interface Marker { lat: number; lon: number; label: string; id: string; tone?: 'ok' | 'pending' | 'neutral' }
-const cities = [...PLACES, ...capitalsData.rows.map(([name, country, lon, lat]) => ({ name: `${name}, ${country}`, lat: Number(lat), lon: Number(lon) }))];
+const normalize = (v:string) => v.normalize('NFD').replace(/(\p{Script=Latin})\p{M}+/gu,'$1').normalize('NFC').toLocaleLowerCase().trim();
+const coordinatePattern = /^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/;
+const cities = [{name:'Medellín, Antioquia, Colombia',lat:6.2443382,lon:-75.573553}, ...PLACES, ...capitalsData.rows.map(([name, country, lon, lat]) => ({ name: `${name}, ${country}`, lat: Number(lat), lon: Number(lon) }))];
 
 export function AtlasMap({ pin, onPin, onState, markers = [], onMarker, days = MODEL.days }: {
   pin: Pin | null; onPin: (p: Pin) => void; onState?: (s: MapState) => void;
@@ -20,6 +23,18 @@ export function AtlasMap({ pin, onPin, onState, markers = [], onMarker, days = M
   const [year, setYear] = useState(LAST_YEAR), [minMag, setMinMag] = useState(6);
   const [playing, setPlaying] = useState(false), [exploring, setExploring] = useState(false);
   const [search, setSearch] = useState(''), [searching, setSearching] = useState(false);
+  const resultId=useId();
+  const [searchRetry,setSearchRetry]=useState(0);
+  const [activeResult,setActiveResult]=useState(-1);
+  const [remote,setRemote]=useState<{query:string;rows:Pin[];status:'loading'|'ready'|'error'}>({query:'',rows:[],status:'ready'});
+  useEffect(()=>{
+    const q=search.trim();
+    if(!searching||q.length<2||coordinatePattern.test(q))return;
+    const controller=new AbortController();
+    setRemote({query:q,rows:[],status:'loading'});
+    const timer=window.setTimeout(()=>{void findPlaces(q,controller.signal).then(rows=>{if(!controller.signal.aborted){setRemote({query:q,rows,status:'ready'});setActiveResult(-1);}}).catch(()=>{if(!controller.signal.aborted)setRemote({query:q,rows:[],status:'error'});});},500);
+    return()=>{controller.abort();window.clearTimeout(timer);};
+  },[search,searching,searchRetry]);
   const drag = useRef<{ x: number; y: number; view: View; moved: boolean } | null>(null);
   const live = year === LAST_YEAR;
   const now = useMemo(() => live ? new Date(CATALOGUE.fetchedAt) : new Date(Date.UTC(year, 11, 31)), [year, live]);
@@ -47,19 +62,24 @@ export function AtlasMap({ pin, onPin, onState, markers = [], onMarker, days = M
   const closeExplore = () => { setExploring(false); setYear(LAST_YEAR); setMinMag(6); setPlaying(false); };
   const choose = (p: Pin) => { onPin(p); setSearch(''); setSearching(false); };
   const results = useMemo(() => {
-    const coordinate=/^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/.exec(search);
-    if(coordinate){const lat=Number(coordinate[1]),lon=Number(coordinate[2]);if(Math.abs(lat)<=90&&Math.abs(lon)<=180)return [{lat,lon,name:`${lat.toFixed(2)}, ${lon.toFixed(2)}`}];}
-    return search.trim()?cities.filter(c=>c.name.toLocaleLowerCase().includes(search.toLocaleLowerCase().trim())).slice(0,6):PLACES.slice(1,4);
-  },[search]);
+    const coordinate=coordinatePattern.exec(search);
+    if(coordinate){const lat=Number(coordinate[1]),lon=Number(coordinate[2]);return Math.abs(lat)<=90&&Math.abs(lon)<=180?[{lat,lon,name:`${lat.toFixed(2)}, ${lon.toFixed(2)}`}]:[];}
+    if(!search.trim())return PLACES.slice(1,4);
+    const local=cities.filter(c=>normalize(c.name).includes(normalize(search)));
+    const worldwide=remote.query===search.trim()&&remote.status==='ready'?remote.rows:[];
+    return [...new Map([...worldwide,...local].map(p=>[normalize(p.name??''),p])).values()].slice(0,8);
+  },[search,remote]);
+  const looking=searching&&search.trim().length>=2&&!coordinatePattern.test(search)&&(remote.query!==search.trim()||remote.status==='loading');
+  const searchError=remote.query===search.trim()&&remote.status==='error'&&!coordinatePattern.test(search);
   const selected = pin ? project(pin.lon, pin.lat, view) : null;
   const land = useMemo(() => landPath(view), [view]);
   return <div className="atlas">
     <div className="place-search">
-      <form onSubmit={e => { e.preventDefault(); if (results[0]) choose(results[0]); }} role="search">
-        <span aria-hidden="true">⌕</span><input aria-label="Find a city" placeholder="Find a city" value={search} onFocus={() => setSearching(true)} onChange={e => { setSearch(e.target.value); setSearching(true); }} onKeyDown={e => { if (e.key === 'Escape') setSearching(false); }} />
-        <button type="submit" className="search-submit" disabled={!results.length} aria-label="Choose first city result">→</button>
+      <form onSubmit={e => { e.preventDefault(); if (results[activeResult<0?0:activeResult]) choose(results[activeResult<0?0:activeResult]); }} role="search">
+        <span aria-hidden="true">⌕</span><input aria-label="Find a city or municipality" placeholder="City, town or municipality" role="combobox" aria-autocomplete="list" aria-expanded={searching} aria-controls={searching?resultId:undefined} aria-activedescendant={searching&&activeResult>=0?`${resultId}-${activeResult}`:undefined} autoComplete="off" maxLength={100} value={search} onFocus={() => setSearching(true)} onChange={e => { setSearch(e.target.value); setSearching(true);setActiveResult(-1); }} onKeyDown={e => { if(e.nativeEvent.isComposing)return; if (e.key === 'Escape') {setSearching(false);setActiveResult(-1);} if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();setSearching(true);setActiveResult(i=>results.length?(i<0?(e.key==='ArrowDown'?0:results.length-1):(i+(e.key==='ArrowDown'?1:-1)+results.length)%results.length):-1);} }} />
+        <button type="submit" className="search-submit" disabled={!results.length} aria-label="Choose place result">→</button>
       </form>
-      {searching ? <div className="search-results"><div className="eyebrow">{search ? 'Matching places' : 'Try a place'}</div>{results.map(p => <button key={p.name} onClick={() => choose(p)}><span>{p.name}</span><span aria-hidden="true">↗</span></button>)}{!results.length ? <p>No matching city. Enter latitude, longitude or choose the map.</p> : null}<button className="search-dismiss" onClick={() => setSearching(false)}>Close search</button></div> : null}
+      {searching ? <div className="search-results"><div className="eyebrow">{search ? 'Matching places' : 'Try a place'}</div><div id={resultId} role="listbox" aria-label="Matching places">{results.map((p,i) => <button type="button" role="option" aria-selected={activeResult===i} id={`${resultId}-${i}`} key={`${p.name}-${p.lat}-${p.lon}`} onMouseEnter={()=>setActiveResult(i)} onClick={() => choose(p)}><span>{p.name}</span><span aria-hidden="true">↗</span></button>)}</div><p className="search-status" role="status">{looking?'Searching worldwide…':searchError?'Worldwide search unavailable. Try again or use coordinates.':!results.length?'No match. Add a country, enter coordinates, or choose the map.':search.trim().length===1?'Keep typing to search worldwide.':''}</p>{remote.query===search.trim()&&remote.status==='ready'&&search.trim().length>=2?<small className="search-credit"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap contributors</a> · Photon</small>:null}<div className="search-actions">{searchError?<button className="search-dismiss" onClick={()=>setSearchRetry(n=>n+1)}>Retry worldwide search</button>:null}<button className="search-dismiss" onClick={() => setSearching(false)}>Close search</button></div></div> : null}
     </div>
     {!pin && !searching ? <div className="suggested-places"><span>Try</span>{PLACES.slice(1,4).map(p=><button key={p.name} className="chip" onClick={()=>choose(p)}>{p.name.split(',')[0]} ↗</button>)}</div> : null}
     <div className="map-frame">

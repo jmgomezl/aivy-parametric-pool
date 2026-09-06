@@ -10,6 +10,7 @@
 // own leg of the premium transfer, which the kit already supports through
 // AgentMode.RETURN_BYTES.
 import http from 'node:http';
+import { searchPlaces } from './places.js';
 import { paymentActivity } from './activity.js';
 import { AccountId, TokenId, TransferTransaction } from '@hiero-ledger/sdk';
 import { client, operator, assertOperatorKey, NETWORK, HASHSCAN } from './config.js';
@@ -69,6 +70,11 @@ async function main() {
     const route = url.pathname.replace(/\/$/, '');
 
     try {
+      if (route === '/api/places' && req.method === 'GET') {
+        try { return json(res,200,{places:await searchPlaces(url.searchParams.get('q')),source:'Photon / OpenStreetMap'}); }
+        catch(error) { return json(res,error.status??503,{ok:false,reason:'search_unavailable',message:error.status===400?error.message:'Worldwide search is unavailable. Try again or enter coordinates.'}); }
+      }
+
       if (route === '/api/activity' && req.method === 'GET') return json(res, 200, { network: NETWORK, payments: paymentActivity(NETWORK), checkedAt: new Date().toISOString() });
 
       if (route === '/api/health') {

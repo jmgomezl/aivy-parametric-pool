@@ -98,3 +98,10 @@ export const requestStatus=(id:string)=>call<RequestStatus>(`/api/requests/${enc
 
 export interface PaymentReceipt { kind: 'x402-payment'; network: Network; transaction: string; amount: string; asset: string; resource: string; at: string }
 export const activity = () => call<{ network: Network; payments: PaymentReceipt[]; checkedAt: string }>('/api/activity', undefined, 10000);
+
+export async function findPlaces(query: string, signal: AbortSignal): Promise<{name:string;lat:number;lon:number}[]> {
+  const res=await fetch(`${BASE}/api/places?q=${encodeURIComponent(query)}`,{signal:AbortSignal.any([signal,AbortSignal.timeout(10000)])});
+  const data=await res.json();
+  if(!res.ok||!Array.isArray(data.places))throw new Error('Place search unavailable');
+  return data.places;
+}
