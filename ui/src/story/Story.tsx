@@ -33,7 +33,7 @@ export function Story(){
  useEffect(()=>{if(previous.current===step)return;previous.current=step;heading.current?.focus({preventScroll:true});window.scrollTo({top:0,behavior:'instant'});},[step]);
  useEffect(()=>{const key=(e:KeyboardEvent)=>{if(e.ctrlKey||e.metaKey||e.altKey||(e.target as HTMLElement).closest('input,textarea,button,a,summary'))return;if(e.key==='ArrowRight'){e.preventDefault();go(step+1);}if(e.key==='ArrowLeft'){e.preventDefault();go(step-1);}};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key);},[step]);
  const b=beats[step];
- return <div className="app"><Chrome route={{name:'story'}}/><main className="replay-page">
+ return <div className="app"><Chrome route={{name:'story'}}/><main className="replay-page" id="main-content">
  <div className="replay-topline"><span className="eyebrow">Inside Aivy Quorum</span><span className="replay-network">● Mainnet recording</span></div>
  <nav className="replay-steps" aria-label="Demonstration steps">{beats.map((b,i)=><button key={b.label} aria-current={step===i?'step':undefined} aria-label={`Step ${i+1}: ${b.label}`} onClick={()=>go(i)}><span>{String(i+1).padStart(2,'0')}</span>{b.label}<i/></button>)}</nav>
  <div className="replay-heading"><div className="eyebrow">{String(step+1).padStart(2,'0')} / 06 · {b.label}</div><h1 ref={heading} tabIndex={-1}>{b.title}</h1><p>{b.caption}</p></div>

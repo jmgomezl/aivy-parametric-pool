@@ -1,5 +1,5 @@
 // The app is the default; the story is a mode.
-import { useRoute } from './lib/router';
+import { useRoute, onLink } from './lib/router';
 import { Chrome } from './app/Chrome';
 import { Home } from './app/Home';
 import { PoliciesPage } from './app/PoliciesPage';
@@ -15,9 +15,9 @@ export default function App() {
   return (
     <div className="app">
       <Chrome route={route} />
-      <div className="app-body">
-        {route.name === 'home' ? <Home /> : route.name === 'policies' ? <PoliciesPage /> : <PolicyPage key={route.serial} serial={route.serial} />}
-      </div>
+      <main className="app-body" id="main-content">
+        {route.name === 'home' ? <Home /> : route.name === 'policies' ? <PoliciesPage /> : route.name==='notfound'?<div className="page"><div className="page-inner empty-state"><h1>Page not found.</h1><p>Choose a place to start, or explore the demo policies.</p><a className="buy compact" href="/" onClick={onLink}>Choose a place →</a><a className="hs" href="/policies" onClick={onLink}>Explore policies ↗</a></div></div>: <PolicyPage key={route.serial} serial={route.serial} />}
+      </main>
     </div>
   );
 }

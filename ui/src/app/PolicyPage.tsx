@@ -12,12 +12,16 @@ import { OracleProof } from './OracleProof';
 export function PolicyPage({serial}:{serial:string}){
   const a=useAgent();
   const [position,setPosition]=useState<PositionKind>(()=>new URLSearchParams(location.search).get('position')==='lp'?'liquidity':'cover'),[portion,setPortion]=useState(10);
+  useEffect(()=>{const sync=()=>setPosition(new URLSearchParams(location.search).get('position')==='lp'?'liquidity':'cover');window.addEventListener('popstate',sync);return()=>window.removeEventListener('popstate',sync);},[]);
   const [retry,setRetry]=useState(0);
   const [lookup,setLookup]=useState<{p?:agent.Policy;error?:string;missing?:boolean}>({});
   const found=a.policies?.find(p=>String(p.serial)===serial);
   useEffect(()=>{if(!a.checked||!a.online||found)return;let live=true;agent.policy(serial).then(p=>{if(live)setLookup('ok'in p&&p.ok===false?{missing:p.reason==='not_found',error:p.message}:{p:p as agent.Policy});}).catch(()=>{if(live)setLookup({error:'The policy service is temporarily unavailable.'});});return()=>{live=false;};},[a.checked,a.online,serial,found,retry]);
   const p=found??lookup.p;
   if(!p)return <div className="page"><div className="page-inner empty-state"><h1>{lookup.missing?'Policy not found':a.checked&&(!a.online||lookup.error)?'Policy temporarily unavailable':'Loading policy…'}</h1><p>{lookup.error??(!a.online&&a.checked?'Please retry when the service reconnects.':'Checking the latest record.')}</p><a className="hs" href="/policies" onClick={onLink}>← All policies</a><button className="chip" onClick={()=>{setLookup({});setRetry(v=>v+1);void refresh();}}>Retry</button></div></div>;
+  const sourceFilter=new URLSearchParams(location.search).get('filter');
+  const backQuery=new URLSearchParams({...position==='liquidity'?{view:'fund'}:{},...sourceFilter&&['global','recent','here','all','active'].includes(sourceFilter)?{filter:sourceFilter}:{}});
+  const galleryPath='/policies'+(backQuery.size?'?'+backQuery:'');
   const state=policyState(p), paid=state==='paid', expired=state==='expired', ledger=p.ledger;
   const oracles=ledger?.oracles??[];
   const signed=oracles.filter(o=>o.signed).length;
@@ -26,7 +30,7 @@ export function PolicyPage({serial}:{serial:string}){
         <dl className="facts"><div><dt>{paid?'Paid on':'Cover ends'}</dt><dd>{new Date(p.executedAt??p.lapsesAt).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'})}</dd></div><div><dt>Modeled premium</dt><dd>${p.premiumUsd.toFixed(2)} once</dd></div></dl>
         <p className="trigger-note">{paid?'The scheduled transfer executed after the required signatures arrived.':expired?'The coverage window has ended. This alone does not prove that no qualifying event occurred.':'The network executes when the agent and two oracle keys have signed. Damage alone does not trigger a payout.'}</p></>;
   return <div className="page"><div className="page-inner policy-detail">
-    <a className="back-link" href={position==='liquidity'?'/policies?view=fund':'/policies'} onClick={onLink}>← {position==='liquidity'?'Funding previews':'Policies'}</a>
+    <a className="back-link" href={galleryPath} onClick={onLink}>← {position==='liquidity'?'Funding previews':'Policies'}</a>
     <div className="policy-detail-grid">
       <div className="policy-main"><div className="eyebrow">Policy #{serial} · {a.network}{mine(a.network).includes(serial)?' · created here':''}</div><h1>{placeName(p)}</h1>
         <div className={`state-label state-${state}`} role="status"><span className="status-dot"/>{statusLabel(p)}</div>
@@ -34,7 +38,7 @@ export function PolicyPage({serial}:{serial:string}){
         {position==='liquidity'?<LPPreviewControls policy={p} portion={portion} onPortion={setPortion}/>:null}
         {position==='liquidity'?<details className="lp-policy-terms"><summary>Policy terms <span>+</span></summary>{policyTerms}</details>:policyTerms}
       </div>
-      <div className="policy-visual"><PolicyPosition policy={p} kind={position} onKind={kind=>{setPosition(kind);history.replaceState(null,'',`/policy/${serial}${kind==='liquidity'?'?position=lp':''}`);}} portion={portion} onPortion={setPortion}/>
+      <div className="policy-visual"><PolicyPosition policy={p} kind={position} onKind={kind=>{setPosition(kind);const query=new URLSearchParams(location.search);if(kind==='liquidity')query.set('position','lp');else query.delete('position');history.replaceState(null,'',`/policy/${serial}${query.size?'?'+query:''}`);}} portion={portion} onPortion={setPortion}/>
         <details className="nft-settlement-details"><summary>Settlement confirmations <span>{ledger?.available?`${signed}/2`:'—'}</span></summary>
         <svg viewBox="0 0 520 420" width="100%" role="img" aria-label={ledger?.available?`${ledger.agentSigned?'Agent signed':'Agent signature missing'}; ${signed} of 2 required oracle confirmations`:'Signature status unavailable'}>
           {ledger?.available?<Lock cx={260} cy={180} r={112} agent={ledger?.agentSigned??false} oracles={oracles.length?oracles.map(o=>o.signed):[false,false,false]} names={[]} state={paid?'ok':expired?'lapsed':'pending'} centre={<g><text x={260} y={177} textAnchor="middle" fill={paid?C.ok:C.fg0} fontSize={36} className="num">{paid?'✓':ledger?.available?`${signed}/2`:'—'}</text><text x={260} y={204} textAnchor="middle" fill={C.fg1} fontSize={14}>{paid?'paid':'confirmations'}</text></g>}/>:<g><circle cx={260} cy={180} r={100} fill="none" stroke={C.line}/><text x={260} y={180} textAnchor="middle" fill={C.fg1} fontSize={16}>Unable to verify</text></g>}

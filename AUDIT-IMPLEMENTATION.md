@@ -73,3 +73,16 @@ capital before/after LP funding, named oracle signatures, animated transfer,
 geographic NFT with receipt trail, and successful/blocked authorization tests.
 Preserved all six deep links and mainnet evidence. Mobile retains direct step
 navigation and previous/next controls; reduced-motion support is included.
+
+## Final navigation and transfer polish
+
+Separated the animated transfer marker from the arrowhead; the marker fades
+before reaching the head. Mobile uses a downward arrow, and reduced motion
+removes the marker. Desktop and 320px layouts were visually checked.
+
+Made the quote panel's return action exit historical exploration and restore
+current M6+ terms. Gallery filters now survive policy-detail round trips, and
+same-page navigation synchronizes the view with the URL. Invalid paths show
+recovery links. Browser checks confirmed return-to-cover, recent funding gallery
+round trips, canonical Policies navigation, and the missing-page recovery.
+Production build and all 26 tests pass. No new blockchain writes were made.

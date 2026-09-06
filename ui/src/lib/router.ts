@@ -7,7 +7,8 @@ export type Route =
   | { name: 'home' }
   | { name: 'policies' }
   | { name: 'policy'; serial: string }
-  | { name: 'story' };
+  | { name: 'story' }
+  | { name: 'notfound' };
 
 export function parse(pathname: string): Route {
   const p = pathname.replace(/\/+$/, '') || '/';
@@ -15,22 +16,20 @@ export function parse(pathname: string): Route {
   if (p === '/policies') return { name: 'policies' };
   const m = /^\/policy\/([^/]+)$/.exec(p);
   if (m) {try{return {name:'policy',serial:decodeURIComponent(m[1])};}catch{return {name:'policy',serial:m[1]};}}
-  return { name: 'home' };
+  return { name: p==='/'?'home':'notfound' };
 }
 
-const listeners = new Set<() => void>();
 export function navigate(to: string, replace = false) {
   if (replace) history.replaceState(null, '', to); else history.pushState(null, '', to);
-  listeners.forEach((l) => l());
+  window.dispatchEvent(new PopStateEvent('popstate'));
 }
 
 export function useRoute(): Route {
   const [route, setRoute] = useState(() => parse(location.pathname));
   useEffect(() => {
     const update = () => setRoute(parse(location.pathname));
-    listeners.add(update);
     window.addEventListener('popstate', update);
-    return () => { listeners.delete(update); window.removeEventListener('popstate', update); };
+    return () => { window.removeEventListener('popstate', update); };
   }, []);
   return route;
 }

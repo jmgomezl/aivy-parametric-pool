@@ -14,14 +14,17 @@ const normalize = (v:string) => v.normalize('NFD').replace(/(\p{Script=Latin})\p
 const coordinatePattern = /^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/;
 const cities = [{name:'Medellín, Antioquia, Colombia',lat:6.2443382,lon:-75.573553}, ...PLACES, ...capitalsData.rows.map(([name, country, lon, lat]) => ({ name: `${name}, ${country}`, lat: Number(lat), lon: Number(lon) }))];
 
-export function AtlasMap({ pin, onPin, onState, markers = [], onMarker, days = MODEL.days }: {
+export function AtlasMap({ pin, onPin, onState, markers = [], onMarker, days = MODEL.days, exploring, onExploringChange }: {
+  exploring:boolean; onExploringChange:(value:boolean)=>void;
   pin: Pin | null; onPin: (p: Pin) => void; onState?: (s: MapState) => void;
   markers?: Marker[]; onMarker?: (id: string) => void; days?: number;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [view, setView] = useState<View>(HOME);
   const [year, setYear] = useState(LAST_YEAR), [minMag, setMinMag] = useState(6);
-  const [playing, setPlaying] = useState(false), [exploring, setExploring] = useState(false);
+  const [playing, setPlaying] = useState(false);
+  const setExploring=onExploringChange;
+  useEffect(()=>{if(!exploring){setYear(LAST_YEAR);setMinMag(6);setPlaying(false);}},[exploring]);
   const [search, setSearch] = useState(''), [searching, setSearching] = useState(false);
   const resultId=useId();
   const [searchRetry,setSearchRetry]=useState(0);

@@ -17,6 +17,7 @@ function readPin(): Pin | null {
 export function Home() {
   const a = useAgent();
   const [pin, setPinState] = useState<Pin | null>(readPin);
+  const [exploring,setExploring]=useState(false);
   const [budget, setBudget] = useState(4), [days, setDays] = useState(MODEL.days);
   const [map, setMap] = useState<MapState>({ hover: null, year: new Date().getUTCFullYear(), live: true, now: new Date(), minMag: 6, exploring: false });
   const setPin = useCallback((p: Pin | null) => {
@@ -29,8 +30,8 @@ export function Home() {
   return <div className={`cover-layout ${pin ? 'has-quote' : ''}`}>
     <div className="atlas-surface">
       <div className="atlas-intro"><div className="eyebrow">Ready before it happens</div><h1>Earthquake cover.<br /><span>Choose a place.</span></h1><p>A payout committed in advance. Released when two oracles confirm.</p><div className="journey-links"><a href="/policies?view=fund" onClick={onLink}>Fund a policy <span>↗</span></a><a href="/story#1" onClick={onLink}>Watch a payout <span>→</span></a></div></div>
-      <AtlasMap days={days} pin={pin} onPin={setPin} onState={setMap} markers={markers} onMarker={id => navigate(policyPath(id))} />
+      <AtlasMap exploring={exploring} onExploringChange={setExploring} days={days} pin={pin} onPin={setPin} onState={setMap} markers={markers} onMarker={id => navigate(policyPath(id))} />
     </div>
-    {pin ? <QuotePanel key={`${pin.lat},${pin.lon}`} pin={pin} map={map} budget={budget} days={days} onBudget={setBudget} onDays={setDays} onClose={() => setPin(null)} /> : null}
+    {pin ? <QuotePanel key={`${pin.lat},${pin.lon}`} pin={pin} map={map} budget={budget} days={days} onBudget={setBudget} onDays={setDays} onReturnToCover={()=>setExploring(false)} onClose={() => setPin(null)} /> : null}
   </div>;
 }
