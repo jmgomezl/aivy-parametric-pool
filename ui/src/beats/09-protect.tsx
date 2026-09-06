@@ -12,7 +12,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { Scene } from '../components/Scene';
 import { Big, C, Lock } from '../components/viz';
 import { Pill } from '../components/ui';
-import { hbar } from '../lib/format';
 import { PLACES, placeName } from '../lib/hazard';
 import * as agent from '../lib/agent';
 import type { Beat } from './types';
@@ -111,7 +110,7 @@ function View() {
             <>
               <Big label="premium" value={`$${q.premium.toFixed(2)}`} tone="ok" />
               <Big label="buys cover of" value={`$${Math.round(q.payout).toLocaleString()}`} />
-              <Big label="settles on-chain" value={hbar(q.settled.payoutHbar * 1e8, 2)} unit="ℏ" size={30} tone="dim" />
+              <Big label="settles on-chain" value={q.settled.payout.toFixed(2)} unit={q.settled.symbol} size={30} tone="dim" />
             </>
           ) : null}
           {pool && phase.at !== 'held' ? (
@@ -141,7 +140,7 @@ function View() {
               centre={
                 <g>
                   <text x={260} y={186} textAnchor="middle" className="num" fill={C.fg0} fontSize={34}>
-                    {hbar(phase.issued.policy.payoutHbar * 1e8, 2)} ℏ
+                    {agent.payoutLabel(phase.issued.policy)}
                   </text>
                   <text x={260} y={212} textAnchor="middle" className="label" fill={C.fg2} fontSize={13}>held for you</text>
                 </g>

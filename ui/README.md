@@ -1,81 +1,73 @@
-# Settlement timeline
+# Aivy Parametric Pool — the app
 
-The demo surface for the parametric pool: one real Hedera **mainnet** policy walked
-from quote to payout, one beat at a time, every ledger id a working HashScan link.
-It opens on the **atlas**: every shallow M6+ earthquake since 1970 drawn as the
-hazard field the model actually integrates, and a cursor that prices 30 days of
-cover anywhere on Earth with the agent's own arithmetic.
+The product opens on the atlas. Pin a place, the agent quotes it; press once, the
+agent writes the policy to Hedera while you watch; the policy is a page you can
+reload and share. The nine-beat story of the mainnet run is still here, as a mode.
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173
+npm run dev          # http://localhost:5173
+# in the repo root, for live quotes and issuing (testnet):
+npm run serve        # the agent API on :8791
 ```
 
-Designed for **1920 × 1080** and scaled to whatever window is filming it. Steppable
-with the keyboard, no timers:
+## Routes
 
-| key | action |
+| path | what |
 |---|---|
-| `→` `space` `enter` | next sub-step, then next beat |
-| `←` `backspace` | back |
-| `0` | the atlas |
-| `1` … `8` | jump to a beat |
-| `home` / `end` | first / last |
+| `/` | the atlas. `/?at=lat,lon` opens with a place pinned and the quote panel up |
+| `/policy/:serial` | one policy: its live ring, ledger ids, and "can the oracles steal this?" |
+| `/policies` | every policy the agent has written on this network; the ones bought from this browser are marked |
+| `/story` | the nine beats, unchanged, in the 1920 × 1080 frame they are filmed in (`/story#3.1` = beat 3, sub-step 1) |
 
-The position lives in the URL hash (`#6.2` = beat 6, sub-step 2, `#0` = atlas),
-so a reload mid-recording lands on the same frame.
+Pool vitals — capital, committed exposure, headroom, live policies — sit in the
+header on every page, read from the agent every 30 s and again after each write.
 
-On the atlas:
+## The atlas
 
-- **move** the mouse to price the point under it; **click** to pin; pick a city chip
+- **move** the mouse to see the record under it; **click** to pin and get a quote; pick a city chip
 - **scroll** to zoom (up to 12×), **drag** to pan, **double-click** to reset
-- **play** or scrub the year slider: the field fills in as the record accumulates,
-  and every number is the model re-run with only the record available that year
-- **cover** and **window** sliders re-price on the fly; the window stops at 62 days,
-  the ledger's ceiling for a scheduled payout
+- **play** or scrub the year slider: the field fills in as the record accumulates. While a
+  past year is selected the panel prices from the frozen catalogue as it stood then;
+  scrub back to today for the agent's live quote
 - **trigger** chips switch the magnitude floor between M6, M6.5 and M7
-- **+ compare** keeps up to four places side by side at the same cover and window
 - **capitals** toggles the world's capitals; more appear as you zoom, and clicking one pins it
-- the pinned point is in the URL (`#0@lat,lon`), so any view can be shared
+- green rings are live policies on the network; click one to open it
 
-The pinned point is recounted live at USGS and the two numbers are shown side by
-side; HBAR is converted at the mirror node's current exchange rate.
+## The quote panel
+
+Quoting is free, so it happens on every change of place, budget or window.
+Issuing is not, so it happens only on the button. The agent's answer is shown in
+its own words either way — *no record here*, *too small to write*, *no headroom*,
+*rate limited* — and a refusal is styled as an answer, not an error.
+
+When the agent is unreachable the panel falls back to the frozen catalogue and
+says so; nothing is invented and nothing can be bought.
 
 ## Where the numbers come from
 
-`src/data/mainnet.json` is a frozen, key-free snapshot of the run, produced by
-`npm run snapshot` from `../.artifacts/mainnet.json` plus the public mirror node.
-Nothing on screen is typed in by hand; nothing secret leaves the artifact. While
-the page is open it re-reads the parts that can still change (balances, schedule
-state, token supply, NFT owner, the USGS catalogue count) and says so next to the
-value: *confirmed by mirror node*, *mirror node differs*, or *unavailable*.
+- **Live:** the agent API (`GET /api/quote`, `/api/pool`, `/api/policies`,
+  `POST /api/policies`) and the Hedera mirror node for each policy's schedule state.
+- **Frozen:** `src/data/quakes.json`, every shallow M6+ event since 1970 from USGS
+  ComCat (`npm run quakes`); `src/data/capitals.json`, 202 national capitals from
+  Natural Earth (`npm run capitals`); `src/data/mainnet.json`, the key-free record of
+  the mainnet run (`npm run snapshot`).
 
-`src/data/quakes.json` is the global catalogue behind the atlas (`npm run quakes`):
-every shallow M6+ event since 1970 from the same USGS endpoint the agent queries,
-6,311 rows of `[lon, lat, mag, depth, day]`. `src/lib/hazard.ts` is the agent's
-model ported line for line, and reproduces its numbers (Armenia 12 events,
-0.01544329 ℏ; Tokyo 103).
-
-The two quorum proofs (`0.0.10843723` control, `0.0.10843725` adversarial) come
-from `scripts/verify-quorum.js`, which prints but does not persist its schedule
-ids; they are pinned in `scripts/snapshot.mjs`.
+Every ledger id links to HashScan on its own network: the story is mainnet, the
+agent issues on testnet.
 
 ## Layout
 
 ```
-scripts/snapshot.mjs     artifact + mirror node -> src/data/mainnet.json
-scripts/quakes.mjs       USGS ComCat -> src/data/quakes.json (the atlas catalogue)
-scripts/capitals.mjs     Natural Earth -> src/data/capitals.json (202 national capitals)
-src/data/mainnet.json    the public record of the run (committed)
-src/lib/hazard.ts        the agent's hazard model, in the browser
-src/beats/00-atlas.tsx   the atlas: hover, pin, zoom, scrub, compare
-src/beats/atlas/         projection + zoom view, the additive heat canvas, land outlines
-src/beats/               one file per story beat; 05-waiting exports the pool – lock – buyer scene 06 reuses
-src/components/viz.tsx   the visual language: nodes, flows, the two-ring lock, the capital tank, waves
-src/components/Scene.tsx the frame every beat uses: title, visual, big numbers, HashScan strip
-src/components/ui.tsx    HashScan ids and state pills
-src/lib/                 formatting, HashScan links, mirror-node and USGS reads
-src/App.tsx              frame, stepper, keyboard, hash routing, 1920×1080 scaling
+src/App.tsx              the router: app by default, story as a mode
+src/app/                 Chrome (nav + vitals), Home, AtlasMap, QuotePanel, PolicyPage,
+                         PoliciesPage, OracleProof, History
+src/story/Story.tsx      the 1920 × 1080 frame, keyboard stepping, beats 1–9
+src/beats/               the nine beats and the atlas drawing modules (projection, heat, land)
+src/components/          viz primitives (nodes, flows, lock, tank, waves), Scene, ids and pills
+src/lib/                 agent client, router, live store, hazard model, mirror node, HashScan
+scripts/                 snapshot.mjs · quakes.mjs · capitals.mjs
 ```
 
-Vite + React + TypeScript + Tailwind v4. Static build (`npm run build`), no server.
+Vite + React + TypeScript + Tailwind v4. Static build (`npm run build`); the routes
+are paths, so a static host needs a fallback to `index.html`.

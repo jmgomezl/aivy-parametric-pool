@@ -155,5 +155,5 @@ export const PLACES: Place[] = [
   { name: 'Berlin', lat: 52.52, lon: 13.4 },
 ];
 
-export const placeName = (p: { lat: number; lon: number; name?: string }) =>
-  p.name ?? `${Math.abs(p.lat).toFixed(2)}° ${p.lat >= 0 ? 'N' : 'S'} · ${Math.abs(p.lon).toFixed(2)}° ${p.lon >= 0 ? 'E' : 'W'}`;
+export const placeName = (p: { lat: number; lon: number; name?: string; place?: string | null }) =>
+  p.name ?? p.place ?? `${Math.abs(p.lat).toFixed(2)}° ${p.lat >= 0 ? 'N' : 'S'} · ${Math.abs(p.lon).toFixed(2)}° ${p.lon >= 0 ? 'E' : 'W'}`;
