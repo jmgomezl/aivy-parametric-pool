@@ -15,10 +15,10 @@ Reusable plugin: https://github.com/jmgomezl/hak-scheduled-settlement
 | 0:00–0:20 | Cover homepage | Fixed earthquake payouts can be committed before an event. |
 | 0:20–0:45 | Search Medellin; Explore data | The historical chart holds payout at $800; premiums vary with the record. Return to cover for current terms. |
 | 0:45–1:15 | Create funded testnet cover; view policy | A real NFT, published terms, premium transfer and scheduled payout. Demo assets have no cash value. Cut network waiting from the recording. |
-| 1:15–1:35 | Policy → Move funds & swap | Hedera → HAK Axelar plugin → Sepolia → Uniswap. Show a completed bridge, exact approval and swap receipt. |
+| 1:15–1:35 | Swap → Bridge / Swap | Hedera → HAK Axelar plugin → Sepolia → Uniswap. Show a completed bridge, exact approval and swap receipt. |
 | 1:35–2:00 | Fund the pool → deposit and ARPS balance | One shared pool backs all policies. ARPS arrives atomically. Per-policy cards are economics previews; no separate vault or guaranteed yield. |
 | 2:00–2:40 | How it works | Replay commit → one confirmation → two confirmations → executed transfer. Controlled mainnet recording, not a live earthquake claim. Open the actual receipt. |
-| 2:40–3:00 | Policy → Check earthquake conditions | Bounded testnet x402 payments query the published policy terms. No-match and unavailable are different; payment does not mean claim approval. |
+| 2:40–3:00 | Policy → Check for earthquakes | Bounded testnet x402 payments query the published policy terms. No-match and unavailable are different; payment does not mean claim approval. |
 | 3:00–3:15 | Final story step / repository | Oracle keys alone cannot spend. Explain the reusable plugin and new hackathon work. |
 
 ## Evidence and scope
@@ -61,10 +61,13 @@ existing evidence, and do not copy the private registry into the repository or V
 
 ## Uniswap and Axelar demonstration
 
-Open **Move funds & swap**. Bridge aUSDd from the service-managed Hedera demo
+Open **Swap** in the main navigation. The visual Hedera → Axelar → Uniswap path
+explains the roles; **Bridge** and **Swap** are separate action steps. Bridge aUSDd from the service-managed Hedera demo
 account to a Sepolia wallet, approve an exact amount, then sign and submit the
 Uniswap swap. Wallet gas is paid in Sepolia ETH. Show [real receipts](evidence/cross-chain-testnet.json)
-and [the HAK Axelar plugin transaction](evidence/hak-axelar-plugin.json).
+and [the HAK Axelar plugin transaction](evidence/hak-axelar-plugin.json). The
+page also presents labeled recorded examples; distinguish those from your own
+current transaction receipts.
 
 Explain: “Hedera commits the cover, Axelar transports its demo asset, and Uniswap
 provides EVM liquidity. The app uses reusable agent tools and validates their

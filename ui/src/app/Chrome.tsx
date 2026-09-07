@@ -12,7 +12,7 @@ export function Chrome({ route }: { route: Route }) {
   return <><a className="skip-content" href="#main-content" onClick={e=>{e.preventDefault();document.getElementById('main-content')?.focus();}}>Skip to content</a><header className="chrome">
     <a href="/" onClick={onLink} className="brand" aria-label="Aivy Quorum home"><span className="brand-mark" aria-hidden="true">◉</span> Aivy Quorum<span className="brand-caption">earthquake cover</span></a>
     <nav aria-label="Main navigation" className="main-nav">
-      {[['/', 'Cover', route.name === 'home'], ['/policies', 'Policies', route.name === 'policies' || route.name === 'policy'], ['/story', 'How it works', route.name === 'story']].map(([href, label, active]) => <a key={String(href)} href={String(href)} onClick={onLink} className={`navlink ${active ? 'navlink-on' : ''}`} aria-current={active ? 'page' : undefined}>{label}</a>)}
+      {[['/', 'Cover', route.name === 'home'], ['/policies', 'Policies', route.name === 'policies' || route.name === 'policy'], ['/swap', 'Swap', route.name === 'swap'], ['/story', 'How it works', route.name === 'story']].map(([href, label, active]) => <a key={String(href)} href={String(href)} onClick={onLink} className={`navlink ${active ? 'navlink-on' : ''}`} aria-current={active ? 'page' : undefined}>{label}</a>)}
     </nav>
     <div className="chrome-status"><DemoAccount/>
       <span className={`network-label ${a.checked && !a.online ? 'text-pending' : ''}`}><span className={`status-dot ${a.online ? 'bg-ok' : 'bg-pending'}`} />{route.name==='story'?'Mainnet recording':!a.checked ? 'Connecting' : !a.online ? 'Estimates only' : `${a.network === 'testnet' ? 'Testnet demo' : 'Mainnet · read only'}`}</span>
@@ -26,5 +26,5 @@ export function Chrome({ route }: { route: Route }) {
         </div>
       </details> : null}
     </div>
-  </header><ChainActivity serial={route.name==='policy'?route.serial:undefined} story={route.name==='story'}/></>;
+  </header><ChainActivity serial={route.name==='policy'?route.serial:undefined} story={route.name==='story'} swap={route.name==='swap'}/></>;
 }

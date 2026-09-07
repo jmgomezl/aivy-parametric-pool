@@ -7,7 +7,7 @@
 | Buyer | Start demo account; choose cover; pay premium | Account tokens fund the policy beneficiary's premium payment; beneficiary receives frozen NFT and scheduled payout. |
 | Liquidity provider | Deposit 1–100 aUSDd into shared pool | Atomic token deposit and fungible ARPS delivery. Demo share issuance is 1:1, not NAV pricing. |
 | Broker | Share account's referral link/code | 15% of referred premium reaches broker; 85% reaches pool, atomically. No referral means 100% to pool. |
-| Policyholder / oracle services | Policy → Check earthquake conditions | Up to 0.003 test aUSDd pays three x402 queries; each service verifies the recorded policy before any signature. Payment and claim approval remain separate. |
+| Policyholder / oracle services | Policy → Check for earthquakes | Up to 0.003 test aUSDd pays three x402 queries; each service verifies the recorded policy before any signature. Payment and claim approval remain separate. |
 
 Start under **Your demo account**. The service sponsors 1,000 unbacked testnet
 aUSDd and network fees. This is a real Hedera account with service-held keys;

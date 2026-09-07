@@ -15,7 +15,9 @@ are separate verification transactions using the same canonical asset route.
 
 ## Where to try
 
-Policy → **Move funds & swap** → **Move aUSDd to Sepolia** → **Swap bridged aUSDd**.
+Main navigation → **[Swap](https://quorum.aivylabs.xyz/swap)** → **01 Bridge** → **02 Swap**.
+Quote and policy pages also link directly to this flow. Verified examples are
+labeled recordings; current receipts appear inside the action that created them.
 Use an injected EVM wallet on Sepolia with test ETH for gas. Confirm the source
 receipt, wait for delivery, quote, approve exactly, then sign and submit the swap.
 Mainnet quote previews never initiate transfers.

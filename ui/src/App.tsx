@@ -6,6 +6,7 @@ import { PoliciesPage } from './app/PoliciesPage';
 import { PolicyPage } from './app/PolicyPage';
 import { lazy, Suspense, useEffect } from 'react';
 const Story=lazy(()=>import('./story/Story').then(m=>({default:m.Story})));
+const SwapPage=lazy(()=>import('./app/SwapPage').then(m=>({default:m.SwapPage})));
 
 export default function App() {
   const route = useRoute();
@@ -16,7 +17,7 @@ export default function App() {
     <div className="app">
       <Chrome route={route} />
       <main className="app-body" id="main-content" tabIndex={-1}>
-        {route.name === 'home' ? <Home /> : route.name === 'policies' ? <PoliciesPage /> : route.name==='notfound'?<div className="page"><div className="page-inner empty-state"><h1>Page not found.</h1><p>Choose a place to start, or explore the demo policies.</p><a className="buy compact" href="/" onClick={onLink}>Choose a place →</a><a className="hs" href="/policies" onClick={onLink}>Explore policies ↗</a></div></div>: <PolicyPage key={route.serial} serial={route.serial} />}
+        {route.name === 'home' ? <Home /> : route.name === 'policies' ? <PoliciesPage /> : route.name==='swap'?<Suspense fallback={<div className="page" role="status">Loading swap…</div>}><SwapPage/></Suspense>:route.name==='notfound'?<div className="page"><div className="page-inner empty-state"><h1>Page not found.</h1><p>Choose a place to start, or explore the demo policies.</p><a className="buy compact" href="/" onClick={onLink}>Choose a place →</a><a className="hs" href="/policies" onClick={onLink}>Explore policies ↗</a></div></div>: <PolicyPage key={route.serial} serial={route.serial} />}
       </main>
     </div>
   );

@@ -236,3 +236,19 @@ payment still blocks a new policy check until its original receipt is reviewed.
 See [FDSN event specification, nodata](https://www.fdsn.org/webservices/fdsnws-event-1.2.pdf),
 [catalogue tests](../tests/oracle-catalogue.test.js) and
 [paid check tests](../tests/policy-checks.test.js).
+
+
+## UI recovery and evidence clarity (2026-09-07)
+
+The direct Swap page preserves bridge/swap component state when changing steps;
+persisted transaction journals still govern reload recovery. A bridge configuration
+request times out and offers a read-only reconnect action. Delivery status resets
+when the source request changes, and late responses from an earlier request are
+ignored. A failed refresh labels previously verified status as stale; it does not
+claim delivery or automatically submit another transfer. These are UI controls;
+the signing authority and server-side transaction validation are unchanged.
+
+Recorded cross-chain examples are explicitly separate from the visitor’s action
+receipts. Shared-pool deposits disclose unavailable withdrawals and LP income
+before the action, and ARPS percentages describe issued-token holdings, not yield.
+See the [final user/judge review](qa/FINAL-UX-REVIEW.md) for browser checks.

@@ -1,5 +1,8 @@
 # Final recording-readiness review · September 6, 2026
 
+Historical baseline. See the [September 7 user and judge review](qa/FINAL-UX-REVIEW.md)
+for the current direct Swap flow and 74-test validation.
+
 Verdict: the verified demo flow is ready to record. This is a hackathon prototype;
 submission eligibility and the finished video still need the owner's review.
 

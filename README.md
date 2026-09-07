@@ -8,7 +8,7 @@ when its signature requirements are met. **Hedera-native cover meets Uniswap
 liquidity through agent APIs—without our own Solidity contracts.** Bridge demo
 aUSDd with Axelar, then approve and execute a Uniswap swap on Sepolia.
 
-[Try the demo](https://quorum.aivylabs.xyz) · [Watch the mechanism](https://quorum.aivylabs.xyz/story) · [Recording guide](docs/SUBMISSION.md)
+[Try the demo](https://quorum.aivylabs.xyz) · [Bridge & swap](https://quorum.aivylabs.xyz/swap) · [Watch the mechanism](https://quorum.aivylabs.xyz/story) · [Recording guide](docs/SUBMISSION.md)
 
 **Judge shortcuts:** [Hedera](#why-hedera) · [Uniswap](#why-uniswap) ·
 [Novelty](#what-is-new) · [Security](#security-by-architecture) · [Evidence](#verify-in-one-minute)
@@ -28,10 +28,10 @@ account payments, shared-pool deposits, oracle checks and bridge/swap controls.*
 | --- | --- | --- |
 | Buyer | **Your demo account → Start**, then choose a place and **Pay premium & create cover** | 1,000 starter aUSDd; actual premium debit, NFT receipt and scheduled payout. |
 | LP | **Fund the pool → Deposit into shared pool** | Tokens enter the shared pool; ARPS shares arrive atomically. Balance and receipt update. |
-| Policyholder | **Policy → Check earthquake conditions** | Three policy-bound oracle requests, up to 0.003 test aUSDd via x402; qualifying signatures can release the scheduled payout. |
-| Broker | **Earn as a broker → Copy referral link** | Buyer pays the same premium; 15% goes to the broker and 85% to the pool. Commission history is visible. |
+| Policyholder | **Policy → Check for earthquakes** | Three policy-bound oracle requests, up to 0.003 test aUSDd via x402; qualifying signatures can release the scheduled payout. |
+| Broker | **Refer & earn → Copy referral link** | Buyer pays the same premium; 15% goes to the broker and 85% to the pool. Commission history is visible. |
 
-[Current QA findings and verified flows](docs/qa/PLATFORM-QA.md).
+[Verified business flows](docs/qa/PLATFORM-QA.md) · [Latest user and judge review](docs/qa/FINAL-UX-REVIEW.md).
 
 No referral means 100% of the premium goes to the pool. There is no separate
 platform fee. Shared-pool shares use demo 1:1 issuance, not NAV pricing;
@@ -52,7 +52,7 @@ payment authority** so a reviewer can check what was actually authorized.
 | What was promised? | Fixed beneficiary, asset, amount and earthquake conditions, published to HCS and linked from a cover NFT. |
 | Who may release it? | Agent **AND** two of three oracle keys; each oracle checks terms against the actual scheduled transfer. |
 | Who sends the final payout? | Hedera executes when required signatures arrive; no separate keeper/executor transaction for this transfer. |
-| What could that payout mean in ETH? | A live Uniswap USDC→ETH quote, explicitly separate from settlement. |
+| Can the asset reach EVM liquidity? | Bridge demo aUSDd through Axelar, then trade it through Uniswap on Sepolia. This uses the visitor’s demo balance; the policy beneficiary is separate. |
 
 ## Why Hedera
 
@@ -105,6 +105,8 @@ Cover settles through Hedera. Axelar ITS moves the demo asset to Sepolia; the
 Uniswap Trading API finds its route and prepares a wallet-approved swap.
 The user can keep the same application open throughout.
 
+![Two steps connect Hedera test tokens to Uniswap, with verifiable examples alongside](docs/media/05-swap.png)
+
 ```mermaid
 flowchart LR
   H["Hedera testnet<br/>Your aUSDd"] --> P["HAK Axelar plugin<br/>Build transfer"]
@@ -151,13 +153,13 @@ plugin predates this submission; the guarded integration is project work.
 
 ### Try it in the app
 
-**Open a policy → Move funds & swap.** Create a demo account from the balance button if needed.
+**Open [Swap](https://quorum.aivylabs.xyz/swap) in the main navigation.** The page shows each network’s role, two action steps and independently verifiable examples. Create a demo account from the balance button if needed.
 
 1. **Bridge:** send 0.01–10 aUSDd to your Sepolia wallet. Hedera fees are sponsored; wait for “Delivered”.
 2. **Quote:** choose 0.01–1 bridged aUSDd. Your wallet needs Sepolia ETH for gas.
 3. **Approve → swap:** approve the exact amount, check confirmation, sign the permit and review the swap. Open the receipt to verify.
 
-A separate native **Sepolia ETH → test USDC** swap is available in the same panel.
+A separate native **Sepolia ETH → test USDC** swap is available below the two steps.
 Base/Unichain mainnet USDC→ETH remains a **quote preview**, without spending authority.
 
 **Testnet boundaries:** aUSDd and test USDC have no cash value. The V3 pool uses
@@ -194,16 +196,16 @@ event work and the Agent Kit contribution. [AI assistance is disclosed](docs/AI-
 
 ## Verify in one minute
 
-![Policies: every cover issued, with its ledger proofs](docs/media/04-policies.png)
+![Global cover receipts: Tokyo, San Francisco and Mexico City](docs/media/04-policies.png)
 
-*Every policy the demo has issued, each with its schedule, its terms on HCS and
-its transfers — all linking out to HashScan.*
+*Global demo cover receipts. Open a card for its scheduled payout, HCS terms and
+transfers, with links to HashScan.*
 
 | Judge action | Evidence / scope |
 | --- | --- |
 | Open **How it works → Release** | Recorded **4 HBAR mainnet** transfer, with receipt. Controlled signatures, not a real earthquake claim. |
 | Open a policy → **Agent guardrails & proof** | Runtime limits plus separate mainnet controls: [1 HBAR transferred](https://hashscan.io/mainnet/schedule/0.0.10843723), [5 HBAR blocked](https://hashscan.io/mainnet/schedule/0.0.10843725) without the agent signature. |
-| Open **Move funds & swap** | Real Hedera → Axelar → Sepolia → Uniswap test-token flow. [Receipts](docs/evidence/cross-chain-testnet.json). Mainnet prices are a separate preview. |
+| Open **Swap → Bridge / Swap** | Real Hedera → Axelar → Sepolia → Uniswap test-token flow. [Receipts](docs/evidence/cross-chain-testnet.json). Mainnet prices are a separate preview. |
 | Open **Onchain / Verify** | Testnet NFT, transfers and paid oracle evidence. [x402 payment receipt](docs/evidence/x402-testnet.json); self-hosted facilitator. |
 | Open **Funding estimate** | Proposed per-policy contribution, premium share and capital-at-risk outcomes. No deposit or LP NFT is issued; actual LP primitives use shared-pool fungible shares. |
 
@@ -309,14 +311,15 @@ commit, confirm, release, verify, protect — labelled as a recording, not live.
 </tr>
 </table>
 
-**Cover → Policies → How it works.** Three destinations, with technical evidence
-one disclosure away.
+**Cover → Policies → Swap → How it works.** Four destinations. Network roles are
+visible on arrival; technical evidence stays one disclosure away.
 
 | Visual | What it teaches |
 | --- | --- |
 | **World map + geographic NFTs** | Where cover applies; worldwide search and Mexico/California/Tokyo demos. |
 | **Interactive premium history** | Premium variation for a fixed **$800 modeled payout**; click/drag/keyboard year selection and red/green annual change. |
 | **LP contribution + two outcomes** | Premium share and principal at risk, explicitly labeled as a preview. |
+| **Hedera → Axelar → Uniswap** | Native cover, cross-chain transport and EVM liquidity have distinct roles. Two action steps sit beside labeled testnet examples. |
 | **Signatures → transfer → receipt** | Who signed, why execution happened or was blocked, and where to verify it. |
 | **Responsive disclosures** | Minimal main copy, mobile stacking, keyboard focus and reduced motion; 320px through desktop reviewed. |
 
@@ -332,14 +335,15 @@ one disclosure away.
 | A clearer six-scene story | Geographic terms → capital commitment → named signatures → transfer animation → NFT/receipts → blocked authorization control. Direct step links and previous/next controls keep the recorded mainnet demonstration navigable. |
 | Explicit signature evidence | Old circular diagrams were replaced with **agent key AND oracle threshold → observed result**. “3 signed · 2 required” avoids ambiguous counts. Missing agent signature explains the blocked control; unknown ledger status remains unverified. |
 | Quiet blockchain visibility | Optional Onchain/Verify panel and contextual receipt links expose NFT mint/delivery, transfers, agent/oracle actions and x402 evidence. Testnet, recorded mainnet, live API quotes and proposed funding are labeled separately. Unknown or invalid policies do not borrow another policy's receipts. |
-| Optional Uniswap detail | “Move funds & swap · Uniswap” expands to network, quote ID, timestamp/expiry, refresh, estimated gas and route evidence. A real quote is visible without implying redemption or a completed swap. |
+| Discoverable Uniswap execution | A main-nav Swap page separates Bridge and Swap, preserves in-progress form state between steps and shows example receipts beside the actions. Quote/policy links lead here directly. Mainnet price previews remain separate, collapsed and fetched only on demand. |
+| Funding decisions | Existing holders see ARPS and percentage of issued shares before pool totals; the deposit action states that withdrawals and LP income are unavailable. The percentage is a holding share, never an APY. |
 | Recovery and navigation | Saved request IDs, interrupted-request review, honest loading/refusal/offline states and retry links. Location persists on refresh, gallery filters survive detail round trips, invalid routes offer recovery, and “Created here” means this browser—not wallet ownership. |
 | Responsive and accessible controls | Mobile layouts stack; story navigation remains accessible; maps/charts have text descriptions, controls support keyboard use, focus is visible for keyboard interaction, and reduced-motion preferences are respected. Recent reviews covered 320 px mobile through desktop without horizontal overflow in the checked flows. |
 
 The [implementation audit](AUDIT-IMPLEMENTATION.md) records the delivered changes
-and checks; the [recording-readiness review](docs/FINAL-UX-REVIEW.md) covers the
-end-to-end demo. The latest visual review checked the active Cover, Policies,
-NFT/LP, historical chart and story illustration paths. Legacy ring components in
+and checks; the [latest user and judge review](docs/qa/FINAL-UX-REVIEW.md) covers
+Cover, Policies, NFT/LP, historical chart, story and the direct Swap journey. The
+[September 6 review](docs/FINAL-UX-REVIEW.md) preserves the earlier recording baseline. Legacy ring components in
 unrouted source files are not used by the active app. These are documented
 browser checks, not a claim of exhaustive device or accessibility certification.
 

@@ -1,4 +1,4 @@
-// A very small path router. The app has four destinations and no nesting, so
+// A very small path router. The app has a few destinations and no nesting, so
 // pushState plus a listener is the whole thing. Story beats keep their own
 // hash (`/story#3`) for direct step navigation.
 import { useEffect, useState } from 'react';
@@ -8,11 +8,13 @@ export type Route =
   | { name: 'policies' }
   | { name: 'policy'; serial: string }
   | { name: 'story' }
+  | { name: 'swap' }
   | { name: 'notfound' };
 
 export function parse(pathname: string): Route {
   const p = pathname.replace(/\/+$/, '') || '/';
   if (p === '/story') return { name: 'story' };
+  if (p === '/swap') return { name: 'swap' };
   if (p === '/policies') return { name: 'policies' };
   const m = /^\/policy\/([^/]+)$/.exec(p);
   if (m) {try{return {name:'policy',serial:decodeURIComponent(m[1])};}catch{return {name:'policy',serial:m[1]};}}

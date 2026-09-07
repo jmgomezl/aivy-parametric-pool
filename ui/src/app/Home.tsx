@@ -1,3 +1,4 @@
+import {NetworkPath} from '../components/NetworkPath';
 import { useCallback, useEffect, useState } from 'react';
 import { PLACES, MODEL } from '../lib/hazard';
 import { navigate, policyPath, onLink } from '../lib/router';
@@ -30,7 +31,7 @@ export function Home() {
   const markers = (a.policies ?? []).filter(p => p.state === 'active' || p.state === 'confirming').map(p => ({ lat: p.lat, lon: p.lon, label: p.place ?? `Policy ${p.serial}`, id: String(p.serial), tone: 'ok' as const }));
   return <div className={`cover-layout ${pin ? 'has-quote' : ''}`}>
     <div className="atlas-surface">
-      <div className="atlas-intro"><div className="eyebrow">Ready before it happens</div><h1>Earthquake cover.<br /><span>Choose a place.</span></h1><p>A payout committed in advance. Released when two oracles confirm.</p><div className="journey-links"><a href="/policies?view=fund" onClick={onLink}>Fund the pool <span>↗</span></a><button className="text-button" onClick={()=>window.dispatchEvent(new Event('quorum:account'))}>Earn as a broker ↗</button><a href="/story#1" onClick={onLink}>Watch a payout <span>→</span></a></div></div>
+      <div className="atlas-intro"><div className="eyebrow">Ready before it happens</div><h1>Earthquake cover.<br /><span>Choose a place.</span></h1><p>A payout committed in advance. Released when two oracles confirm.</p><NetworkPath/><div className="journey-links"><a href="/policies?view=fund" onClick={onLink}>Fund the pool <span>↗</span></a><button className="text-button" onClick={()=>window.dispatchEvent(new Event('quorum:account'))}>Refer & earn <span aria-hidden="true">↗</span></button><a href="/story#1" onClick={onLink}>Watch payout <span>→</span></a></div></div>
       <AtlasMap exploring={exploring} onExploringChange={setExploring} days={days} pin={pin} onPin={setPin} onState={setMap} markers={markers} onMarker={id => navigate(policyPath(id))} />
     </div>
     {pin ? <QuotePanel key={`${pin.lat},${pin.lon}`} pin={pin} map={map} budget={budget} days={days} onBudget={setBudget} onDays={setDays} onReturnToCover={()=>setExploring(false)} onClose={() => setPin(null)} /> : null}
