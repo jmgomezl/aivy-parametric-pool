@@ -64,3 +64,18 @@ allocation and income distribution, independent oracle custody, and production
 customer authentication. These are disclosed limitations, not working buttons
 or promised LP payouts. The current fee model routes premium to pool/broker;
 no separate platform fee is collected.
+
+## Terminology and decision review
+
+Plain labels now connect insurance and blockchain concepts: Cover active
+(previously Committed), Cover receipt (NFT), Funding estimate (previously LP
+preview), and pool-share tokens (ARPS). Premium, payout, pool and broker are
+defined beside the money-flow diagram. Deposit restrictions explain that users
+cannot withdraw or collect investment income in this demo; acronym-only NAV
+wording was replaced with an explanation of the share-pricing limitation.
+
+The annual first-claim bar now represents first-term income only, matching the
+scenario amount. Previously it incorrectly drew full-year income. Explicitly
+refused deposit requests (400/401/429) unlock editing; uncertain submissions
+retain their identifier for reconciliation. Desktop/320px checks verified the
+funding-estimate-to-deposit handoff, visible definitions and no horizontal overflow.
