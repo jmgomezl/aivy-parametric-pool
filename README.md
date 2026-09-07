@@ -6,7 +6,7 @@ A parametric earthquake-cover prototype: a deterministic agent prices and commit
 a payout; oracle keys verify the event; Hedera executes the pre-signed transfer
 when its signature requirements are met. **Hedera-native cover meets Uniswap
 liquidity through agent APIs—without our own Solidity contracts.** Bridge demo
-aUSDd with Axelar, then approve and execute a Uniswap swap on Sepolia.
+aUSDd with Axelar, then swap or provide liquidity on Uniswap Sepolia.
 
 [Try the demo](https://quorum.aivylabs.xyz) · [Bridge & swap](https://quorum.aivylabs.xyz/swap) · [Watch the mechanism](https://quorum.aivylabs.xyz/story) · [Recording guide](docs/SUBMISSION.md)
 
@@ -27,15 +27,16 @@ account payments, shared-pool deposits, oracle checks and bridge/swap controls.*
 | Role | Click | Real testnet outcome |
 | --- | --- | --- |
 | Buyer | **Your demo account → Start**, then choose a place and **Pay premium & create cover** | 1,000 starter aUSDd; actual premium debit, NFT receipt and scheduled payout. |
-| LP | **Fund the pool → Deposit into shared pool** | Tokens enter the shared pool; ARPS shares arrive atomically. Balance and receipt update. |
+| Cover funder | **Fund the pool → Deposit into shared pool** | Tokens enter the shared insurance pool; ARPS shares arrive atomically. Balance and receipt update. |
+| Swap liquidity provider | **Swap → Provide swap liquidity** | Create a real Uniswap V3 NFT, add tokens, collect swap fees and withdraw the position. |
 | Policyholder | **Policy → Check for earthquakes** | Three policy-bound oracle requests, up to 0.003 test aUSDd via x402; qualifying signatures can release the scheduled payout. |
 | Broker | **Refer & earn → Copy referral link** | Buyer pays the same premium; 15% goes to the broker and 85% to the pool. Commission history is visible. |
 
 [Verified business flows](docs/qa/PLATFORM-QA.md) · [Latest user and judge review](docs/qa/FINAL-UX-REVIEW.md).
 
 No referral means 100% of the premium goes to the pool. There is no separate
-platform fee. Shared-pool shares use demo 1:1 issuance, not NAV pricing;
-withdrawals and income distributions are not implemented. Per-policy cards
+platform fee. Shared insurance-pool shares use demo 1:1 issuance, not NAV pricing;
+ARPS withdrawals and income distributions are not implemented. Per-policy cards
 remain economic previews with term, 30-day and yearly claim/no-claim scenarios.
 
 [Business flows and custody](docs/INTERACTIVE-BUSINESS-FLOWS.md) ·
@@ -123,6 +124,7 @@ flowchart LR
 | **Your `hak-axelar-plugin` · `axelar_send_token`** | Build the real Hedera ITS transfer inside the existing HAK tool interface | Reuses a modular agent capability; Quorum adds application-specific spending restrictions |
 | **Axelar ITS** | Lock canonical aUSDd on Hedera and deliver its linked Sepolia token | Provides the cross-chain transport; Uniswap is not the bridge |
 | **Uniswap Trading API `/quote` + `/swap`** | Route linked aUSDd → test USDC and prepare Universal Router calldata | Gives a Hedera-origin user access to an actual EVM liquidity pool |
+| **Uniswap LP API** | Build V3 position creation, increases, fee collection and withdrawals | Users can also supply the trading liquidity; their wallet owns a genuine position NFT |
 | **Permit2 + user wallet** | Exact token permission, typed signature and transaction approval | The server never receives the user's EVM signing key |
 
 **Confirmed on-chain:** [demo account bridge](https://sepolia.etherscan.io/tx/0x506bc1df0c3a1948a0b954cf3d1cd6b08c019fb06be9258988bc69ef5c6d4500)
@@ -167,6 +169,48 @@ sponsored test liquidity; its price is not a USD peg or a redemption promise.
 ARPS and policy LP previews are separate from this Uniswap pool. There is no
 mainnet bridge, automatic swap, or return bridge UI.
 
+### Two pools, two purposes
+
+![Live Uniswap market balances and its genuine on-chain position NFT, with optional liquidity controls](docs/media/06-liquidity.png)
+
+| | Fund cover | Provide swap liquidity |
+| --- | --- | --- |
+| Network | Hedera testnet | Ethereum Sepolia |
+| Receipt | Fungible **ARPS** shares | **Uniswap V3 position NFT** |
+| Capital supports | Conditional earthquake payouts | aUSDd ↔ test USDC trades |
+| Income / exit today | Not implemented for ARPS | Actual swap-fee collection and partial/full withdrawal |
+
+**Try: Swap → Provide swap liquidity → Connect Sepolia wallet.** Add 0.01–1
+bridged aUSDd plus matching test USDC. Review amounts, approve each exact token
+allowance, then create the position. Its balances, uncollected tokens and receipt
+appear together. Select **Collect fees** or **Remove** to return tokens to your wallet.
+
+```mermaid
+flowchart LR
+  W["Your Sepolia wallet<br/>aUSDd + test USDC"] --> A["Uniswap LP API<br/>Quorum validates calldata"]
+  A -->|"You sign"| N["V3 position NFT<br/>Full-range liquidity"]
+  N -->|"Collect fees / withdraw"| W
+```
+
+The page reads the pool and position from Sepolia; the seed NFT artwork comes
+from Uniswap's on-chain `tokenURI`. **Operator seed** and **Your position** are
+separately labeled. Pool fee is **0.3% per swap**, not an APY. Uncollected amounts
+are read with `eth_call`; they include any principal previously removed without
+collection. All tokens have no cash value, and token proportions can change.
+
+**Confirmed lifecycle:** NFT **#231762** was created and increased; a separate
+swap generated fees; **0.000006 aUSDd** was collected; 50% and then the remaining
+liquidity were withdrawn. Seed NFT #231745 retained its original liquidity.
+[Mint](https://sepolia.etherscan.io/tx/0x156128aef98952488fdd34174fa300bfe35be0a50cdb68fad31aa4927283989c) ·
+[Collect](https://sepolia.etherscan.io/tx/0xb190fc08ba9686ef4ac0a4b9f4e0b3009ab7dc2820eeeb5c9063f6b9c6d04634) ·
+[Exit](https://sepolia.etherscan.io/tx/0x59e266a5f575f9cde213337cf38cfa39fbc177ec40e963729974a48eb996fbd8) ·
+[All receipts](docs/evidence/uniswap-liquidity.json).
+
+[API adapter and validation](src/settlement/liquidity.js) ·
+[Wallet interface](ui/src/app/SwapLiquidity.tsx) ·
+[Guardrail tests](tests/liquidity.test.js) ·
+[LP API reference](https://developers.uniswap.org/docs/liquidity/liquidity-provisioning-api/integration-guide).
+
 **Guardrails:** fixed chains/contracts/assets; exact input and recipient; 0.5%
 slippage; validated router commands and permit schema; short-lived quotes;
 wallet gas checks; bounded API calls; persisted pending transactions and
@@ -206,6 +250,7 @@ transfers, with links to HashScan.*
 | Open **How it works → Release** | Recorded **4 HBAR mainnet** transfer, with receipt. Controlled signatures, not a real earthquake claim. |
 | Open a policy → **Agent guardrails & proof** | Runtime limits plus separate mainnet controls: [1 HBAR transferred](https://hashscan.io/mainnet/schedule/0.0.10843723), [5 HBAR blocked](https://hashscan.io/mainnet/schedule/0.0.10843725) without the agent signature. |
 | Open **Swap → Bridge / Swap** | Real Hedera → Axelar → Sepolia → Uniswap test-token flow. [Receipts](docs/evidence/cross-chain-testnet.json). Mainnet prices are a separate preview. |
+| Open **Swap → Provide swap liquidity** | Actual pool, seed NFT art, wallet positions, exact approvals, add/collect/withdraw. [Verified lifecycle](docs/evidence/uniswap-liquidity.json). Separate from ARPS. |
 | Open **Onchain / Verify** | Testnet NFT, transfers and paid oracle evidence. [x402 payment receipt](docs/evidence/x402-testnet.json); self-hosted facilitator. |
 | Open **Funding estimate** | Proposed per-policy contribution, premium share and capital-at-risk outcomes. No deposit or LP NFT is issued; actual LP primitives use shared-pool fungible shares. |
 

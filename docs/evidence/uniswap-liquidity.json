@@ -1,0 +1,107 @@
+{
+  "network": "Ethereum Sepolia",
+  "chainId": 11155111,
+  "checkedAt": "2026-09-07T23:32:59.584Z",
+  "pool": "0x520388428673bc16fad5aa5e49fdb1d30727ceb3",
+  "manager": "0x1238536071e1c677a632429e3655c799b22cda52",
+  "wallet": "0x18c5e6987a734638403bbd942e17d959952b8e4e",
+  "tokenId": "231762",
+  "seedPosition": "231745",
+  "seedLiquidityBefore": "90000000",
+  "seedLiquidityAfter": "90000000",
+  "amounts": "0.1 aUSDd plus matching test USDC, then another 0.1; a separate 1 aUSDd swap generates fees.",
+  "transactions": {
+    "create-approve-0x1c7d4b196cb0c7b01d743fbc6116a902379c7238": "0x5969fca5485bc571c119c929678640d12cb2aa1c5fc3be6439716536f9757b3f",
+    "create-approve-0x5685b5660a86028d8a50c9e4fc33ff081b3cd9e9": "0xe161b9dbd5ba173c6980189b85cd7767f9b7db670114e7dfa727b2e330e7e4ef",
+    "create": "0x156128aef98952488fdd34174fa300bfe35be0a50cdb68fad31aa4927283989c",
+    "increase-approve-0x1c7d4b196cb0c7b01d743fbc6116a902379c7238": "0x88ce6bcde80a4e20ff0026b130a6dc7af01554124e4c5e32168b7820bd212790",
+    "increase-approve-0x5685b5660a86028d8a50c9e4fc33ff081b3cd9e9": "0xc02858e7358e16331c6a2d602a18dcb912ef95aa0e724147891f475ae4791cc2",
+    "increase": "0xc695e2e180c0e41c2167326f34fe245e731a050bd3a526e81e0a7251628bbca4",
+    "swap-approval": "0x0dc24b094848a7f73fd6e571b5871b9bc26c26323ea8ee4b6ccf7d647ea9855f",
+    "fee-generating-swap": "0xd46ddb35d8e60c4a9f03211d37b6fe305fac45f3de84c7df0d751e55a6d99b2d",
+    "collect": "0xb190fc08ba9686ef4ac0a4b9f4e0b3009ab7dc2820eeeb5c9063f6b9c6d04634",
+    "remove-half": "0xa0b111aa26e8778951f8438a86fcbb28fc8a050b5e176d3ca9ca1309e6b1aba8",
+    "remove-rest": "0x59e266a5f575f9cde213337cf38cfa39fbc177ec40e963729974a48eb996fbd8"
+  },
+  "beforeCollect": {
+    "tokenId": "231762",
+    "owner": "0x18c5e6987a734638403bbd942e17d959952b8e4e",
+    "liquidity": "199974",
+    "tickLower": -887220,
+    "tickUpper": 887220,
+    "supported": true,
+    "inRange": true,
+    "amount0": "197766",
+    "amount1": "202206",
+    "claimable0": "0",
+    "claimable1": "6"
+  },
+  "afterCollect": {
+    "tokenId": "231762",
+    "owner": "0x18c5e6987a734638403bbd942e17d959952b8e4e",
+    "liquidity": "199974",
+    "tickLower": -887220,
+    "tickUpper": 887220,
+    "supported": true,
+    "inRange": true,
+    "amount0": "197766",
+    "amount1": "202206",
+    "claimable0": "0",
+    "claimable1": "0"
+  },
+  "afterHalf": {
+    "tokenId": "231762",
+    "owner": "0x18c5e6987a734638403bbd942e17d959952b8e4e",
+    "liquidity": "99987",
+    "tickLower": -887220,
+    "tickUpper": 887220,
+    "supported": true,
+    "inRange": true,
+    "amount0": "98883",
+    "amount1": "101103",
+    "claimable0": "0",
+    "claimable1": "0"
+  },
+  "finalPosition": {
+    "tokenId": "231762",
+    "owner": "0x18c5e6987a734638403bbd942e17d959952b8e4e",
+    "liquidity": "0",
+    "tickLower": -887220,
+    "tickUpper": 887220,
+    "supported": true,
+    "inRange": true,
+    "amount0": "0",
+    "amount1": "0",
+    "claimable0": "0",
+    "claimable1": "0"
+  },
+  "boundaries": "Real testnet tokens, no cash value. Separate operator verification wallet. No ARPS or insurance capital used. The original seed position was not altered.",
+  "tokensReceived": {
+    "collect": [
+      {
+        "token": "0x5685b5660a86028d8a50c9e4fc33ff081b3cd9e9",
+        "amountUnits": "6"
+      }
+    ],
+    "remove-half": [
+      {
+        "token": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+        "amountUnits": "98883"
+      },
+      {
+        "token": "0x5685b5660a86028d8a50c9e4fc33ff081b3cd9e9",
+        "amountUnits": "101103"
+      }
+    ],
+    "remove-rest": [
+      {
+        "token": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+        "amountUnits": "98883"
+      },
+      {
+        "token": "0x5685b5660a86028d8a50c9e4fc33ff081b3cd9e9",
+        "amountUnits": "101103"
+      }
+    ]
+  }
+}

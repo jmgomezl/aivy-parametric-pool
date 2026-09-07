@@ -5,6 +5,7 @@ import {onLink,navigate} from '../lib/router';
 import {BridgeTransfer} from './BridgeTransfer';
 import {BridgedSwap} from './BridgedSwap';
 import {TestnetSwap} from './TestnetSwap';
+import {SwapLiquidity} from './SwapLiquidity';
 
 const readStep=()=>new URLSearchParams(location.search).get('step')==='swap'?'swap':'bridge';
 export function SwapPage(){
@@ -31,6 +32,7 @@ export function SwapPage(){
     <details className="swap-technical"><summary>How the agent is constrained <span>+</span></summary><p>The HAK Axelar plugin builds the transfer. Quorum checks its chain, token, recipient and amount before signing. The Uniswap Trading API builds a swap for your wallet to approve.</p><p>Exact approvals · 0.5% slippage · saved transaction IDs. No custom Solidity contracts from this project.</p><a href="https://github.com/jmgomezl/aivy-parametric-pool#why-uniswap" target="_blank" rel="noreferrer">Architecture & implementation ↗</a></details>
    </aside>
   </div>
+  <SwapLiquidity/>
   <div className="swap-alternative"><div><h2>Only have Sepolia ETH?</h2><p>Try a direct Uniswap swap. No bridge needed.</p></div><TestnetSwap/></div>
   <p className="swap-footer">This moves your demo account balance. Policy payouts go to a separate demo beneficiary. ARPS is not traded here. Sponsored test liquidity is not a USD peg or cash redemption.</p>
   <a className="hs" href="/" onClick={onLink}>Explore earthquake cover →</a>

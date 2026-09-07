@@ -252,3 +252,35 @@ Recorded cross-chain examples are explicitly separate from the visitor’s actio
 receipts. Shared-pool deposits disclose unavailable withdrawals and LP income
 before the action, and ARPS percentages describe issued-token holdings, not yield.
 See the [final user/judge review](qa/FINAL-UX-REVIEW.md) for browser checks.
+
+## Uniswap position management (Sepolia only)
+
+**Insurance custody and market liquidity have separate authorities.**
+`/api/liquidity/*` reads the existing V3 market and returns unsigned transactions.
+It never uses a Hedera account, ARPS supply key, insurance reserve or server EVM
+signer. Users supply both test tokens from their own Sepolia wallets.
+
+| Boundary | Enforced behavior |
+| --- | --- |
+| Chain and market | Sepolia 11155111; pinned V3 pool, NonfungiblePositionManager, aUSDd/test USDC and 3000 fee tier. API routes are disabled outside the testnet deployment. |
+| Position ownership | NFT owner and token pair verified on-chain before preparation; ownership checked again before returning the request and in the wallet before submission. Only full-range positions are managed. |
+| API output | Canonical ABI decoding and re-encoding. Only mint, increase, collect, or an exact decrease+collect sequence. No extra calls, alternative recipients, native value, permits, burning or arbitrary approvals. |
+| Amounts and exit | Add 0.01–1 aUSDd, with at most 1 matching test USDC. Dependent amount checked against the live pool ratio. Removal liquidity must equal the requested percentage of the owned NFT. Both output minima enforce 0.5% protection, subject to integer rounding. |
+| Allowances | Read actual ERC-20 allowances and build exact token approvals to the position manager. This intentionally uses a narrower local approval builder instead of accepting generic LP API approval/permit payloads. |
+| Signing and gas | Wallet signs and broadcasts. Frontend verifies account/network, target, zero native value and exact approval bytes. Maximum 1M gas and 0.002 Sepolia ETH fee budget per operation. Review expires after 90 seconds; transaction deadline is bounded. |
+| Recovery | Save operation, calldata and explicit nonce before the wallet request. Browser Web Locks serialize LP submissions across tabs where supported. Unknown submission blocks another operation. Hash reconciliation checks sender, recipient, calldata, value, nonce and successful receipt; mint recovery also verifies the new NFT Transfer event. |
+| Reads and API budget | On-chain reads use a common block per snapshot; pool response cached for 15 seconds with block/time shown. Wallet NFT discovery paginates ten at a time. Global request and concurrency limits, RPC/HTTP timeouts, server-only API key, no API redirects. |
+
+The seed NFT art is read from the pinned manager's `tokenURI`, bounded in size,
+restricted to embedded base64 SVG, and displayed as an image resource, never
+injected into the DOM as HTML. Metadata failure does not authorize an operation.
+
+Fees shown are actual collectible token units, not a promised yield. Previously
+removed but uncollected principal is disclosed in the same figure. Full-range
+positions can change their token mix; withdrawal is not a guarantee of original
+deposit amounts. LP withdrawal affects only the Uniswap position; ARPS redemption
+and insurance-premium distributions remain unimplemented.
+
+[Implementation](../src/settlement/liquidity.js) · [Negative tests](../tests/liquidity.test.js) ·
+[Real create/increase/collect/partial and full exit receipts](evidence/uniswap-liquidity.json) ·
+[Browser and ledger verification](qa/UNISWAP-LIQUIDITY.md).

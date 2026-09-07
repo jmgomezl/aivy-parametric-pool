@@ -4,6 +4,11 @@
 Hedera’s settlement mechanism and Uniswap’s useful role discoverable from arrival.
 This is a submission prototype, not a production investment product.
 
+**Later September 7 addition:** [Uniswap liquidity verification](UNISWAP-LIQUIDITY.md)
+adds actual pool/NFT visibility and a verified create → increase → fee collection
+→ partial/full withdrawal lifecycle. The earlier visual-review checks below
+remain scoped to their original pass; current regression count is **80 tests**.
+
 ## What a judge can understand immediately
 
 | Viewer | Visible value | Inspectable evidence |
@@ -50,7 +55,9 @@ No new ledger transaction was required for this visual review.
 
 - Use a browser with an injected EVM wallet and funded **Sepolia ETH**. Missing-wallet guidance was exercised; wallet extension approval dialogs were not re-tested in this pass. Existing successful signed swaps remain in the evidence.
 - Public cover, deposits, x402 payments and bridge/swaps are **testnet**. Mainnet settlement is a labeled recording; Base/Unichain prices are quote-only.
-- One shared pool; fixed 1:1 demo ARPS issuance. No distributions, withdrawal/redemption, ARPS trading, per-policy vaults or minted LP NFTs.
+- One shared insurance pool; fixed 1:1 demo ARPS issuance. No ARPS distributions,
+  withdrawal/redemption, ARPS trading, per-policy vaults or per-policy LP NFTs.
+  Separate Uniswap V3 positions have real NFTs, fee collection and withdrawals.
 - The bridge uses the visitor’s managed demo balance. Policy payouts use a separate demo beneficiary. Sponsored test liquidity is not a USD peg.
 - Checks are manually requested. Distinct keys/catalogues on this project’s host do not establish independently operated oracles.
 - This review does not certify prize eligibility, production security, or every device/accessibility combination. Record and submit using the [current guide](../SUBMISSION.md).

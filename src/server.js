@@ -1,5 +1,6 @@
 import {checkPolicy,latestPolicyCheck} from './demo/policyChecks.js';
 import {createBridgedSwap} from './settlement/bridgedSwap.js';
+import {createLiquidity} from './settlement/liquidity.js';
 import {bridgeConfig,bridgeStatus} from './settlement/bridge.js';
 import {createTestnetSwap} from './settlement/testnetSwap.js';
 // The underwriting agent, over HTTP.
@@ -67,6 +68,7 @@ async function main() {
 
   const prepareTestnetSwap=createTestnetSwap();
   const bridgedSwaps=createBridgedSwap();
+  const liquidity=createLiquidity();
   const demo=demoService({client:c,agent,network:NETWORK,reg});
 
   const server = http.createServer(async (req, res) => {
@@ -74,6 +76,12 @@ async function main() {
     try {
       const url = new URL(req.url, 'http://localhost');
       const route = url.pathname.replace(/\/$/, '');
+      if (route.startsWith('/api/liquidity')) {
+        if (NETWORK!=='testnet') throw new HttpError(403,'Testnet liquidity only.');
+        if (route==='/api/liquidity/market' && req.method==='GET') return json(res,200,await liquidity.market());
+        if (route==='/api/liquidity/wallet' && req.method==='GET') return json(res,200,await liquidity.wallet(url.searchParams.get('address'),url.searchParams.get('cursor')??'0'));
+        if (route==='/api/liquidity/prepare' && req.method==='POST') return json(res,200,await liquidity.prepare(await readJsonBody(req)));
+      }
       if(['/api/bridged-swap/quote','/api/bridged-swap/build'].includes(route)&&req.method==='POST'){
         if(NETWORK!=='testnet')throw new HttpError(403,'Testnet only.');
         const input=await readJsonBody(req);return json(res,200,await bridgedSwaps[route.endsWith('/quote')?'prepare':'build'](input));

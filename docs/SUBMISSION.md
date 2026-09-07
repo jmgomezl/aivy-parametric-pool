@@ -29,7 +29,7 @@ Reusable plugin: https://github.com/jmgomezl/hak-scheduled-settlement
   Payment: 1,000 base units = 0.001 aUSDd; USGS service returned HTTP 200 after settlement.
   The query covers Mexico City in January 2025. It found no qualifying event and did not sign any policy.
 - x402 uses the deployed self-hosted testnet facilitator. No Blocky mainnet payment is claimed.
-- Per-policy funding, LP NFTs and premium distribution are a proposed model. Working LP primitives issue fungible shares for the shared pool; the public UI accepts actual shared-pool deposits.
+- Per-policy funding, per-policy LP NFTs and insurance-premium distribution are a proposed model. Working insurance-pool primitives issue fungible ARPS shares; the public UI accepts actual shared-pool deposits. Separate Uniswap positions have real NFTs, swap-fee collection and withdrawals.
 - Annual premium rate is gross, before claims and costs. It is not guaranteed yield. The slider shows capital at risk.
 - Automatic ledger execution is implemented; earthquake checks are manually requested from the policy page.
 
@@ -86,3 +86,15 @@ Creation budgets now persist across restarts and count interrupted attempts.
 Before recording, read `/api/guardrails` and `/api/pool`. Choose a smaller cover
 if capacity is low, or use an existing NFT. Keep funded Sepolia gas available in
 the demonstration wallet. Do not reset a journal to make a recording pass.
+
+
+### Optional Uniswap liquidity close-up
+
+After the swap, reveal **Provide swap liquidity**: show the real seed NFT and
+**Your Uniswap position**, then open a collection or withdrawal receipt. Say:
+“People can fund cover on Hedera, or supply trading liquidity on Uniswap.
+These are separate positions with separate earnings.”
+
+Use [NFT 231762’s completed lifecycle](evidence/uniswap-liquidity.json) as a
+recorded example, labeled Sepolia. Its liquidity is now fully withdrawn; it
+is not a currently earning position. Leave the primary bridge/swap story central.

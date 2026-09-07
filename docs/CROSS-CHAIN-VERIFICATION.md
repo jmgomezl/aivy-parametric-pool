@@ -16,6 +16,13 @@ are separate verification transactions using the same canonical asset route.
 ## Where to try
 
 Main navigation → **[Swap](https://quorum.aivylabs.xyz/swap)** → **01 Bridge** → **02 Swap**.
+
+The same page now shows the actual pool, seed NFT artwork and wallet-owned V3
+positions under **Provide swap liquidity**. Create, increase, collect and partial/full
+withdrawal were executed on Sepolia: [lifecycle evidence](evidence/uniswap-liquidity.json)
+and [QA](qa/UNISWAP-LIQUIDITY.md). These positions are separate from ARPS and
+the insurance reserves. The initial 90+90 seed remains a historical deposit;
+the page reads current token balances after swaps.
 Quote and policy pages also link directly to this flow. Verified examples are
 labeled recordings; current receipts appear inside the action that created them.
 Use an injected EVM wallet on Sepolia with test ETH for gas. Confirm the source
