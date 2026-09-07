@@ -1,0 +1,16 @@
+{
+  "plugin": "hak-axelar-plugin",
+  "version": "1.0.1",
+  "tool": "axelar_send_token",
+  "integrationRevision": "3f733a4b9b4fbd0f495b30ca3d028e5ae6b1b3e3",
+  "network": "testnet",
+  "amount": 0.01,
+  "asset": "aUSDd",
+  "sourceTransaction": "0.0.10408106@1788799512.671223617",
+  "sourceHash": "0x9027859ed638603a5c8d9ffce5f55084e6b80000b7e95ce78749c2386336a282",
+  "sourceStatus": "SUCCESS",
+  "destinationStatusAtVerification": "in-transit",
+  "recipient": "0x18c5e6987a734638403bbd942e17d959952b8e4e",
+  "explorer": "https://testnet.axelarscan.io/gmp/0x9027859ed638603a5c8d9ffce5f55084e6b80000b7e95ce78749c2386336a282",
+  "validation": "Built with the installed plugin, corrected native Hedera ITS gas units, validated all terms, journaled and signed by the managed demo account. No plugin secondaryAction invoked."
+}

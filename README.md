@@ -142,6 +142,7 @@ plugin predates this submission; the guarded integration is project work.
 
 [Integration adapter](src/settlement/axelarPlugin.js) ·
 [Tests using the actual package](tests/axelar-plugin.test.js) ·
+[Real plugin-built transfer](docs/evidence/hak-axelar-plugin.json) ·
 [Security rationale](docs/AGENT-SECURITY.md#hak-axelar-plugin-integration)
 
 ### Try it in the app
