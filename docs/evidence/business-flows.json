@@ -234,5 +234,11 @@
     "amount": 1,
     "shares": 1,
     "poolId": "0.0.10373722"
+  },
+  "negativeChecks": {
+    "unauthorized": 401,
+    "oversizedDeposit": 400,
+    "selfReferral": 400,
+    "balanceAndActionJournalUnchanged": true
   }
 }

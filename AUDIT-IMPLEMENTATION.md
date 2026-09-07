@@ -135,3 +135,13 @@ security review. This is not an independent security audit or certification.
 - Preserved the distinct 1 HBAR executed / 5 HBAR blocked control records and receipt links. Unknown ledger evidence stays explicitly unverified; the diagram does not infer execution from signatures.
 - Reviewed active illustration paths across Cover, Policies, NFT/LP positions, premium history and the six-scene walkthrough. Geographic maps and current walkthrough visuals remain appropriate. Legacy rings in unrouted `beats` files are not served by the active app.
 - Verified desktop (1280px) and narrow mobile (320px) proof and live confirmations with no horizontal overflow. UI TypeScript/production build passed; existing large-bundle warning remains.
+
+## Interactive business-flow review — September 7, 2026
+
+Real service-managed testnet accounts replace the abandoned practice-credit idea.
+The funding entry point now has an atomic deposit action, live pool balances and
+ARPS receipts. Cover debits the visitor account, checks available capacity and
+shows the broker split; a public broker shortcut exposes referral links and income.
+Term/month/year scenarios show both premium growth and a first-term claim loss.
+See docs/INTERACTIVE-BUSINESS-FLOWS.md and docs/evidence/business-flows.json for
+the completed UI/API checks and remaining production/business-model boundaries.

@@ -42,3 +42,25 @@ unimplemented and are labeled before a deposit. There is no guaranteed yield.
 `npm test` includes capabilities, persisted account quotas, replay/mismatched
 request protection, pending-action blocking, broker validation and multi-period
 scenarios. `npm --prefix ui run build` checks the browser implementation.
+
+## Verified September 7, 2026
+
+- UI account 0.0.10408106 received 1,000 real aUSDd; deposited 25 and received
+  25 ARPS, then paid a 4 aUSDd premium. Displayed balance: 971 aUSDd.
+- Policy #29: NFT mint/delivery and premium transfer succeeded. Broker
+  0.0.10408125 received 0.60 aUSDd; pool received 3.40 aUSDd.
+- A separate 1 aUSDd deposit replay returned the same receipt, without a second
+  charge. Unauthorized deposit, oversized amount and self-referral checks were
+  refused without changing balances or the action journal.
+- 46 offline tests and production build pass. Desktop funding/purchase/broker
+  panels and 320px account/scenario layouts reviewed; no horizontal overflow.
+- Referral parameter survives city selection. Broker shortcut opens the account
+  disclosure. UI balance polling uses stable subscriptions and free mirror reads.
+
+[Machine-readable receipt evidence](evidence/business-flows.json).
+
+The remaining business work is NAV share accounting, withdrawal/claim-loss
+allocation and income distribution, independent oracle custody, and production
+customer authentication. These are disclosed limitations, not working buttons
+or promised LP payouts. The current fee model routes premium to pool/broker;
+no separate platform fee is collected.
