@@ -1,0 +1,113 @@
+{
+  "checkedAt": "2026-09-07T17:31:35.480Z",
+  "network": "testnet",
+  "policy": "24",
+  "check": {
+    "status": "complete",
+    "at": 1788802171573,
+    "ok": true,
+    "serial": "24",
+    "network": "testnet",
+    "checkedAt": "2026-09-07T17:29:38.505Z",
+    "checks": [
+      {
+        "sourceKey": "usgs",
+        "source": "USGS ComCat",
+        "status": "no-match",
+        "paymentTxId": "0.0.7231440@1788802164.871522199",
+        "paid": true,
+        "verdict": "USGS ComCat recorded no seismic activity meeting these terms in the window.",
+        "queriedAt": "2026-09-07T17:29:34.108Z",
+        "query": "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minmagnitude=5.5&latitude=35.6762&longitude=139.6503&maxradiuskm=100&starttime=2026-09-06T05:09:14.655Z&endtime=2026-09-07T17:29:32.202Z",
+        "alreadySettled": false,
+        "matches": []
+      },
+      {
+        "sourceKey": "emsc",
+        "source": "EMSC",
+        "status": "no-match",
+        "paymentTxId": "0.0.7231440@1788802170.421634414",
+        "paid": true,
+        "verdict": "EMSC recorded no seismic activity meeting these terms in the window.",
+        "queriedAt": "2026-09-07T17:29:35.863Z",
+        "query": "https://www.seismicportal.eu/fdsnws/event/1/query?format=json&minmag=5.5&lat=35.6762&lon=139.6503&maxradius=0.8994&start=2026-09-06T05:09:14.655Z&end=2026-09-07T17:29:34.580Z&limit=1000",
+        "alreadySettled": false,
+        "matches": []
+      },
+      {
+        "sourceKey": "geofon",
+        "source": "GEOFON",
+        "status": "no-match",
+        "paymentTxId": "0.0.7231440@1788802169.116748997",
+        "paid": true,
+        "verdict": "GEOFON recorded no seismic activity meeting these terms in the window.",
+        "queriedAt": "2026-09-07T17:29:38.126Z",
+        "query": "https://geofon.gfz-potsdam.de/fdsnws/event/1/query?format=text&minmagnitude=5.5&latitude=35.6762&longitude=139.6503&maxradius=0.8994&starttime=2026-09-06T05:09:14.655Z&endtime=2026-09-07T17:29:36.704Z&limit=1000",
+        "alreadySettled": false,
+        "matches": []
+      }
+    ],
+    "needsReview": false,
+    "cost": 0.003,
+    "maxCost": 0.003
+  },
+  "receipts": [
+    {
+      "source": "usgs",
+      "transaction": "0.0.7231440-1788802164-871522199",
+      "status": "SUCCESS",
+      "tokenTransfers": [
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10386832",
+          "amount": 1000,
+          "is_approval": false
+        },
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10408106",
+          "amount": -1000,
+          "is_approval": false
+        }
+      ]
+    },
+    {
+      "source": "emsc",
+      "transaction": "0.0.7231440-1788802170-421634414",
+      "status": "SUCCESS",
+      "tokenTransfers": [
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10386833",
+          "amount": 1000,
+          "is_approval": false
+        },
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10408106",
+          "amount": -1000,
+          "is_approval": false
+        }
+      ]
+    },
+    {
+      "source": "geofon",
+      "transaction": "0.0.7231440-1788802169-116748997",
+      "status": "SUCCESS",
+      "tokenTransfers": [
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10386835",
+          "amount": 1000,
+          "is_approval": false
+        },
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10408106",
+          "amount": -1000,
+          "is_approval": false
+        }
+      ]
+    }
+  ]
+}
