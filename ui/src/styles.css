@@ -1101,3 +1101,7 @@ small { font-size:12px; color:var(--fg-2); }
 .lp-position details {margin:8px 0;font-size:12px;color:var(--fg-1);}
 .lp-position summary {padding:12px 0;cursor:pointer;}
 .lp-position>a {font-size:12px;color:var(--ok);}
+
+.conversion-purpose {display:grid;gap:6px;margin:12px 0 18px;}
+.conversion-purpose strong {font-size:13px;font-weight:500;color:var(--fg-0);}
+.conversion-purpose span {font-size:11px;color:var(--fg-2);line-height:1.5;}

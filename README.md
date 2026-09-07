@@ -4,8 +4,9 @@
 
 A parametric earthquake-cover prototype: a deterministic agent prices and commits
 a payout; oracle keys verify the event; Hedera executes the pre-signed transfer
-when its signature requirements are met. Uniswap adds a live view of what the
-modeled payout could buy in ETH.
+when its signature requirements are met. **Hedera-native cover meets Uniswap
+liquidity quotes through an agent API integration—without custom Solidity
+contracts.** Users can inspect what the modeled payout could buy in ETH.
 
 [Try the demo](https://quorum.aivylabs.xyz) · [Watch the mechanism](https://quorum.aivylabs.xyz/story) · [Recording guide](docs/SUBMISSION.md)
 
@@ -95,9 +96,20 @@ host do not prove independent operators.
 
 ## Why Uniswap
 
-**A payout amount is more useful when a beneficiary can inspect its purchasing
-power in another asset.** “Payout in ETH?” connects the modeled cover amount to a
-live liquidity quote, rather than displaying a static exchange-rate estimate.
+**Uniswap reach beyond a Solidity application.** A user starts with earthquake
+cover on Hedera and discovers USDC→ETH liquidity on Base or Unichain inside the
+same experience. Our JavaScript agent calls the Uniswap Trading API through
+`hak-uniswap-plugin`; this integration requires no custom Solidity contracts.
+
+**Why it belongs here:** cover answers “what can I receive?” Uniswap quotes help
+answer “what could that amount buy in another asset?” Routes, estimated gas and
+expiry make this a live liquidity lookup, not a static currency converter.
+
+**New entry point, not a completed cross-chain transfer:** the implemented flow
+introduces Hedera users to Uniswap quotes. Converting actual funds would also
+require supported EVM funds, user authorization and swap execution; moving funds
+from Hedera would require a separate supported transfer mechanism. Those steps
+are not implemented, and demo aUSDd cannot fund a swap.
 
 ```mermaid
 flowchart LR
@@ -118,9 +130,8 @@ flowchart LR
   class View ledger
 ```
 
-> A quote, and it says so in the response. The payout is on Hedera and the
-> liquidity is on an EVM chain; crossing needs a bridge this protocol
-> deliberately does not have.
+> **Live now: quote discovery.** Hedera settlement and EVM liquidity remain
+> separate. The diagram describes API data, not a transfer of funds.
 
 | Component used | Purpose in this app |
 | --- | --- |
