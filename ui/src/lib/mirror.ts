@@ -26,7 +26,7 @@ async function get<T>(path: string, timeoutMs = 8000, network: Network = 'mainne
 
 export interface AccountLive { balanceTinybar: number; tokens: { token_id: string; balance: number }[] }
 export interface ScheduleLive { executedAt: string | null; signatures: number; deleted: boolean; expiresAt: string }
-export interface TokenLive { totalSupply: string; symbol: string }
+export interface TokenLive { totalSupply: string; symbol: string; decimals: number }
 export interface NftLive { owner: string; metadata: string }
 
 export const fetchAccount = async (id: string, network: Network = 'mainnet'): Promise<AccountLive> => {
@@ -44,9 +44,9 @@ export const fetchSchedule = async (id: string, network: Network = 'mainnet'): P
   };
 };
 
-export const fetchToken = async (id: string): Promise<TokenLive> => {
-  const j = await get<{ total_supply: string; symbol: string }>(`/tokens/${id}`);
-  return { totalSupply: j.total_supply, symbol: j.symbol };
+export const fetchToken = async (id: string, network: Network = 'mainnet'): Promise<TokenLive> => {
+  const j = await get<{ total_supply: string; symbol: string; decimals: string }>(`/tokens/${id}`, 8000, network);
+  return { totalSupply: j.total_supply, symbol: j.symbol, decimals: Number(j.decimals) };
 };
 
 export const fetchNft = async (tokenId: string, serial: number): Promise<NftLive> => {

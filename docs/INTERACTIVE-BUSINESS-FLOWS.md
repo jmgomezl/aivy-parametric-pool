@@ -85,3 +85,7 @@ funding-estimate-to-deposit handoff, visible definitions and no horizontal overf
 The account panel prioritizes balance, pool shares and referral earnings. A visual **Share link → Buyer pays → 15% for you** flow leads to one copy-link action. Commission terms, testing instructions, transaction receipts and custody details expand on demand. Testnet / no cash value and service-managed custody remain visible. Clipboard failure exposes a selectable link.
 
 Verified at 320px and desktop: no horizontal overflow; referral copy feedback, disclosure controls, close button and home broker shortcut work. No ledger writes are required for this presentation change.
+
+### Depositor position
+
+The funding page shows the connected demo account’s ARPS balance, percentage of issued ARPS (balance ÷ live token supply, using token decimals), account verification and latest completed deposit receipt. This is a token holding percentage, not APY, asset ownership or distributed earnings. Missing supply renders an unavailable percentage. Investment income distributions and withdrawals remain unimplemented and are visibly labeled.

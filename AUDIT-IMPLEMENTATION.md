@@ -153,3 +153,7 @@ Replaced the broker paragraph and raw code with a three-step referral flow, earn
 ### 2026-09-07 — Account dismissal
 
 Account popover closes with the explicit × control, outside pointer interaction, or Escape. Escape returns focus to the account summary; outside clicks retain the destination interaction. Verified close/reopen, outside click and keyboard focus in the browser, plus × at 320px. Production UI build passes.
+
+### 2026-09-07 — Visible depositor position
+
+Added persistent ARPS holdings, percentage of issued token supply and latest deposit receipt to the funding page. Token supply is read from the testnet mirror node with token decimals; no fake earnings rate is shown. Production build passes; checked live supply and 320px layout without horizontal overflow.
