@@ -9,5 +9,6 @@ export async function demoCall(path:string,body?:unknown){const response=await f
 export function refreshDemo(){if(!demoToken())return Promise.resolve();if(reading)return reading;reading=(async()=>{try{state={...state,account:await demoCall('/api/demo'),error:''};}catch(e){state={...state,error:(e as Error).message};}emit();})().finally(()=>{reading=null;});return reading;}
 export async function startDemo(){if(state.busy)return;state={...state,busy:true,error:''};emit();try{state={account:await demoCall('/api/demo/start',{}),busy:false,error:''};}catch(e){state={...state,busy:false,error:(e as Error).message};}emit();}
 let timer:ReturnType<typeof setInterval>|undefined;
-export function useDemo(){return useSyncExternalStore(cb=>{listeners.add(cb);void refreshDemo();if(!timer)timer=setInterval(()=>{if(document.visibilityState==='visible')void refreshDemo();},15000);return()=>{listeners.delete(cb);if(!listeners.size){clearInterval(timer);timer=undefined;}};},()=>state);}
+const subscribe=(cb:()=>void)=>{listeners.add(cb);void refreshDemo();if(!timer)timer=setInterval(()=>{if(document.visibilityState==='visible')void refreshDemo();},15000);return()=>{listeners.delete(cb);if(!listeners.size){clearInterval(timer);timer=undefined;}};};
+export function useDemo(){return useSyncExternalStore(subscribe,()=>state);}
 export const receipt=(id:string)=>`https://hashscan.io/testnet/transaction/${id}`;

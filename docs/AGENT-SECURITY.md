@@ -124,3 +124,15 @@ check remains mandatory. These settings do not allow public mainnet writes.
 dry-runs by default. `--execute` tops up to its fixed target and journals the
 submitted transaction ID before waiting for consensus. Reconcile an uncertain
 submission before running it again. It is not exposed as a public faucet.
+
+### Interactive accounts and broker flow — September 7, 2026
+
+Public cover creation now requires a browser-held 256-bit demo capability.
+The server stores only its digest and resolves custodial signing keys privately.
+Referral codes resolve only ready registered accounts; self-referrals and arbitrary
+broker account fields are refused. Starter grants and deposit/purchase actions
+have separate durable quotas and use the same global issuance lock.
+Account balance display reads the mirror node, avoiding paid balance queries on
+every page refresh; spending checks still use fresh SDK balances.
+
+[Full business/API boundaries](INTERACTIVE-BUSINESS-FLOWS.md).

@@ -21,6 +21,22 @@ is committed on Hedera — in about twenty seconds, unedited.*
 > model outputs. Event checks are manually requested. Mainnet settlement is a
 > labeled recording; per-policy funding is a preview.
 
+## Try the business model
+
+| Role | Click | Real testnet outcome |
+| --- | --- | --- |
+| Buyer | **Your demo account → Start**, then choose a place and **Pay premium & create cover** | 1,000 starter aUSDd; actual premium debit, NFT receipt and scheduled payout. |
+| LP | **Fund the pool → Deposit into shared pool** | Tokens enter the shared pool; ARPS shares arrive atomically. Balance and receipt update. |
+| Broker | **Earn as a broker → Copy referral link** | Buyer pays the same premium; 15% goes to the broker and 85% to the pool. Commission history is visible. |
+
+No referral means 100% of the premium goes to the pool. There is no separate
+platform fee. Shared-pool shares use demo 1:1 issuance, not NAV pricing;
+withdrawals and income distributions are not implemented. Per-policy cards
+remain economic previews with term, 30-day and yearly claim/no-claim scenarios.
+
+[Business flows and custody](docs/INTERACTIVE-BUSINESS-FLOWS.md) ·
+[Verified deposit, purchase and commission receipts](docs/evidence/business-flows.json).
+
 ## The problem and the improvement
 
 Parametric cover replaces damage assessment with a measurable trigger. A remaining
