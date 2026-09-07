@@ -167,7 +167,7 @@ its transfers — all linking out to HashScan.*
 | Open a policy → **Agent guardrails & proof** | Runtime limits plus separate mainnet controls: [1 HBAR transferred](https://hashscan.io/mainnet/schedule/0.0.10843723), [5 HBAR blocked](https://hashscan.io/mainnet/schedule/0.0.10843725) without the agent signature. |
 | Open **Payout in ETH? → Uniswap** | Live mainnet quote; switch Base/Unichain and inspect route/quote ID. [Saved evidence](docs/evidence/uniswap-quotes.json). |
 | Open **Onchain / Verify** | Testnet NFT, transfers and paid oracle evidence. [x402 payment receipt](docs/evidence/x402-testnet.json); self-hosted facilitator. |
-| Open **LP preview** | Proposed per-policy contribution, premium share and capital-at-risk outcomes. No deposit or LP NFT is issued; actual LP primitives use shared-pool fungible shares. |
+| Open **Funding estimate** | Proposed per-policy contribution, premium share and capital-at-risk outcomes. No deposit or LP NFT is issued; actual LP primitives use shared-pool fungible shares. |
 
 ## Security by architecture
 
