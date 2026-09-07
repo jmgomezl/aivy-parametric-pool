@@ -1,0 +1,35 @@
+{
+  "network": "testnet",
+  "sourceChain": 296,
+  "destinationChain": 11155111,
+  "asset": "aUSDd (no cash value)",
+  "destinationToken": "0x5685B5660A86028d8a50C9e4Fc33fF081B3Cd9e9",
+  "bridge": {
+    "amount": 0.01,
+    "sourceAccount": "0.0.10408106",
+    "sourceTransaction": "0.0.10408106@1788797761.825573565",
+    "sourceHash": "0xedae0a7b249d1841f850020dca56f3f2799027a7e1dff752b5f753154fdfbda9",
+    "destinationHash": "0x506bc1df0c3a1948a0b954cf3d1cd6b08c019fb06be9258988bc69ef5c6d4500"
+  },
+  "swap": {
+    "input": 0.01,
+    "outputTestUSDC": 0.009968,
+    "approval": "0x56557eb32ad83bd7462301607d898ba7a6d53907aca82a8e32535d3d081451d6",
+    "transaction": "0xdcd06bd9aeb5a0fb33ac54aaf2f3b82f69e18ae554e76a3892fcbacaeb6420a6",
+    "sourceOfSwapTokens": "Separate 100 aUSDd operator seed bridged through the same ITS token route; not attributed to the 0.01 visitor transfer.",
+    "before": {
+      "ausddUnits": "10000000",
+      "usdcUnits": "12788545"
+    },
+    "after": {
+      "ausddUnits": "9990000",
+      "usdcUnits": "12798513"
+    }
+  },
+  "pool": {
+    "address": "0x520388428673BC16FAD5Aa5e49FDB1d30727cEb3",
+    "fee": 3000,
+    "initialLiquidity": "90 aUSDd + 90 test USDC, operator sponsored",
+    "mintTransaction": "0xcfd4f5b12b52e4c3eebdb3cc0723fbf8a7f680bc75cf5cd53f0be1d53fae398f"
+  }
+}

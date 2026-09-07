@@ -96,80 +96,53 @@ host do not prove independent operators.
 
 ## Why Uniswap
 
-**Uniswap reach beyond a Solidity application.** A user starts with earthquake
-cover on Hedera and discovers USDC→ETH liquidity on Base or Unichain inside the
-same experience. Our JavaScript agent calls the Uniswap Trading API through
-`hak-uniswap-plugin`; this integration requires no custom Solidity contracts.
-
-**Why it belongs here:** cover answers “what can I receive?” Uniswap quotes help
-answer “what could that amount buy in another asset?” Routes, estimated gas and
-expiry make this a live liquidity lookup, not a static currency converter.
-
-**New entry point, not a completed cross-chain transfer:** the implemented flow
-introduces Hedera users to Uniswap quotes. Converting actual funds would also
-require supported EVM funds, user authorization and swap execution; moving funds
-from Hedera would require a separate supported transfer mechanism. Hedera bridging
-is not implemented, and demo aUSDd cannot fund a swap. A separate **Ethereum
-Sepolia ETH → test USDC** wallet execution flow is now available below the quote.
+**A Hedera-native application can reach Uniswap liquidity without custom Solidity.**
+Cover settles through Hedera. Axelar ITS moves the demo asset to Sepolia; the
+Uniswap Trading API finds its route and prepares a wallet-approved swap.
+The user can keep the same application open throughout.
 
 ```mermaid
 flowchart LR
-  Model["💵 Modeled<br/>USD payout"] --> Equivalent["🪙 The same amount<br/>as USDC"]
-  Equivalent --> Server["🛡️ Server<br/>allowlisted quote tool"]
-  Server --> API["🦄 Uniswap<br/>Trading API"]
-  API --> View["📊 ETH estimate<br/>route, gas, expiry"]
-
-  classDef record fill:#1c2333,stroke:#64748b,stroke-width:1.5px,color:#e2e8f0
-  classDef commit fill:#0d3b2e,stroke:#34d399,stroke-width:2px,color:#a7f3d0
-  classDef oracle fill:#3a2c08,stroke:#f5b301,stroke-width:2px,color:#fde68a
-  classDef ledger fill:#0b2f40,stroke:#38bdf8,stroke-width:2px,color:#bae6fd
-  classDef result fill:#064e3b,stroke:#10b981,stroke-width:3px,color:#d1fae5
-  classDef outside fill:#2b1830,stroke:#c084fc,stroke-width:1.5px,color:#f3e8ff
-  class Model,Equivalent record
-  class Server commit
-  class API outside
-  class View ledger
+  H["Hedera testnet<br/>Your aUSDd"] -->|"Lock · exact amount"| A["Axelar ITS"]
+  A -->|"Deliver linked token"| E["Your Sepolia wallet"]
+  E -->|"Exact approval + signed permit"| U["Uniswap V3<br/>Trading API quote + swap"]
+  U --> R["Test USDC<br/>Verified receipt"]
 ```
 
-> **Live now: quote discovery.** Hedera settlement and EVM liquidity remain
-> separate. The diagram describes API data, not a transfer of funds.
+| Technology | Concrete role | Why it fits |
+| --- | --- | --- |
+| **Hedera HTS + scheduled transfers** | Issue the asset and execute conditional cover | Native tokens and signature conditions without our own Solidity settlement contract |
+| **Axelar ITS** | Lock canonical aUSDd on Hedera and deliver its linked Sepolia token | Provides the cross-chain transport; Uniswap is not the bridge |
+| **Uniswap Trading API `/quote` + `/swap`** | Route linked aUSDd → test USDC and prepare Universal Router calldata | Gives a Hedera-origin user access to an actual EVM liquidity pool |
+| **Permit2 + user wallet** | Exact token permission, typed signature and transaction approval | The server never receives the user's EVM signing key |
 
-| Component used | Purpose in this app |
-| --- | --- |
-| **Trading API via `hak-uniswap-plugin` → `uniswap_quote`** | Fetch a real USDC→ETH quote on **Base (8453)** or **Unichain (130)** mainnet. |
-| **Server-side quote adapter** | Convert exact token units, allowlist assets/chains, bound requests, cache/coalesce calls and keep the API key private. |
-| **Optional conversion panel** | Show quote ID, route, estimated gas, timestamp, expiry and refresh alongside the cover amount. |
+**Confirmed on-chain:** [demo account bridge](https://sepolia.etherscan.io/tx/0x506bc1df0c3a1948a0b954cf3d1cd6b08c019fb06be9258988bc69ef5c6d4500)
+· [bridged aUSDd → test USDC swap](https://sepolia.etherscan.io/tx/0xdcd06bd9aeb5a0fb33ac54aaf2f3b82f69e18ae554e76a3892fcbacaeb6420a6)
+· [evidence and limits](docs/CROSS-CHAIN-VERIFICATION.md).
 
-[Adapter](src/settlement/crossAsset.js) · [UI](ui/src/app/PayoutConversion.tsx) ·
-[Tests](tests/cross-asset.test.js) · [Real API responses](docs/evidence/uniswap-quotes.json)
+### Try it in the app
 
-**Implemented: live mainnet quotes plus wallet-approved Sepolia swaps.**
-The Sepolia flow uses separate EVM wallet funds, not the Hedera payout. The
-backend prepares validated Uniswap V3 calldata; the wallet simulates, signs and
-broadcasts. Native ETH input requires no ERC-20 approval. No bridge is implemented.
-The diagram is a data flow; Hedera funds do not move to EVM. `aUSDd` is not USDC.
-The proposed per-policy LP receipt is also **not a Uniswap liquidity position**.
+**Open a policy → Move funds & swap.** Create a demo account from the balance button if needed.
 
+1. **Bridge:** send 0.01–10 aUSDd to your Sepolia wallet. Hedera fees are sponsored; wait for “Delivered”.
+2. **Quote:** choose 0.01–1 bridged aUSDd. Your wallet needs Sepolia ETH for gas.
+3. **Approve → swap:** approve the exact amount, check confirmation, sign the permit and review the swap. Open the receipt to verify.
 
-### Try an actual testnet swap
+A separate native **Sepolia ETH → test USDC** swap is available in the same panel.
+Base/Unichain mainnet USDC→ETH remains a **quote preview**, without spending authority.
 
-**Policy → Payout in ETH? → Execute a testnet swap**
+**Testnet boundaries:** aUSDd and test USDC have no cash value. The V3 pool uses
+sponsored test liquidity; its price is not a USD peg or a redemption promise.
+ARPS and policy LP previews are separate from this Uniswap pool. There is no
+mainnet bridge, automatic swap, or return bridge UI.
 
-```mermaid
-flowchart LR
-  W["Your Sepolia wallet"] --> Q["Agent API: quote + swap calldata"]
-  Q --> V["Validate amount, recipient, router, minimum output"]
-  V --> S["Wallet simulates + user signs"]
-  S --> U["Uniswap V3 on Sepolia"]
-  U --> R["Test USDC + transaction receipt"]
-```
+**Guardrails:** fixed chains/contracts/assets; exact input and recipient; 0.5%
+slippage; validated router commands and permit schema; short-lived quotes;
+wallet gas checks; bounded API calls; persisted pending transactions and
+same-request reconciliation. An uncertain transfer is never automatically repeated.
 
-- **Funds:** 0.00001–0.01 Sepolia ETH per swap, plus gas. Separate from Hedera cover.
-- **Protection:** 0.5% slippage; 60-second quote review window; fixed native ETH→Circle test USDC V3 route; no ERC-20 approvals or server EVM signing key.
-- **Recovery:** pending requests persist in this browser. A receipt must match the prepared transaction before clearing an uncertain submission. No automatic rebroadcast.
-- **Verification:** API quote and transaction decoding verified live; six guardrail tests pass. **A funded-wallet end-to-end transaction is still pending**, so no completed swap receipt is claimed in the evidence.
-
-[Adapter](src/settlement/testnetSwap.js) · [Wallet UI](ui/src/app/TestnetSwap.tsx) · [Tests](tests/testnet-swap.test.js) · [Uniswap supported testnets](https://developers.uniswap.org/docs/trading/swapping-api/supported-chains)
+[Bridge](src/settlement/bridge.js) · [Trading API adapter](src/settlement/bridgedSwap.js)
+· [Wallet UI](ui/src/app/BridgedSwap.tsx) · [Security](docs/AGENT-SECURITY.md)
 
 ## What is new
 
@@ -201,7 +174,7 @@ its transfers — all linking out to HashScan.*
 | --- | --- |
 | Open **How it works → Release** | Recorded **4 HBAR mainnet** transfer, with receipt. Controlled signatures, not a real earthquake claim. |
 | Open a policy → **Agent guardrails & proof** | Runtime limits plus separate mainnet controls: [1 HBAR transferred](https://hashscan.io/mainnet/schedule/0.0.10843723), [5 HBAR blocked](https://hashscan.io/mainnet/schedule/0.0.10843725) without the agent signature. |
-| Open **Payout in ETH? → Uniswap** | Live mainnet quote; switch Base/Unichain and inspect route/quote ID. [Saved evidence](docs/evidence/uniswap-quotes.json). |
+| Open **Move funds & swap → Uniswap** | Live mainnet quote; switch Base/Unichain and inspect route/quote ID. [Saved evidence](docs/evidence/uniswap-quotes.json). |
 | Open **Onchain / Verify** | Testnet NFT, transfers and paid oracle evidence. [x402 payment receipt](docs/evidence/x402-testnet.json); self-hosted facilitator. |
 | Open **Funding estimate** | Proposed per-policy contribution, premium share and capital-at-risk outcomes. No deposit or LP NFT is issued; actual LP primitives use shared-pool fungible shares. |
 
@@ -330,7 +303,7 @@ one disclosure away.
 | A clearer six-scene story | Geographic terms → capital commitment → named signatures → transfer animation → NFT/receipts → blocked authorization control. Direct step links and previous/next controls keep the recorded mainnet demonstration navigable. |
 | Explicit signature evidence | Old circular diagrams were replaced with **agent key AND oracle threshold → observed result**. “3 signed · 2 required” avoids ambiguous counts. Missing agent signature explains the blocked control; unknown ledger status remains unverified. |
 | Quiet blockchain visibility | Optional Onchain/Verify panel and contextual receipt links expose NFT mint/delivery, transfers, agent/oracle actions and x402 evidence. Testnet, recorded mainnet, live API quotes and proposed funding are labeled separately. Unknown or invalid policies do not borrow another policy's receipts. |
-| Optional Uniswap detail | “Payout in ETH? · Uniswap” expands to network, quote ID, timestamp/expiry, refresh, estimated gas and route evidence. A real quote is visible without implying redemption or a completed swap. |
+| Optional Uniswap detail | “Move funds & swap · Uniswap” expands to network, quote ID, timestamp/expiry, refresh, estimated gas and route evidence. A real quote is visible without implying redemption or a completed swap. |
 | Recovery and navigation | Saved request IDs, interrupted-request review, honest loading/refusal/offline states and retry links. Location persists on refresh, gallery filters survive detail round trips, invalid routes offer recovery, and “Created here” means this browser—not wallet ownership. |
 | Responsive and accessible controls | Mobile layouts stack; story navigation remains accessible; maps/charts have text descriptions, controls support keyboard use, focus is visible for keyboard interaction, and reduced-motion preferences are respected. Recent reviews covered 320 px mobile through desktop without horizontal overflow in the checked flows. |
 
@@ -452,7 +425,7 @@ What existed before the event, and does **not** count as new work:
   Hedera Agent Kit docs.
 - **hak-uniswap-plugin** — Uniswap Trading API plugin with allowance handling and a
   Ledger threshold gate, proven on Sepolia. Reused here for live USDC-to-ETH
-  conversion quotes on Base and Unichain. The mainnet quote UI does not execute swaps. The separate Sepolia adapter prepares wallet-approved test swaps; it does not bridge funds.
+  conversion quotes on Base and Unichain. The mainnet quote UI does not execute swaps. The Sepolia adapters prepare wallet-approved native and bridged-token swaps; Axelar ITS supplies the separate Hedera testnet bridge.
 - **Aivy Settlement Layer (ETHGlobal Lisbon, July 2026)** — a prior continuity
   build on aivy-studio that also used HTS pools and Scheduled Transactions. The
   overlap is the *substrate*; what is new here is stated below.

@@ -1,4 +1,5 @@
-import {AccountBalanceQuery,AccountId,PrivateKey,TokenId,TransferTransaction} from '@hiero-ledger/sdk';
+import {bridgeStatus,bridgeInput,confirmBridgeDestination,bridgeGas,bridgeCalldata,ITS,ITS_ACCOUNT} from '../settlement/bridge.js';
+import {AccountBalanceQuery,AccountId,PrivateKey,TokenId,TransferTransaction,AccountAllowanceApproveTransaction,ContractExecuteTransaction,ContractId,Client,Hbar} from '@hiero-ledger/sdk';
 import {createFundedAccount,known} from '../accounts.js';
 import {associate} from '../pool/shares.js';
 import {deposit} from '../pool/deposit.js';
@@ -19,6 +20,38 @@ export function demoService({client,agent,network,reg}){
    store.patch(id,{starterTx:tx.transactionId.toString()});const sent=await tx.execute(client);await sent.getReceipt(client);store.patch(id,{status:'ready'});
   },
   async view(id){enabled();const a=store.account(id),tokens=(await mirrorGet(network,`/accounts/${a.accountId}/tokens`)).tokens??[],b={tokens:Number(tokens.find(t=>t.token_id===asset.tokenId)?.balance??0)/1e6,shares:Number(tokens.find(t=>t.token_id===reg.shareTokenId)?.balance??0)/1e8};return {ok:true,network,accountId:a.accountId,asset:asset.symbol,tokenId:asset.tokenId,shareTokenId:reg.shareTokenId,balance:b.tokens,shares:b.shares,referralCode:a.code,starterTx:a.starterTx,actions:a.actions,commissions:policies(network).filter(p=>p.brokerId===a.accountId).map(p=>({serial:p.serial,amount:Math.round(p.premiumUnits*.15)/1e6,transaction:p.saleTxId})),checkedAt:new Date().toISOString(),custody:'Service-managed testnet account. Browser access token controls this demo session. No cash value.'};},
+  async bridge(id,input){
+   enabled();const terms=bridgeInput(input),account=store.account(id),prior=account.actions.find(x=>x.requestId===terms.requestId);
+   if(prior){if(prior.kind!=='bridge'||prior.amount!==terms.amount||prior.recipient!==terms.recipient)throw Object.assign(Error('Request already used for other bridge terms.'),{status:409});if(prior.status==='complete')return prior.result;
+    if(prior.bridgeTxId){
+     // Read-only reconciliation of the original transaction; never broadcast a replacement.
+     await bridgeStatus({...prior,status:'complete',result:{bridgeTxId:prior.bridgeTxId}});
+     const config=await confirmBridgeDestination(),result={status:'source-confirmed',bridgeTxId:prior.bridgeTxId,recipient:prior.recipient,amount:prior.amount,destinationToken:config.destinationToken,destinationChain:11155111};
+     store.finish(id,terms.requestId,result);return result;
+    }
+    throw Object.assign(Error('Bridge transaction needs operator reconciliation. No transfer is repeated.'),{status:409});}
+   const config=await confirmBridgeDestination();if(config.sourceTokenId!==asset.tokenId)throw Error('Bridge asset mismatch.');
+   const b=await balance(account.accountId);if(b.tokens<terms.amount)throw Object.assign(Error('Not enough aUSDd to bridge.'),{status:400});
+   const gas=await bridgeGas(),lp=signer(id);
+   store.begin(id,terms.requestId,'bridge',terms.amount);
+   const patch=value=>{const a=store.account(id);Object.assign(a.actions.find(x=>x.requestId===terms.requestId),value);store.patch(id,{actions:a.actions});};
+   patch({recipient:terms.recipient});
+   const c=Client.forTestnet().setOperator(lp.id,lp.key);
+   try{
+    const native=(await new AccountBalanceQuery().setAccountId(lp.id).execute(client)).hbars.toTinybars().toNumber();
+    if(native<200000000){
+     const topup=new TransferTransaction().addHbarTransfer(agent.id,Hbar.fromTinybars(-(200000000-native))).addHbarTransfer(lp.id,Hbar.fromTinybars(200000000-native)).freezeWith(client);
+     patch({gasFundingTxId:topup.transactionId.toString()});const paid=await topup.execute(client);await paid.getReceipt(client);
+    }
+    const spender=AccountId.fromString(ITS_ACCOUNT);
+    const approval=await new AccountAllowanceApproveTransaction().approveTokenAllowance(asset.tokenId,lp.id,spender,terms.units).freezeWith(client).sign(lp.key);
+    patch({approvalTxId:approval.transactionId.toString()});const approved=await approval.execute(client);await approved.getReceipt(client);
+    const tx=new ContractExecuteTransaction().setContractId(ContractId.fromEvmAddress(0,0,ITS)).setGas(1000000).setFunctionParameters(Buffer.from(bridgeCalldata(terms.recipient,terms.units,gas).slice(2),'hex')).setPayableAmount(Hbar.fromTinybars(gas.toString())).setMaxTransactionFee(new Hbar(1)).freezeWith(c);
+    patch({bridgeTxId:tx.transactionId.toString()});const sent=await tx.execute(c);await sent.getReceipt(c);
+    const result={status:'source-confirmed',bridgeTxId:sent.transactionId.toString(),recipient:terms.recipient,amount:terms.amount,destinationToken:config.destinationToken,destinationChain:11155111};
+    store.finish(id,terms.requestId,result);return result;
+   }finally{c.close();}
+  },
   async fund(id,{requestId,amount}){enabled();store.account(id);const b=await balance(store.account(id).accountId);
    const prior=store.account(id).actions.find(x=>x.requestId===requestId);
    if(!prior&&(!Number.isFinite(amount)||amount<1||amount>100||Math.abs(Math.round(amount*100)-amount*100)>1e-7||amount>b.tokens))throw Object.assign(Error('Choose 1–100 aUSDd within your balance, with up to two decimals.'),{status:400});

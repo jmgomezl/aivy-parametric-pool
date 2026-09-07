@@ -1,0 +1,15 @@
+{
+  "status": "CONFIRMED",
+  "address": "0x18c5E6987A734638403BBD942E17D959952B8e4e",
+  "hash": "0x42a2d59962ae3682ce58d84b033e997dc21cf6f39137a2db33077790676fd7d2",
+  "beforeUsdc": "0",
+  "afterUsdc": "171458",
+  "amountWei": "10000000000000",
+  "minimumOut": "170600",
+  "quoteId": "01a07c94-1f77-8000-ab72-e2165ffd0100",
+  "block": 11655169,
+  "network": "Ethereum Sepolia",
+  "chainId": 11155111,
+  "source": "Live Uniswap Trading API and on-chain receipt",
+  "explorer": "https://sepolia.etherscan.io/tx/0x42a2d59962ae3682ce58d84b033e997dc21cf6f39137a2db33077790676fd7d2"
+}

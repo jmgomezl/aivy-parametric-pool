@@ -38,7 +38,7 @@ flowchart TD
 | Network authorization is separate from app checks | The pool key is `agent AND threshold(2, oracle keys)`. Recorded mainnet control and blocked schedules are linked from “Agent guardrails & proof”. Those prove the key restriction, not independent operators. |
 | An HTTP 402 cannot freely spend a caller's money | `src/x402/payment-policy.js`: an explicit resource, network, recipient, token, fee payer and maximum amount must match before signing. Paid redirects are refused. An uncertain response never causes an automatic new payment. |
 | The facilitator signs only the required payment | `src/x402/facilitator.js` decodes every node body and rejects extra debits, unrelated assets, allowances and excessive fee caps. Consensus receipt, not precheck, determines success. |
-| Uniswap does not have spending authority | Server selects only the quote tool; USDC→ETH on Base/Unichain is allowlisted and bounded. No EVM key is required, no approval or broadcast occurs. API key stays server-side. |
+| Mainnet Uniswap quotes do not have spending authority | Server selects only the quote tool; USDC→ETH on Base/Unichain is allowlisted and bounded. No EVM key is required, no approval or broadcast occurs. API key stays server-side. |
 | Judges can inspect deployed configuration | `GET /api/guardrails` exposes network, execution mode, limits and current usage, without IP identifiers or secrets. UI labels this as runtime configuration, not a security certification. |
 
 ## Operational review
@@ -143,4 +143,44 @@ Mainnet conversion remains quote-only. `/api/testnet-swap` prepares a separate E
 
 Wallet checks include chain/account binding, gas simulation, input balance, gas cost cap, quote freshness and explicit transaction approval. Pending submission state survives reload; unknown submissions block another quote until an exact matching transaction receipt is found. Wallet rejection clears the pending attempt. Replaced/cancelled transactions without a matching receipt require manual reconciliation; they are not automatically retried.
 
-Read API requests are bounded to 20 per minute and three concurrent calls, with upstream timeouts. API credentials remain on the server. Tests cover altered router, sender, chain, value, commands, recipient, minimum output and deadlines. This integration does not bridge Hedera funds. Live calldata validation passed; funded-wallet settlement verification remains pending.
+Read API requests are bounded to 20 per minute and three concurrent calls, with upstream timeouts. API credentials remain on the server. Tests cover altered router, sender, chain, value, commands, recipient, minimum output and deadlines. The native ETH swap is separate from the Axelar bridge described below. Live calldata validation and funded-wallet settlement passed; see `docs/evidence/testnet-swap.json`.
+
+
+## Hedera → Axelar → Uniswap testnet execution
+
+The public bridge accepts only a browser capability, an idempotent request ID,
+a recipient and 0.01–10 aUSDd. Chain, token and ITS contract are fixed. Before an
+allowance is signed, the service verifies the Hedera contract account mapping
+and the destination token registered by ITS. The managed demo account signs its
+own transfer; the operator only sponsors bounded testnet gas. API callers cannot
+spend pledged pool capital through this endpoint.
+
+Every source transaction ID is journaled before broadcast under the issuance
+lock. Repeating a request with changed terms is rejected. A pending source
+transfer can be reconciled from its original ledger event; no replacement is
+broadcast. Missing or failed stages remain blocked for operator review. The
+normal per-account/global action budgets still apply.
+
+Delivery is not inferred from an Axelar status label: the server matches the
+successful Hedera event and Sepolia ITS receipt to the token ID, source address,
+recipient and amount. For delayed relaying, it exposes an optional unsigned
+execution only after verifying the exact payload and on-chain gateway approval.
+The EVM wallet pays for that permissionless completion; ITS commands execute once.
+
+For bridged-token swaps, `/quote` terms are checked before display. The server
+retains the quote for two minutes and validates the Permit2 domain, exact amount,
+router, signature deadline and signer. `/swap` calldata must contain only the
+matching permit and single-hop V3 exact-input swap (or just that swap if a permit
+is unnecessary). Changed chains, recipients, commands, paths and minimum output
+are rejected. Token approval is exact, never unlimited. The wallet simulates,
+checks gas and signs; the API stores no EVM private key.
+
+Browser journals block repeat submissions after ambiguous wallet responses.
+A transaction hash must match the prepared sender, target, calldata and value
+before confirmation clears it. Existing allowance is checked when refreshing a
+quote, avoiding unnecessary approval transactions.
+
+**Trust boundaries:** managed Hedera account custody, Axelar gateway/ITS,
+wallet/RPC availability and sponsored pool liquidity remain dependencies. These
+controls are bounded testnet safeguards, not an independent security audit.
+[Executed receipts and operational limits](CROSS-CHAIN-VERIFICATION.md).

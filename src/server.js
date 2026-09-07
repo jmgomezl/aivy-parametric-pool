@@ -1,3 +1,5 @@
+import {createBridgedSwap} from './settlement/bridgedSwap.js';
+import {bridgeConfig,bridgeStatus} from './settlement/bridge.js';
 import {createTestnetSwap} from './settlement/testnetSwap.js';
 // The underwriting agent, over HTTP.
 //
@@ -63,6 +65,7 @@ async function main() {
   };
 
   const prepareTestnetSwap=createTestnetSwap();
+  const bridgedSwaps=createBridgedSwap();
   const demo=demoService({client:c,agent,network:NETWORK,reg});
 
   const server = http.createServer(async (req, res) => {
@@ -70,6 +73,22 @@ async function main() {
     try {
       const url = new URL(req.url, 'http://localhost');
       const route = url.pathname.replace(/\/$/, '');
+      if(['/api/bridged-swap/quote','/api/bridged-swap/build'].includes(route)&&req.method==='POST'){
+        if(NETWORK!=='testnet')throw new HttpError(403,'Testnet only.');
+        const input=await readJsonBody(req);return json(res,200,await bridgedSwaps[route.endsWith('/quote')?'prepare':'build'](input));
+      }
+      if(route==='/api/demo/bridge/status'&&req.method==='GET'){
+        const id=capability(req),action=demo.store.account(id).actions.find(a=>a.requestId===url.searchParams.get('requestId'));
+        if(!action)throw new HttpError(404,'Bridge request not found.');
+        return json(res,200,await bridgeStatus(action));
+      }
+      if(route==='/api/bridge'&&req.method==='GET'){
+        try{return json(res,200,{ok:true,...bridgeConfig()});}catch{return json(res,503,{ok:false,message:'Bridge destination is being verified.'});}
+      }
+      if(route==='/api/demo/bridge'&&req.method==='POST'){
+        const id=capability(req),input=await readJsonBody(req);
+        const result=await withIssuanceLock(NETWORK,()=>demo.bridge(id,input));return json(res,200,{ok:true,...result});
+      }
       if(route==='/api/testnet-swap'&&req.method==='POST'){
         if(NETWORK!=='testnet')throw new HttpError(403,'Testnet swap interface only.');
         return json(res,200,await prepareTestnetSwap(await readJsonBody(req)));
