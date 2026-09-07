@@ -1,5 +1,6 @@
-import {bridgeStatus,bridgeInput,confirmBridgeDestination,bridgeGas,bridgeCalldata,ITS,ITS_ACCOUNT} from '../settlement/bridge.js';
-import {AccountBalanceQuery,AccountId,PrivateKey,TokenId,TransferTransaction,AccountAllowanceApproveTransaction,ContractExecuteTransaction,ContractId,Client,Hbar} from '@hiero-ledger/sdk';
+import {buildPluginBridge,AXELAR_PLUGIN_VERSION} from '../settlement/axelarPlugin.js';
+import {bridgeStatus,bridgeInput,confirmBridgeDestination,bridgeGas,ITS_ACCOUNT} from '../settlement/bridge.js';
+import {AccountBalanceQuery,AccountId,PrivateKey,TokenId,TransferTransaction,AccountAllowanceApproveTransaction,Client,Hbar} from '@hiero-ledger/sdk';
 import {createFundedAccount,known} from '../accounts.js';
 import {associate} from '../pool/shares.js';
 import {deposit} from '../pool/deposit.js';
@@ -33,9 +34,10 @@ export function demoService({client,agent,network,reg}){
    const config=await confirmBridgeDestination();if(config.sourceTokenId!==asset.tokenId)throw Error('Bridge asset mismatch.');
    const b=await balance(account.accountId);if(b.tokens<terms.amount)throw Object.assign(Error('Not enough aUSDd to bridge.'),{status:400});
    const gas=await bridgeGas(),lp=signer(id);
+   const prepared=await buildPluginBridge(input,gas);
    store.begin(id,terms.requestId,'bridge',terms.amount);
    const patch=value=>{const a=store.account(id);Object.assign(a.actions.find(x=>x.requestId===terms.requestId),value);store.patch(id,{actions:a.actions});};
-   patch({recipient:terms.recipient});
+   patch({recipient:terms.recipient,via:'hak-axelar-plugin',pluginVersion:AXELAR_PLUGIN_VERSION});
    const c=Client.forTestnet().setOperator(lp.id,lp.key);
    try{
     const native=(await new AccountBalanceQuery().setAccountId(lp.id).execute(client)).hbars.toTinybars().toNumber();
@@ -46,9 +48,9 @@ export function demoService({client,agent,network,reg}){
     const spender=AccountId.fromString(ITS_ACCOUNT);
     const approval=await new AccountAllowanceApproveTransaction().approveTokenAllowance(asset.tokenId,lp.id,spender,terms.units).freezeWith(client).sign(lp.key);
     patch({approvalTxId:approval.transactionId.toString()});const approved=await approval.execute(client);await approved.getReceipt(client);
-    const tx=new ContractExecuteTransaction().setContractId(ContractId.fromEvmAddress(0,0,ITS)).setGas(1000000).setFunctionParameters(Buffer.from(bridgeCalldata(terms.recipient,terms.units,gas).slice(2),'hex')).setPayableAmount(Hbar.fromTinybars(gas.toString())).setMaxTransactionFee(new Hbar(1)).freezeWith(c);
+    const tx=prepared.freezeWith(c);
     patch({bridgeTxId:tx.transactionId.toString()});const sent=await tx.execute(c);await sent.getReceipt(c);
-    const result={status:'source-confirmed',bridgeTxId:sent.transactionId.toString(),recipient:terms.recipient,amount:terms.amount,destinationToken:config.destinationToken,destinationChain:11155111};
+    const result={status:'source-confirmed',via:'hak-axelar-plugin',pluginVersion:AXELAR_PLUGIN_VERSION,bridgeTxId:sent.transactionId.toString(),recipient:terms.recipient,amount:terms.amount,destinationToken:config.destinationToken,destinationChain:11155111};
     store.finish(id,terms.requestId,result);return result;
    }finally{c.close();}
   },

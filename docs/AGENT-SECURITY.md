@@ -184,3 +184,25 @@ quote, avoiding unnecessary approval transactions.
 wallet/RPC availability and sponsored pool liquidity remain dependencies. These
 controls are bounded testnet safeguards, not an independent security audit.
 [Executed receipts and operational limits](CROSS-CHAIN-VERIFICATION.md).
+
+
+## HAK Axelar plugin integration
+
+`hak-axelar-plugin@1.0.1` is pinned in the lockfile. Only `axelar_send_token` is
+selected, with a fresh context pinning testnet and the ITS address; neither an
+LLM nor API input can select another tool, network or contract. The plugin's
+`normalizeParams` and `coreAction` build the transaction. `secondaryAction`
+(which can execute it) is never called.
+
+Before a source action begins, Quorum checks the resulting transaction type,
+contract, payable amount and every ITS calldata field. The pinned package encodes
+`gasValue` in 18-decimal weibar; this deployed Hedera native contract path expects
+8-decimal tinybars. The adapter requires the exact expected legacy value, replaces
+only that argument, and compares the entire corrected calldata to Quorum's
+known-good encoding. An unexpected package change fails closed. Existing exact
+HTS allowances, sponsored-fee limits and journal-before-broadcast rules remain.
+
+The package's generic fee/status tools are not used as authoritative evidence.
+Quorum retains the verified ITS fee endpoint and source/destination event checks,
+including the Axelar hub-to-destination distinction. Tests invoke the installed
+plugin and reject changed destinations, network input and oversized gas.

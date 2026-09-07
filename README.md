@@ -103,7 +103,9 @@ The user can keep the same application open throughout.
 
 ```mermaid
 flowchart LR
-  H["Hedera testnet<br/>Your aUSDd"] -->|"Lock · exact amount"| A["Axelar ITS"]
+  H["Hedera testnet<br/>Your aUSDd"] --> P["HAK Axelar plugin<br/>Build transfer"]
+  P --> G["Quorum guardrails<br/>Validate + journal + sign"]
+  G -->|"Lock · exact amount"| A["Axelar ITS"]
   A -->|"Deliver linked token"| E["Your Sepolia wallet"]
   E -->|"Exact approval + signed permit"| U["Uniswap V3<br/>Trading API quote + swap"]
   U --> R["Test USDC<br/>Verified receipt"]
@@ -112,6 +114,7 @@ flowchart LR
 | Technology | Concrete role | Why it fits |
 | --- | --- | --- |
 | **Hedera HTS + scheduled transfers** | Issue the asset and execute conditional cover | Native tokens and signature conditions without our own Solidity settlement contract |
+| **Your `hak-axelar-plugin` · `axelar_send_token`** | Build the real Hedera ITS transfer inside the existing HAK tool interface | Reuses a modular agent capability; Quorum adds application-specific spending restrictions |
 | **Axelar ITS** | Lock canonical aUSDd on Hedera and deliver its linked Sepolia token | Provides the cross-chain transport; Uniswap is not the bridge |
 | **Uniswap Trading API `/quote` + `/swap`** | Route linked aUSDd → test USDC and prepare Universal Router calldata | Gives a Hedera-origin user access to an actual EVM liquidity pool |
 | **Permit2 + user wallet** | Exact token permission, typed signature and transaction approval | The server never receives the user's EVM signing key |
@@ -119,6 +122,27 @@ flowchart LR
 **Confirmed on-chain:** [demo account bridge](https://sepolia.etherscan.io/tx/0x506bc1df0c3a1948a0b954cf3d1cd6b08c019fb06be9258988bc69ef5c6d4500)
 · [bridged aUSDd → test USDC swap](https://sepolia.etherscan.io/tx/0xdcd06bd9aeb5a0fb33ac54aaf2f3b82f69e18ae554e76a3892fcbacaeb6420a6)
 · [evidence and limits](docs/CROSS-CHAIN-VERIFICATION.md).
+
+### Built with our HAK Axelar plugin
+
+[`hak-axelar-plugin`](https://github.com/jmgomezl/hak-axelar-plugin), by Juanma
+Gomez, is a real dependency pinned to **1.0.1**. The bridge calls its
+**`axelar_send_token`** builder for each new transfer. Quorum validates the
+contract, token ID, recipient, amount and payable HBAR before signing.
+
+The plugin's automatic execution stage is deliberately not exposed: Quorum
+journals the transaction ID before broadcast and preserves its existing custody
+and request limits. Its v1.0.1 gas argument needs a small, tested compatibility
+correction for native Hedera ITS calls (weibar → tinybar). Fee estimation and
+receipt verification remain in Quorum; the plugin's other tools are not enabled.
+
+**Contribution:** an existing reusable HAK plugin now connects this
+Hedera-native cover application to the Axelar → Uniswap testnet flow. The
+plugin predates this submission; the guarded integration is project work.
+
+[Integration adapter](src/settlement/axelarPlugin.js) ·
+[Tests using the actual package](tests/axelar-plugin.test.js) ·
+[Security rationale](docs/AGENT-SECURITY.md#hak-axelar-plugin-integration)
 
 ### Try it in the app
 

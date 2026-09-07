@@ -24,7 +24,7 @@ Mainnet quote previews never initiate transfers.
 
 The deployed canonical registry lives in `.artifacts/axelar-bridge-testnet.json`.
 Keep `.env` and all `.artifacts` private and preserve them during deployments.
-The API requires `UNISWAP_API_KEY`. Testnet IDs are intentionally pinned; a network
+The API requires `UNISWAP_API_KEY`. `hak-axelar-plugin@1.0.1` builds new source transfers through the [guarded adapter](../src/settlement/axelarPlugin.js); it requires no separate Axelar API key. Testnet IDs are intentionally pinned; a network
 reset requires deliberate reprovisioning and matching code/configuration updates.
 
 `provision-bridge.js` reads the current deployment without spending by default;
