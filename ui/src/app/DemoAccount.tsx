@@ -5,6 +5,23 @@ export function DemoAccount(){
  const {account:a,busy,error}=useDemo(),[copyState,setCopyState]=useState<'idle'|'copied'|'manual'>('idle');
  const panel=useRef<HTMLDetailsElement>(null);
  useEffect(()=>{const show=()=>{if(panel.current){panel.current.open=true;panel.current.querySelector('summary')?.focus();window.scrollTo({top:0,behavior:'instant'});}};window.addEventListener('quorum:account',show);return()=>window.removeEventListener('quorum:account',show);},[]);
+ useEffect(()=>{
+  const outside=(event:PointerEvent)=>{
+   const current=panel.current;
+   if(current?.open&&event.target instanceof Node&&!current.contains(event.target)) current.open=false;
+  };
+  const escape=(event:KeyboardEvent)=>{
+   const current=panel.current;
+   if(event.key==='Escape'&&current?.open){
+    event.preventDefault();
+    current.open=false;
+    current.querySelector('summary')?.focus();
+   }
+  };
+  document.addEventListener('pointerdown',outside);
+  document.addEventListener('keydown',escape);
+  return()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('keydown',escape);};
+ },[]);
  const referralLink=a?`${location.origin}/?ref=${a.referralCode}`:'';
  const close=()=>{if(panel.current){panel.current.open=false;panel.current.querySelector('summary')?.focus();}};
  return <details className="demo-account" ref={panel}><summary>{a?<><span>Your testnet balance</span><strong className="num">{n(a.balance)} aUSDd</strong></>:<span>Your demo account</span>}</summary><div className="demo-account-body">

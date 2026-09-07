@@ -149,3 +149,7 @@ the completed UI/API checks and remaining production/business-model boundaries.
 ### 2026-09-07 — Minimal account panel
 
 Replaced the broker paragraph and raw code with a three-step referral flow, earnings metric and one primary copy action. Moved receipts and detailed explanations behind native disclosures; retained visible testnet and managed-account labels. Added a close control, accessible refresh button and manual clipboard fallback. Production UI build passes; populated account checked at 320px and desktop, including copy and broker shortcut.
+
+### 2026-09-07 — Account dismissal
+
+Account popover closes with the explicit × control, outside pointer interaction, or Escape. Escape returns focus to the account summary; outside clicks retain the destination interaction. Verified close/reopen, outside click and keyboard focus in the browser, plus × at 320px. Production UI build passes.
