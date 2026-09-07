@@ -3,6 +3,7 @@
 // Quoting is free and open. Issuing writes to the ledger and spends the agent's
 // own HBAR, so it is rate-limited and refused outright on mainnet — a refusal is
 // a normal answer here, not an error, and the UI shows the agent's own words.
+import {demoToken} from './demo';
 const BASE = import.meta.env.VITE_AGENT_URL ?? '';
 
 export type Network = 'testnet' | 'mainnet';
@@ -65,7 +66,7 @@ export interface Health { ok: boolean; network: Network; writesAllowed: boolean 
 async function call<T>(path: string, init?: RequestInit, timeoutMs = 120_000): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
     ...init,
-    headers: init?.body ? { 'content-type': 'application/json' } : undefined,
+    headers: {...(init?.body?{'content-type':'application/json'}:{}),...(demoToken()?{authorization:`Bearer ${demoToken()}`}:{})},
     signal: AbortSignal.timeout(timeoutMs),
   });
   const body = await res.json().catch(() => ({ ok: false, reason: 'unreadable', message: `Agent returned ${res.status}` }));
@@ -79,7 +80,7 @@ export const pool = () => call<Pool>('/api/pool', undefined, 20_000);
 export const quote = (lat: number, lon: number, budgetUsd = 4, days = 30) =>
   call<Quote | Refusal>(`/api/quote?lat=${lat}&lon=${lon}&budget=${budgetUsd}&days=${days}`, undefined, 30_000);
 
-export const buy = (input: { lat: number; lon: number; place?: string | null; budgetUsd?: number; days?: number; requestId?: string }) =>
+export const buy = (input: { lat: number; lon: number; place?: string | null; budgetUsd?: number; days?: number; requestId?: string; referralCode?:string }) =>
   call<Issued | Refusal>('/api/policies', { method: 'POST', body: JSON.stringify(input) });
 
 export const policies = () => call<{ network: Network; policies: Policy[] }>('/api/policies', undefined, 20_000);

@@ -8,3 +8,11 @@ export function lpModel(policy, portion = 10) {
   const contribution = payout * share, income = premium * poolFraction * share;
   return {days,share,poolFraction,contribution,income,annualRate:premium*poolFraction/payout*365/days*100,noClaimTotal:contribution+income,claimTotal:income};
 }
+
+/** Comparison only: flat-rate renewals, no compounding; first-term claim stops funding. */
+export function lpScenario(policy,portion,horizon){
+ const m=lpModel(policy,portion);if(!m)return null;
+ const days=horizon==='year'?365:horizon==='month'?30:m.days;
+ const income=m.income*days/m.days,earlyIncome=Math.min(income,m.income);
+ return {...m,horizonDays:days,income,noClaimTotal:m.contribution+income,claimTotal:earlyIncome,returnPct:m.contribution?income/m.contribution*100:0,lossPct:m.contribution?(earlyIncome-m.contribution)/m.contribution*100:0};
+}

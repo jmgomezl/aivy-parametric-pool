@@ -10,6 +10,8 @@
 // own leg of the premium transfer, which the kit already supports through
 // AgentMode.RETURN_BYTES.
 import http from 'node:http';
+import {demoService} from './demo/service.js';
+import {capability} from './demo/store.js';
 import { searchPlaces } from './places.js';
 import { paymentActivity } from './activity.js';
 import { AccountId, TokenId, TransferTransaction } from '@hiero-ledger/sdk';
@@ -31,7 +33,7 @@ const json = (res, status, body) => {
   res.writeHead(status, {
     'content-type': 'application/json',
     'access-control-allow-origin': '*',
-    'access-control-allow-headers': 'content-type',
+    'access-control-allow-headers': 'content-type, authorization',
     'access-control-allow-methods': 'GET,POST,OPTIONS',
   });
   res.end(JSON.stringify(body, null, 2));
@@ -59,12 +61,23 @@ async function main() {
     reconcile: async () => {for(const p of await currentPolicies())if(p.state==='paid')settle(NETWORK,p.serial,p.executedAt);},
   };
 
+  const demo=demoService({client:c,agent,network:NETWORK,reg});
+
   const server = http.createServer(async (req, res) => {
     if (req.method === 'OPTIONS') return json(res, 204, {});
     try {
       const url = new URL(req.url, 'http://localhost');
       const route = url.pathname.replace(/\/$/, '');
-      if (route === '/api/places' && req.method === 'GET') {
+      if(route==='/api/demo'&&req.method==='GET')return json(res,200,await demo.view(capability(req)));
+      if(route==='/api/demo/start'&&req.method==='POST'){
+        const id=capability(req);await withIssuanceLock(NETWORK,()=>demo.start(id,clientIp(req)));return json(res,200,await demo.view(id));
+      }
+      if(route==='/api/demo/deposit'&&req.method==='POST'){
+        const id=capability(req),input=await readJsonBody(req);
+        if(Object.keys(input).some(k=>!['requestId','amount'].includes(k)))throw new HttpError(400,'Unsupported deposit field.');
+        const result=await withIssuanceLock(NETWORK,()=>demo.fund(id,input));return json(res,200,{ok:true,...result});
+      }
+      if (route === '/api/places'  && req.method === 'GET') {
         try { return json(res,200,{places:await searchPlaces(url.searchParams.get('q')),source:'Photon / OpenStreetMap'}); }
         catch(error) { return json(res,error.status??503,{ok:false,reason:'search_unavailable',message:error.status===400?error.message:'Worldwide search is unavailable. Try again or enter coordinates.'}); }
       }
@@ -145,23 +158,39 @@ async function main() {
 
       if (route === '/api/policies' && req.method === 'POST') {
         if (NETWORK !== 'testnet') return json(res,403,{ok:false,reason:'mainnet_writes_disabled',message:'The public demo creates policies on testnet only.'});
-        const input = policyInput(await readJsonBody(req));
+        const body=await readJsonBody(req),{referralCode,...raw}=body;
+        const input = policyInput(raw);
+        const sessionId=capability(req);demo.enabled();demo.store.account(sessionId);
+        const brokerId=demo.store.broker(referralCode,sessionId);
+        if(request(NETWORK,input.requestId)&&!demo.store.account(sessionId).actions.some(x=>x.requestId===input.requestId))throw new HttpError(403,'This request belongs to another demo session.');
+        if(!input.requestId)throw new HttpError(400,'A saved request identifier is required.');
         const result = await issuePolicy({...deps,
-          beforeWrite:quote=>writeGuard.check({ip:clientIp(req),usd:quote.payout}),
-          beforeLedgerWrite:quote=>writeGuard.admit({ip:clientIp(req),usd:quote.payout}),
+          beforeWrite:async quote=>{
+            const account=demo.store.account(sessionId),balance=await demo.balance(account.accountId);
+            if(balance.tokens<quote.settled.premium)return {status:400,reason:'insufficient_balance',message:'Your demo account does not have enough aUSDd for this premium.'};
+            return writeGuard.check({ip:clientIp(req),usd:quote.payout});
+          },
+          beforeLedgerWrite:quote=>{
+            const prior=demo.store.account(sessionId).actions.find(x=>x.requestId===input.requestId);
+            if(prior)return {status:409,reason:'pending_recovery',message:'This account request needs review before another payment.'};
+            const denied=writeGuard.admit({ip:clientIp(req),usd:quote.payout});if(denied)return denied;
+            demo.store.begin(sessionId,input.requestId,'cover',quote.settled.premium);return null;
+          },
           createBuyer:async quote=>{
             const asset=settlementAsset(NETWORK);
             const buyer=await createFundedAccount(c,NETWORK,1,'demo beneficiary');
             await associate(c,buyer.id,buyer.key,TokenId.fromString(reg.policyTokenId));
             if(asset.kind==='token'){
               await associate(c,buyer.id,buyer.key,TokenId.fromString(asset.tokenId));
-              const fund=new TransferTransaction().addTokenTransfer(TokenId.fromString(asset.tokenId),agent.id,-quote.settled.premiumUnits).addTokenTransfer(TokenId.fromString(asset.tokenId),buyer.id,quote.settled.premiumUnits);
-              await(await fund.execute(c)).getReceipt(c);
+              const payer=demo.signer(sessionId);
+              const fund=await new TransferTransaction().addTokenTransfer(TokenId.fromString(asset.tokenId),payer.id,-quote.settled.premiumUnits).addTokenTransfer(TokenId.fromString(asset.tokenId),buyer.id,quote.settled.premiumUnits).freezeWith(c);
+              await fund.sign(payer.key);await(await fund.execute(c)).getReceipt(c);
             }
             return buyer;
           }
-        },input);
+        },{...input,brokerId});
         if(!result.ok)return json(res,200,result);
+        await withIssuanceLock(NETWORK,()=>{const a=demo.store.account(sessionId);if(a.actions.some(x=>x.requestId===input.requestId))demo.store.finish(sessionId,input.requestId,{serial:String(result.policy.serial),saleTxId:result.policy.saleTxId,beneficiaryId:result.policy.buyerId,brokerId});});
         return json(res, 201, {
           ...result, policy:publicPolicy(result.policy),
           hashscan: {
@@ -175,7 +204,7 @@ async function main() {
       return json(res, 404, { ok: false, message: `No route ${route}` });
     } catch (err) {
       console.warn('Agent request refused:', err.reason ?? err.name);
-      return json(res, err instanceof HttpError?err.status:503, { ok:false, reason:err instanceof HttpError?err.reason:'service_unavailable', message:err instanceof HttpError?err.message:'The service could not complete this request. Check Policies before retrying an interrupted creation.' });
+      return json(res, err instanceof HttpError?err.status:err.status??503, { ok:false, reason:err instanceof HttpError?err.reason:'service_unavailable', message:err instanceof HttpError||err.status?err.message:'The service could not complete this request. Check Policies before retrying an interrupted creation.' });
     }
   });
 
