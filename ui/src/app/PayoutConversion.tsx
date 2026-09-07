@@ -1,3 +1,4 @@
+import {TestnetSwap} from './TestnetSwap';
 import { useEffect, useState } from 'react';
 import { conversionPath, conversionQuote, type ConversionQuote } from '../lib/agent';
 
@@ -34,8 +35,9 @@ export function PayoutConversion({ usd }: { usd: number }) {
       <p className="conversion-context">If the modeled payout were held as USDC:</p>
       <div className="conversion-amounts" aria-live="polite"><div><strong>{amount.toLocaleString(undefined, { maximumFractionDigits: 2 })}</strong><span>USDC equivalent</span></div><span aria-hidden="true">→</span><div><strong>{eth === null ? '—' : '≈ ' + eth.toLocaleString(undefined, { maximumSignificantDigits: 6 })}</strong><span>ETH</span></div></div>
       <div className="conversion-status" role="status"><span>{state.error ? state.error : q ? expired ? 'Quote expired · refresh for current price' : `Quoted ${new Date(q.quotedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}` : 'Requesting Uniswap price…'}</span>{q || state.error ? <button className="text-button" onClick={() => setRefresh(v => v + 1)}>{state.error ? 'Retry' : 'Refresh'} ↻</button> : null}</div>
-      <p className="conversion-boundary">Demo tokens cannot be converted. No bridge or swap is executed.</p>
+      <p className="conversion-boundary">This mainnet quote does not move funds. Try a separate testnet swap below.</p>
       {q ? <details className="conversion-proof"><summary>Verify Uniswap quote <span>+</span></summary><dl className="facts"><div><dt>Source</dt><dd>Uniswap Trading API</dd></div><div><dt>Network</dt><dd>{chain === 8453 ? 'Base' : 'Unichain'} mainnet</dd></div><div><dt>Approval / transaction</dt><dd>None</dd></div>{q.gasFeeUsd ? <div><dt>Estimated gas · extra</dt><dd>${Number(q.gasFeeUsd).toFixed(4)}</dd></div> : null}</dl><p>This prices the policy’s modeled USD amount as USDC on an EVM chain. It does not change the Hedera payout or redeem aUSDd.</p>{q.quoteId ? <p className="conversion-id">Quote ID · {q.quoteId}</p> : null}<a className="hs" href={conversionPath(amount, chain)} target="_blank" rel="noreferrer">Open latest API response & route ↗</a></details> : null}
+      <TestnetSwap/>
     </div> : null}
   </details>;
 }

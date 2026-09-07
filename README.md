@@ -108,8 +108,9 @@ expiry make this a live liquidity lookup, not a static currency converter.
 **New entry point, not a completed cross-chain transfer:** the implemented flow
 introduces Hedera users to Uniswap quotes. Converting actual funds would also
 require supported EVM funds, user authorization and swap execution; moving funds
-from Hedera would require a separate supported transfer mechanism. Those steps
-are not implemented, and demo aUSDd cannot fund a swap.
+from Hedera would require a separate supported transfer mechanism. Hedera bridging
+is not implemented, and demo aUSDd cannot fund a swap. A separate **Ethereum
+Sepolia ETH → test USDC** wallet execution flow is now available below the quote.
 
 ```mermaid
 flowchart LR
@@ -142,9 +143,33 @@ flowchart LR
 [Adapter](src/settlement/crossAsset.js) · [UI](ui/src/app/PayoutConversion.tsx) ·
 [Tests](tests/cross-asset.test.js) · [Real API responses](docs/evidence/uniswap-quotes.json)
 
-**Implemented: live quotes.** No bridge, approval, swap or ETH payout is executed.
+**Implemented: live mainnet quotes plus wallet-approved Sepolia swaps.**
+The Sepolia flow uses separate EVM wallet funds, not the Hedera payout. The
+backend prepares validated Uniswap V3 calldata; the wallet simulates, signs and
+broadcasts. Native ETH input requires no ERC-20 approval. No bridge is implemented.
 The diagram is a data flow; Hedera funds do not move to EVM. `aUSDd` is not USDC.
 The proposed per-policy LP receipt is also **not a Uniswap liquidity position**.
+
+
+### Try an actual testnet swap
+
+**Policy → Payout in ETH? → Execute a testnet swap**
+
+```mermaid
+flowchart LR
+  W["Your Sepolia wallet"] --> Q["Agent API: quote + swap calldata"]
+  Q --> V["Validate amount, recipient, router, minimum output"]
+  V --> S["Wallet simulates + user signs"]
+  S --> U["Uniswap V3 on Sepolia"]
+  U --> R["Test USDC + transaction receipt"]
+```
+
+- **Funds:** 0.00001–0.01 Sepolia ETH per swap, plus gas. Separate from Hedera cover.
+- **Protection:** 0.5% slippage; 60-second quote review window; fixed native ETH→Circle test USDC V3 route; no ERC-20 approvals or server EVM signing key.
+- **Recovery:** pending requests persist in this browser. A receipt must match the prepared transaction before clearing an uncertain submission. No automatic rebroadcast.
+- **Verification:** API quote and transaction decoding verified live; six guardrail tests pass. **A funded-wallet end-to-end transaction is still pending**, so no completed swap receipt is claimed in the evidence.
+
+[Adapter](src/settlement/testnetSwap.js) · [Wallet UI](ui/src/app/TestnetSwap.tsx) · [Tests](tests/testnet-swap.test.js) · [Uniswap supported testnets](https://developers.uniswap.org/docs/trading/swapping-api/supported-chains)
 
 ## What is new
 
@@ -214,7 +239,7 @@ flowchart LR
 | Public request | Testnet-only issuance, bounded JSON and fields; no caller-selected beneficiary or raw transaction. |
 | Spending admission | Default **3 attempts/IP/hour · 100 attempts/24h · $20k modeled cover/24h**; survives restart. |
 | Interrupted issuance | Idempotent request IDs, retained reservations, fail-closed locks and reconciliation. |
-| Oracle / x402 / Uniswap | Exact terms/transfer verification; explicitly bounded payments; quote-only Uniswap authority. |
+| Oracle / x402 / Uniswap | Exact terms/transfer verification; explicitly bounded payments; mainnet quote-only authority; bounded Sepolia calldata preparation (wallet signs). |
 | Runtime | Private key/config files, loopback services behind TLS, patched minimal dependencies. |
 
 **Evidence:** 41 offline tests passed locally and on the VPS in the September 6
@@ -233,7 +258,7 @@ confirmed an oversized request caused no ledger write. [Current runtime limits](
 | Policy-bound oracle authority | Verifies configured HCS topic, issuer signature, canonical terms hash, time window, network, asset, beneficiary and exact scheduled amount. Rejects extra transfer legs, allowances and unsupported fields. Caller input cannot lower the published trigger; queries are bounded, missing data is not a positive vote, duplicate identities do not become a quorum. | [Policy binding](src/policy/binding.js), [oracle implementation](src/oracle/), [security review](docs/AGENT-SECURITY.md) |
 | Ledger-enforced signature gate | The pool requires **agent AND 2-of-3 oracle keys**. Oracle keys alone cannot spend. Signature evidence and observed execution are displayed separately. | [1 HBAR executed control](https://hashscan.io/mainnet/schedule/0.0.10843723), [5 HBAR blocked control](https://hashscan.io/mainnet/schedule/0.0.10843725) |
 | Bounded x402 payment authority | Client checks explicitly authorized resource, network, recipient, asset, fee payer and maximum amount before signing; paid redirects and automatic new payments after uncertain responses are refused. Facilitator validates exact payment bodies, rejects extra debits/approvals and excessive fees, and requires a consensus receipt. | [Payment policy](src/x402/payment-policy.js), [facilitator](src/x402/facilitator.js), [payment tests](tests/payments.test.js) |
-| Uniswap least privilege | Server selects only a bounded, allowlisted quote operation. API key remains server-side; no EVM private key, approval or broadcast is needed. | [Conversion tests](tests/cross-asset.test.js), [live quote evidence](docs/evidence/uniswap-quotes.json) |
+| Uniswap least privilege | Mainnet is quote-only. Sepolia execution pins the router, chain, token path, recipient, amount, minimum output and allowed commands. API key stays server-side; the wallet signs and broadcasts. | [Conversion tests](tests/cross-asset.test.js), [live quote evidence](docs/evidence/uniswap-quotes.json) |
 | Runtime and secret isolation | Project listeners bind to loopback behind TLS nginx; environment/registry files use 0600 and artifact directory 0700. Project-specific Node 22 runtime and patched protobuf, WebSocket and gRPC dependencies. Minimal runtime installation omits unrelated automatic peers. | [Operational review and install instructions](docs/AGENT-SECURITY.md#operational-review), [lockfile](package-lock.json) |
 | Visible verification | Open a policy → **Agent guardrails & proof** for current limits/usage and recorded authorization controls. Read-only endpoint exposes configuration without keys or IP identifiers. | [Live guardrails](https://quorum.aivylabs.xyz/api/guardrails), [UI implementation](ui/src/app/AgentGuardrails.tsx) |
 
@@ -427,7 +452,7 @@ What existed before the event, and does **not** count as new work:
   Hedera Agent Kit docs.
 - **hak-uniswap-plugin** — Uniswap Trading API plugin with allowance handling and a
   Ledger threshold gate, proven on Sepolia. Reused here for live USDC-to-ETH
-  conversion quotes on Base and Unichain. The UI does not bridge or execute swaps.
+  conversion quotes on Base and Unichain. The mainnet quote UI does not execute swaps. The separate Sepolia adapter prepares wallet-approved test swaps; it does not bridge funds.
 - **Aivy Settlement Layer (ETHGlobal Lisbon, July 2026)** — a prior continuity
   build on aivy-studio that also used HTS pools and Scheduled Transactions. The
   overlap is the *substrate*; what is new here is stated below.

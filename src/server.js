@@ -1,3 +1,4 @@
+import {createTestnetSwap} from './settlement/testnetSwap.js';
 // The underwriting agent, over HTTP.
 //
 // Quoting is free and touches nothing — it reads the USGS record and does
@@ -61,6 +62,7 @@ async function main() {
     reconcile: async () => {for(const p of await currentPolicies())if(p.state==='paid')settle(NETWORK,p.serial,p.executedAt);},
   };
 
+  const prepareTestnetSwap=createTestnetSwap();
   const demo=demoService({client:c,agent,network:NETWORK,reg});
 
   const server = http.createServer(async (req, res) => {
@@ -68,6 +70,10 @@ async function main() {
     try {
       const url = new URL(req.url, 'http://localhost');
       const route = url.pathname.replace(/\/$/, '');
+      if(route==='/api/testnet-swap'&&req.method==='POST'){
+        if(NETWORK!=='testnet')throw new HttpError(403,'Testnet swap interface only.');
+        return json(res,200,await prepareTestnetSwap(await readJsonBody(req)));
+      }
       if(route==='/api/demo'&&req.method==='GET')return json(res,200,await demo.view(capability(req)));
       if(route==='/api/demo/start'&&req.method==='POST'){
         const id=capability(req);await withIssuanceLock(NETWORK,()=>demo.start(id,clientIp(req)));return json(res,200,await demo.view(id));

@@ -136,3 +136,11 @@ Account balance display reads the mirror node, avoiding paid balance queries on
 every page refresh; spending checks still use fresh SDK balances.
 
 [Full business/API boundaries](INTERACTIVE-BUSINESS-FLOWS.md).
+
+## Wallet-approved Sepolia swaps (2026-09-07)
+
+Mainnet conversion remains quote-only. `/api/testnet-swap` prepares a separate Ethereum Sepolia swap using Uniswap Trading API `/quote` and `/swap`. No server private key signs EVM transactions. Chain 11155111, Universal Router 2.0, native ETH input, Circle test USDC output, exact amount, recipient and 0.5% output protection are validated. Only WRAP_ETH + single-pool V3_SWAP_EXACT_IN commands are accepted; allowance, arbitrary transfer and alternate router commands fail closed.
+
+Wallet checks include chain/account binding, gas simulation, input balance, gas cost cap, quote freshness and explicit transaction approval. Pending submission state survives reload; unknown submissions block another quote until an exact matching transaction receipt is found. Wallet rejection clears the pending attempt. Replaced/cancelled transactions without a matching receipt require manual reconciliation; they are not automatically retried.
+
+Read API requests are bounded to 20 per minute and three concurrent calls, with upstream timeouts. API credentials remain on the server. Tests cover altered router, sender, chain, value, commands, recipient, minimum output and deadlines. This integration does not bridge Hedera funds. Live calldata validation passed; funded-wallet settlement verification remains pending.

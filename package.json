@@ -29,6 +29,7 @@
     "@hiero-ledger/proto": "2.31.0",
     "@hiero-ledger/sdk": "^2.87.0",
     "dotenv": "^16.4.5",
+    "ethers": "6.17.0",
     "hak-scheduled-settlement": "github:jmgomezl/hak-scheduled-settlement",
     "hak-uniswap-plugin": "github:jmgomezl/hak-uniswap-plugin"
   },

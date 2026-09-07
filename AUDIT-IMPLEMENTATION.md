@@ -161,3 +161,7 @@ Added persistent ARPS holdings, percentage of issued token supply and latest dep
 ### 2026-09-07 — Uniswap value proposition
 
 README and conversion panel now explain the Hedera-native JavaScript agent → Uniswap Trading API integration, without custom Solidity deployment. Distinguishes the implemented EVM liquidity discovery entry point from future authorized swaps and cross-chain funding. No swap execution or user migration is claimed.
+
+### 2026-09-07 — Sepolia execution path
+
+Implemented wallet-approved Uniswap API ETH→test USDC swaps, strict calldata validation, quote bounds, wallet simulation, pending-request recovery and receipt links. Verified live API quote + swap calldata and 52 tests; UI builds and fits 320px. Funded-wallet signing/broadcast/settlement is pending user wallet availability. No Hedera bridge or completed test swap is claimed.
