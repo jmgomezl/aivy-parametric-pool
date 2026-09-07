@@ -9,8 +9,11 @@
   "sourceTransaction": "0.0.10408106@1788799512.671223617",
   "sourceHash": "0x9027859ed638603a5c8d9ffce5f55084e6b80000b7e95ce78749c2386336a282",
   "sourceStatus": "SUCCESS",
-  "destinationStatusAtVerification": "in-transit",
+  "destinationStatusAtVerification": "delivered",
   "recipient": "0x18c5e6987a734638403bbd942e17d959952b8e4e",
   "explorer": "https://testnet.axelarscan.io/gmp/0x9027859ed638603a5c8d9ffce5f55084e6b80000b7e95ce78749c2386336a282",
-  "validation": "Built with the installed plugin, corrected native Hedera ITS gas units, validated all terms, journaled and signed by the managed demo account. No plugin secondaryAction invoked."
+  "validation": "Built with the installed plugin, corrected native Hedera ITS gas units, validated all terms, journaled and signed by the managed demo account. No plugin secondaryAction invoked.",
+  "destinationTransaction": "0x0349e61a3e79e6509b078d95beef4bc3401bb5c3db57a5ee990f4cafb92abbd6",
+  "deliveryVerifiedAt": "2026-09-07T17:26:53.022840+00:00",
+  "destinationVerification": "Successful Sepolia ITS InterchainTransferReceived event matches the Hedera source token ID, sender, recipient and amount."
 }

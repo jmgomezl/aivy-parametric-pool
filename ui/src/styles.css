@@ -1121,3 +1121,5 @@ small { font-size:12px; color:var(--fg-2); }
 @media(max-width:400px){.pool-business-map {gap:5px;font-size:11px;}.pool-business-map strong {padding:12px 7px;}}
 
 .policy-checks {width:100%;max-width:400px;border-top:1px solid var(--line);padding-top:20px;margin-top:20px;font-size:12px;}.policy-checks p {color:var(--fg-2);line-height:1.6;margin:12px 0;}.policy-checks small {display:block;color:var(--fg-2);font-size:10px;line-height:1.6;margin-top:10px;}.policy-checks .capital-heading {flex-wrap:wrap;}.policy-check-results>div {padding:14px 0;border-bottom:1px solid var(--line);}.policy-check-results>div>div {display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;}.policy-check-results summary {padding:10px 0;font-size:11px;cursor:pointer;color:var(--fg-2);}.policy-check-results a {display:block;color:var(--ok);margin-top:8px;}
+
+@media(max-width:760px){.chrome {row-gap:4px;}.chrome-status {width:100%;margin-left:0;justify-content:space-between;gap:12px;flex-wrap:nowrap;}.chrome .pool-summary {display:none;}.demo-account>summary {gap:7px;}.network-label {font-size:10px;}}

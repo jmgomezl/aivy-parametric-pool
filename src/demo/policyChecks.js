@@ -29,7 +29,7 @@ export async function checkPolicy({demo,network,reg,agent,sessionId,policy,input
    const body=await result.response.json();
    if(!result.response.ok||!result.paid||body.sourceKey!==sourceKey||typeof body.triggered!=='boolean')throw Error('Oracle response could not be verified.');
    if(body.payment?.transaction!==row.paymentTxId)throw Error('Payment receipt does not match the submitted transaction.');
-   Object.assign(row,{status:body.triggered?'qualifying-event':'no-match',paid:true,verdict:String(body.verdict??'').slice(0,300),queriedAt:body.queriedAt,query:body.query,signatureTxId:body.signature?.signed?body.signature.transactionId:undefined,alreadySettled:Boolean(body.signature?.alreadySettled),matches:(body.matches??[]).slice(0,3)});
+   Object.assign(row,{status:body.unavailable?'unavailable':body.triggered?'qualifying-event':'no-match',paid:true,verdict:String(body.verdict??'').slice(0,300),queriedAt:body.queriedAt,query:body.query,signatureTxId:!body.unavailable&&body.triggered&&body.signature?.signed?body.signature.transactionId:undefined,alreadySettled:Boolean(body.signature?.alreadySettled),matches:(body.matches??[]).slice(0,3)});
   }catch{Object.assign(row,{status:row.paymentTxId?'needs-review':'unavailable',verdict:row.paymentTxId?'Payment submitted; check its receipt. No payment is repeated.':'Source unavailable or policy verification refused. No payment was submitted.'});}
   patch({checks});
  }

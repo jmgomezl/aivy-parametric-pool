@@ -225,3 +225,14 @@ contains the exact four token legs: aUSDd from the visitor to the shared pool,
 and ARPS from the treasury to the visitor. Wrong recipient, amount, token or
 receipt is rejected; recovery never mints or transfers again. The UI clears its
 pending request when that completed action appears in the account journal.
+
+### Paid source failures
+
+Catalogue reads use one 18-second budget and at most three attempts, including
+body parsing. FDSN HTTP 204 is an empty record; malformed or empty HTTP 200
+responses are unavailable, never a negative vote. A confirmed x402 receipt
+survives catalogue failure, and unavailable sources cannot sign. An unknown
+payment still blocks a new policy check until its original receipt is reviewed.
+See [FDSN event specification, nodata](https://www.fdsn.org/webservices/fdsnws-event-1.2.pdf),
+[catalogue tests](../tests/oracle-catalogue.test.js) and
+[paid check tests](../tests/policy-checks.test.js).

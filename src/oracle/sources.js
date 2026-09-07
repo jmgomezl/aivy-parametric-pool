@@ -18,48 +18,35 @@ export function distanceKm(lat1, lon1, lat2, lon2) {
 
 const kmToDeg = (km) => km / 111.19;
 
-// A truncated body is as much a transient failure as a 502, and it arrives as a
-// SyntaxError rather than a status code. EMSC in particular cuts responses short
-// under load, so parsing lives inside the retry rather than after it.
-async function getJson(url, timeout) {
-  for (let attempt = 0; ; attempt++) {
-    try { return await (await get(url, timeout, attempt >= 2 ? 2 : 0)).json(); }
-    catch (err) {
-      if (attempt >= 2 || err.fatal) throw err;
-      await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
-    }
-  }
-}
-
-async function getText(url, timeout) {
+// FDSN defines HTTP 204 as a successful empty catalogue. Empty/malformed 200
+// responses are failures, never evidence that no event happened.
+// One bounded retry loop includes parsing; nested retries previously outlived
+// the paid client's timeout and hid otherwise successful payment receipts.
+async function readCatalogue(url, format, timeout = 18_000) {
+  const deadline = Date.now() + timeout;
   for (let attempt = 0; ; attempt++) {
     try {
-      const body = await (await get(url, timeout, attempt >= 2 ? 2 : 0)).text();
-      if (!body.trim()) throw new Error('empty response');
+      const remaining = deadline - Date.now();
+      if (remaining <= 0) throw Object.assign(new Error('Catalogue deadline exceeded'), {fatal: true});
+      const res = await fetch(url, {signal: AbortSignal.timeout(Math.min(6000, remaining)), headers: {accept: '*/*'}});
+      if (res.status === 204) return format === 'json' ? {features: []} : '';
+      if (!res.ok) throw Object.assign(new Error(`Catalogue HTTP ${res.status}`), {fatal: res.status < 500});
+      if (format === 'json') {
+        const body = await res.json();
+        if (!Array.isArray(body?.features)) throw new Error('Invalid catalogue features');
+        return body;
+      }
+      const body = await res.text();
+      if (!body.trim()) throw new Error('Empty catalogue response');
       return body;
     } catch (err) {
-      if (attempt >= 2 || err.fatal) throw err;
-      await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
+      if (attempt >= 2 || err.fatal || Date.now() >= deadline) throw err;
+      await new Promise(resolve => setTimeout(resolve, Math.min(600 * (attempt + 1), Math.max(0, deadline - Date.now()))));
     }
   }
 }
-
-// These are public research services, not commercial APIs; they rate-limit and
-// drop connections under load. A catalogue that blinks is a missing vote, and a
-// missing vote can cost a policyholder a payout — so we retry before giving up.
-async function get(url, timeout = 25_000, attempt = 0) {
-  try {
-    const res = await fetch(url, { signal: AbortSignal.timeout(timeout), headers: { accept: '*/*' } });
-    if (res.ok) return res;
-    if (attempt < 2 && res.status >= 500) throw new Error(`${res.status}`);
-    if (!res.ok) throw Object.assign(new Error(`${res.status} ${(await res.text()).slice(0, 120)}`), { fatal: res.status < 500 });
-    return res;
-  } catch (err) {
-    if (err.fatal || attempt >= 2) throw err;
-    await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
-    return get(url, timeout, attempt + 1);
-  }
-}
+const getJson = url => readCatalogue(url, 'json');
+const getText = url => readCatalogue(url, 'text');
 
 /** United States Geological Survey — ComCat. */
 async function usgs({ lat, lon, radiusKm, minMagnitude, since, until }) {
@@ -89,7 +76,7 @@ async function emsc({ lat, lon, radiusKm, minMagnitude, since, until }) {
   const body = await getJson(url);
   return {
     url,
-    events: (body.features ?? []).map((f) => ({
+    events: body.features.map((f) => ({
       id: f.id,
       time: new Date(f.properties.time).toISOString(),
       lat: f.geometry.coordinates[1],

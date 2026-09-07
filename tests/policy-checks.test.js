@@ -5,3 +5,10 @@ test('manual check pays pinned sources only, journals first and never repays a r
 test('rejects caller-controlled conditions, mainnet and unverified policies without spending',async()=>{const f=fixture();try{for(const patch of[{network:'mainnet'},{input:{requestId:'check-request-000001',spec:{minMagnitude:0}}},{policy:{...f.config.policy,state:'paid'}},{policy:{...f.config.policy,ledger:{available:false}}}])await assert.rejects(checkPolicy({...f.config,...patch}));assert.equal(f.getCalls(),0);}finally{f.done();}});
 test('lost paid responses remain reviewable and block fresh payments for that policy',async()=>{const f=fixture();try{let calls=0;const pay=async(_url,o)=>{calls++;await o.checkpoint({transactionId:'0.0.1@123.000000001'});throw Error('connection lost');};const r=await checkPolicy({...f.config,pay});assert.equal(r.needsReview,true);assert.ok(r.checks.every(r=>r.status==='needs-review'));await assert.rejects(checkPolicy({...f.config,pay,input:{requestId:'check-request-000002'}}),/payment review/);assert.equal(calls,3);}finally{f.done();}});
 test('unreachable catalogues cast no vote and never imply a payment',async()=>{const f=fixture();try{const r=await checkPolicy({...f.config,pay:async()=>{throw Error('offline before payment');}});assert.equal(r.cost,0);assert.equal(r.needsReview,false);assert.ok(r.checks.every(r=>r.status==='unavailable'&&!r.paid));}finally{f.done();}});
+test('a confirmed payment survives catalogue failure without claiming a negative vote or signature',async()=>{
+ const f=fixture();try{
+  const pay=async(url,o)=>{const tx='0.0.1@123.000000001';await o.checkpoint({transactionId:tx});return {paid:true,response:{ok:true,json:async()=>({sourceKey:new URL(url).hostname.split('.')[0],triggered:false,unavailable:true,verdict:'Catalogue unavailable.',payment:{transaction:tx},signature:{signed:true,transactionId:'untrusted'}})}};};
+  const r=await checkPolicy({...f.config,pay});assert.equal(r.cost,.003);assert.equal(r.needsReview,false);
+  assert.ok(r.checks.every(c=>c.status==='unavailable'&&c.paid&&!c.signatureTxId));
+ }finally{f.done();}
+});

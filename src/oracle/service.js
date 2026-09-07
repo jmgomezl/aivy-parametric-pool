@@ -17,7 +17,7 @@ import http from 'node:http';
 import { ScheduleId, ScheduleSignTransaction, Client, AccountId } from '@hiero-ledger/sdk';
 import { parseKey } from '../config.js';
 import { SOURCES } from './sources.js';
-import { attest, validateAttestationSpec } from './attest.js';
+import { attestOrUnavailable, validateAttestationSpec } from './attest.js';
 import { readJsonBody, HttpError, requestPath } from '../http-safety.js';
 import { charge, requirements } from '../x402/gate.js';
 import { settlementAsset } from '../asset.js';
@@ -115,11 +115,11 @@ const server = http.createServer(async (req, res) => {
       });
       if (!gate.paid) return json(res, gate.status, gate.body);
 
-      const attestation = await attest(SOURCE, spec);
+      const attestation = await attestOrUnavailable(SOURCE, spec);
 
       // An oracle signs only what it just verified for itself.
       let signature = null;
-      if (path === '/attest-and-sign' && attestation.triggered && body.scheduleId) {
+      if (path === '/attest-and-sign' && attestation.triggered && !attestation.unavailable && body.scheduleId) {
         signature = await signSchedule(body.scheduleId);
       } else if (path === '/attest-and-sign' && !attestation.triggered) {
         signature = { signed: false, reason: attestation.verdict };

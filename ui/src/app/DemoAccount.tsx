@@ -1,6 +1,6 @@
 import {useState,useEffect,useRef} from 'react';
 import {useDemo,startDemo,refreshDemo,receipt} from '../lib/demo';
-const n=(v:number)=>v.toLocaleString(undefined,{maximumFractionDigits:2});
+const n=(v:number)=>v.toLocaleString(undefined,{maximumFractionDigits:Math.abs(v)>0&&Math.abs(v)<.01?6:2});
 export function DemoAccount(){
  const {account:a,busy,error}=useDemo(),[copyState,setCopyState]=useState<'idle'|'copied'|'manual'>('idle');
  const panel=useRef<HTMLDetailsElement>(null);
@@ -24,7 +24,7 @@ export function DemoAccount(){
  },[]);
  const referralLink=a?`${location.origin}/?ref=${a.referralCode}`:'';
  const close=()=>{if(panel.current){panel.current.open=false;panel.current.querySelector('summary')?.focus();}};
- return <details className="demo-account" ref={panel}><summary>{a?<><span>Your testnet balance</span><strong className="num">{n(a.balance)} aUSDd</strong></>:<span>Your demo account</span>}</summary><div className="demo-account-body">
+ return <details className="demo-account" ref={panel}><summary>{a?<><span>Demo balance</span><strong className="num">{n(a.balance)} aUSDd</strong></>:<span>Your demo account</span>}</summary><div className="demo-account-body">
  <div className="account-panel-heading"><span className="account-network"><i aria-hidden="true"/>Testnet · no cash value</span><button className="account-icon" aria-label="Close demo account" onClick={close}>×</button></div>
  {a?<>
  <div className="account-balance"><div><span className="account-label">Available balance</span><h3>{n(a.balance)} <small>aUSDd</small></h3></div><button className="account-icon" aria-label="Refresh balances" title="Refresh balances" onClick={()=>void refreshDemo()}>↻</button></div>

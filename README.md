@@ -31,6 +31,8 @@ account payments, shared-pool deposits, oracle checks and bridge/swap controls.*
 | Policyholder | **Policy → Check earthquake conditions** | Three policy-bound oracle requests, up to 0.003 test aUSDd via x402; qualifying signatures can release the scheduled payout. |
 | Broker | **Earn as a broker → Copy referral link** | Buyer pays the same premium; 15% goes to the broker and 85% to the pool. Commission history is visible. |
 
+[Current QA findings and verified flows](docs/qa/PLATFORM-QA.md).
+
 No referral means 100% of the premium goes to the pool. There is no separate
 platform fee. Shared-pool shares use demo 1:1 issuance, not NAV pricing;
 withdrawals and income distributions are not implemented. Per-policy cards
@@ -80,8 +82,9 @@ flowchart LR
   class Result result
 ```
 
-> Nothing polls and nothing wakes up. The payout already exists, already carries
-> the agent's signature, and the network runs it the moment the quorum completes.
+> The payout needs no keeper: it already carries the agent’s signature, and
+> Hedera executes when the quorum completes. Event checks still need to be
+> requested; this demo does not run an autonomous earthquake monitor.
 
 | Component used | Why it fits | Implementation |
 | --- | --- | --- |
@@ -143,7 +146,7 @@ plugin predates this submission; the guarded integration is project work.
 
 [Integration adapter](src/settlement/axelarPlugin.js) ·
 [Tests using the actual package](tests/axelar-plugin.test.js) ·
-[Real plugin-built transfer](docs/evidence/hak-axelar-plugin.json) ·
+[Plugin-built transfer, delivered on Sepolia](docs/evidence/hak-axelar-plugin.json) ·
 [Security rationale](docs/AGENT-SECURITY.md#hak-axelar-plugin-integration)
 
 ### Try it in the app

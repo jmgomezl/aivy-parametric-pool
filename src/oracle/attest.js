@@ -76,22 +76,23 @@ export async function attest(sourceKey, spec) {
   };
 }
 
+/** A missing catalogue casts no vote, including after a confirmed service payment. */
+export async function attestOrUnavailable(sourceKey, spec, read = attest) {
+  try { return await read(sourceKey, spec); }
+  catch {
+    const source = SOURCES[sourceKey];
+    return {
+      sourceKey, source: source.name, operator: source.operator,
+      queriedAt: new Date().toISOString(), triggered: false, unavailable: true,
+      matches: [], nearMisses: [],
+      verdict: `${source.name} is unavailable, so it casts no vote. No signature was submitted.`,
+    };
+  }
+}
+
 /** Ask every source independently. One failing catalogue must not stop the others. */
 export async function attestAll(spec, keys = Object.keys(SOURCES)) {
-  const results = await Promise.allSettled(keys.map((k) => attest(k, spec)));
-  return results.map((r, i) =>
-    r.status === 'fulfilled'
-      ? r.value
-      : {
-          sourceKey: keys[i], source: SOURCES[keys[i]].name, operator: SOURCES[keys[i]].operator,
-          queriedAt: new Date().toISOString(),
-          triggered: false, unavailable: true,
-          matches: [], nearMisses: [],
-          error: String(r.reason?.message ?? r.reason).slice(0, 160),
-          // An unreachable catalogue is not a "no". It is a missing vote, and the
-          // quorum has to be able to tell the difference.
-          verdict: `${SOURCES[keys[i]].name} could not be reached, so it casts no vote.`,
-        });
+  return Promise.all(keys.map(key => attestOrUnavailable(key, spec)));
 }
 
 /** Does a quorum of catalogues agree the trigger fired? */
