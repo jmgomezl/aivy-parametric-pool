@@ -206,3 +206,22 @@ The package's generic fee/status tools are not used as authoritative evidence.
 Quorum retains the verified ITS fee endpoint and source/destination event checks,
 including the Axelar hub-to-destination distinction. Tests invoke the installed
 plugin and reject changed destinations, network input and oversized gas.
+
+
+## QA: manual oracle checks and deposit recovery
+
+The policy page now invokes a capability-authorized, testnet-only check route.
+The server selects the recorded schedule and HCS pointer; user-supplied trigger
+conditions are rejected. Three fixed HTTPS oracle endpoints receive exact x402
+policies (recipient, fee payer, asset and maximum 1,000 base units each). The
+payer is the visitor's managed demo account. Payment IDs are persisted before
+submission; repeated request IDs do not repay, and uncertain payments block
+another check for that policy. A five-minute shared cooldown reuses the latest
+result. Existing daily action budgets also apply. Missing sources cast no vote.
+Actual schedule signatures remain independently visible in the ledger panel.
+
+Interrupted deposits reconcile only when the original successful transaction
+contains the exact four token legs: aUSDd from the visitor to the shared pool,
+and ARPS from the treasury to the visitor. Wrong recipient, amount, token or
+receipt is rejected; recovery never mints or transfers again. The UI clears its
+pending request when that completed action appears in the account journal.

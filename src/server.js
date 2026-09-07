@@ -1,3 +1,4 @@
+import {checkPolicy,latestPolicyCheck} from './demo/policyChecks.js';
 import {createBridgedSwap} from './settlement/bridgedSwap.js';
 import {bridgeConfig,bridgeStatus} from './settlement/bridge.js';
 import {createTestnetSwap} from './settlement/testnetSwap.js';
@@ -172,6 +173,16 @@ async function main() {
 
       if (route === '/api/policies' && req.method === 'GET') {
         return json(res, 200, { network: NETWORK, policies: (await currentPolicies()).map(publicPolicy) });
+      }
+
+      const checkRoute=/^\/api\/policies\/(\d+)\/check$/.exec(route);
+      if(checkRoute&&req.method==='GET')return json(res,200,{ok:true,check:latestPolicyCheck(demo.store,checkRoute[1])});
+      if(checkRoute&&req.method==='POST'){
+        const sessionId=capability(req),input=await readJsonBody(req);
+        const p=(await currentPolicies()).find(p=>String(p.serial)===checkRoute[1]);
+        if(!p)throw new HttpError(404,'Policy not found.');
+        const result=await withIssuanceLock(NETWORK,()=>checkPolicy({demo,network:NETWORK,reg,agent,sessionId,policy:p,input}));
+        return json(res,200,result);
       }
 
       if (route.startsWith('/api/policies/') && req.method === 'GET') {

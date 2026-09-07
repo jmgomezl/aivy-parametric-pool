@@ -14,7 +14,7 @@ export function demoStore(directory=path.join(process.cwd(),'.artifacts')){
   account(id){const a=read().accounts[id];if(!a||a.status!=='ready')throw Object.assign(Error(a?'Demo account needs reconciliation. Do not request another starter allocation.':'Start your demo account first.'),{status:a?409:401});return a;},
   broker(code,id){if(!code)return null;if(!/^[a-f0-9]{12}$/.test(code))throw Object.assign(Error('Invalid referral code.'),{status:400});const s=read();const row=Object.entries(s.accounts).find(([,a])=>a.code===code&&a.status==='ready');if(!row||row[0]===id)throw Object.assign(Error('Use another registered broker’s referral code.'),{status:400});return row[1].accountId;},
   begin(id,requestId,kind,amount,now=Date.now()){
-   if(!/^[a-zA-Z0-9-]{16,80}$/.test(requestId)||!['deposit','cover','bridge'].includes(kind)||!Number.isFinite(amount)||amount<=0||amount>100)throw Object.assign(Error('Invalid demo action.'),{status:400});
+   if(!/^[a-zA-Z0-9-]{16,80}$/.test(requestId)||!['deposit','cover','bridge','oracle-check'].includes(kind)||!Number.isFinite(amount)||amount<=0||amount>100)throw Object.assign(Error('Invalid demo action.'),{status:400});
    const a=this.account(id),old=a.actions.find(x=>x.requestId===requestId);if(old){if(old.kind!==kind||old.amount!==amount)throw Object.assign(Error('Request identifier already used for different terms.'),{status:409});return old;}
    if(a.actions.some(x=>x.status==='pending'))throw Object.assign(Error('A previous transaction needs confirmation or operator review.'),{status:409});
    const s=read(),recent=Object.values(s.accounts).flatMap(x=>x.actions).filter(x=>now-x.at<86400000);

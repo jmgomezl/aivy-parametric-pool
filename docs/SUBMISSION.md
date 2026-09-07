@@ -15,23 +15,23 @@ Reusable plugin: https://github.com/jmgomezl/hak-scheduled-settlement
 | 0:00–0:20 | Cover homepage | Fixed earthquake payouts can be committed before an event. |
 | 0:20–0:45 | Search Medellin; Explore data | The historical chart holds payout at $800; premiums vary with the record. Return to cover for current terms. |
 | 0:45–1:15 | Create funded testnet cover; view policy | A real NFT, published terms, premium transfer and scheduled payout. Demo assets have no cash value. Cut network waiting from the recording. |
-| 1:15–1:35 | Cover policy → Payout in ETH? · Uniswap | Live USDC-equivalent conversion on Base or Unichain mainnet. Show quote ID. No bridge or swap executes. |
-| 1:35–2:00 | Fund a policy → Tokyo → contribution slider | Proposed participation: back a policy and share premiums. Show income and full capital at risk. Preview only; no deposit. |
+| 1:15–1:35 | Policy → Move funds & swap | Hedera → HAK Axelar plugin → Sepolia → Uniswap. Show a completed bridge, exact approval and swap receipt. |
+| 1:35–2:00 | Fund the pool → deposit and ARPS balance | One shared pool backs all policies. ARPS arrives atomically. Per-policy cards are economics previews; no separate vault or guaranteed yield. |
 | 2:00–2:40 | How it works | Replay commit → one confirmation → two confirmations → executed transfer. Controlled mainnet recording, not a live earthquake claim. Open the actual receipt. |
-| 2:40–3:00 | Onchain → x402 | Real testnet payment gates a historical catalogue query. A negative event result is valid; payment does not mean claim approval. |
+| 2:40–3:00 | Policy → Check earthquake conditions | Bounded testnet x402 payments query the published policy terms. No-match and unavailable are different; payment does not mean claim approval. |
 | 3:00–3:15 | Final story step / repository | Oracle keys alone cannot spend. Explain the reusable plugin and new hackathon work. |
 
 ## Evidence and scope
 
-- Cover creation is real testnet issuance, free to the visitor through funded demo accounts.
+- Cover creation is real testnet issuance, paid from the visitor’s funded demo account.
 - Mainnet story proves a real 4 HBAR settlement with controlled signatures. It does not demonstrate autonomous event detection or independent oracle operators.
 - x402 evidence: [public request/result](evidence/x402-testnet.json), [settled payment](https://hashscan.io/testnet/transaction/0.0.7231440-1788672698-044530315).
   Payment: 1,000 base units = 0.001 aUSDd; USGS service returned HTTP 200 after settlement.
   The query covers Mexico City in January 2025. It found no qualifying event and did not sign any policy.
 - x402 uses the deployed self-hosted testnet facilitator. No Blocky mainnet payment is claimed.
-- Per-policy funding, LP NFTs and premium distribution are a proposed model. Working LP primitives issue fungible shares for the shared pool; the public UI does not accept LP deposits.
+- Per-policy funding, LP NFTs and premium distribution are a proposed model. Working LP primitives issue fungible shares for the shared pool; the public UI accepts actual shared-pool deposits.
 - Annual premium rate is gross, before claims and costs. It is not guaranteed yield. The slider shows capital at risk.
-- Automatic ledger execution is implemented; earthquake checks remain manually requested.
+- Automatic ledger execution is implemented; earthquake checks are manually requested from the policy page.
 
 ## Submission checklist
 
@@ -59,20 +59,17 @@ performs one historical `/attest` query and writes public result JSON under
 `.artifacts`. It never calls `/attest-and-sign`. Do not rerun merely to inspect
 existing evidence, and do not copy the private registry into the repository or VPS.
 
-## Optional Uniswap demonstration (15 seconds)
+## Uniswap and Axelar demonstration
 
-On a cover policy, open **Payout in ETH? · Uniswap**. Show the live USDC-to-ETH
-quote, switch Base → Unichain, and open **Verify Uniswap quote**. Explain:
-“If the modeled payout were held as USDC, this is its current ETH conversion.
-Uniswap supplies the real mainnet liquidity quote; our demo does not bridge
-Hedera funds or execute the swap.” The quote ID and API route are inspectable.
-This is a live API integration, not a completed onchain swap or a Uniswap LP NFT.
+Open **Move funds & swap**. Bridge aUSDd from the service-managed Hedera demo
+account to a Sepolia wallet, approve an exact amount, then sign and submit the
+Uniswap swap. Wallet gas is paid in Sepolia ETH. Show [real receipts](evidence/cross-chain-testnet.json)
+and [the HAK Axelar plugin transaction](evidence/hak-axelar-plugin.json).
 
-API behavior follows the [Uniswap integration guide](https://developers.uniswap.org/docs/trading/swapping-api/start-building/integration-guide).
-
-[Recorded API evidence](evidence/uniswap-quotes.json) preserves actual Base and
-Unichain quote IDs and routes from the verification run. These are expired price
-snapshots, not transaction receipts; use the UI to request current prices.
+Explain: “Hedera commits the cover, Axelar transports its demo asset, and Uniswap
+provides EVM liquidity. The app uses reusable agent tools and validates their
+transactions before signing.” Sponsored test liquidity is not a USD peg. The
+mainnet price preview is quote-only. ARPS is not traded in this Uniswap pool.
 
 ## Technical judge: agent protection
 
@@ -83,8 +80,6 @@ then the recorded agent-plus-quorum control and oracle-only blocked transfer.
 shared-host hot-key boundary that remains before production.
 
 Creation budgets now persist across restarts and count interrupted attempts.
-Before recording, read `/api/guardrails`; choose a smaller cover if the rolling
-budget is low, or demonstrate an existing NFT. Do not reset the journal merely
-to make a recording pass. On September 6 at 07:07 UTC, approximately $348 remained;
-Medellín at a $2 budget or Tokyo at $4 fit that snapshot. Limits may change as
-visitors create policies and earlier attempts age out of the rolling window.
+Before recording, read `/api/guardrails` and `/api/pool`. Choose a smaller cover
+if capacity is low, or use an existing NFT. Keep funded Sepolia gas available in
+the demonstration wallet. Do not reset a journal to make a recording pass.

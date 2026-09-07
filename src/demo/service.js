@@ -1,3 +1,4 @@
+import {reconcileDeposit} from './reconcile.js';
 import {buildPluginBridge,AXELAR_PLUGIN_VERSION} from '../settlement/axelarPlugin.js';
 import {bridgeStatus,bridgeInput,confirmBridgeDestination,bridgeGas,ITS_ACCOUNT} from '../settlement/bridge.js';
 import {AccountBalanceQuery,AccountId,PrivateKey,TokenId,TransferTransaction,AccountAllowanceApproveTransaction,Client,Hbar} from '@hiero-ledger/sdk';
@@ -57,7 +58,11 @@ export function demoService({client,agent,network,reg}){
   async fund(id,{requestId,amount}){enabled();store.account(id);const b=await balance(store.account(id).accountId);
    const prior=store.account(id).actions.find(x=>x.requestId===requestId);
    if(!prior&&(!Number.isFinite(amount)||amount<1||amount>100||Math.abs(Math.round(amount*100)-amount*100)>1e-7||amount>b.tokens))throw Object.assign(Error('Choose 1–100 aUSDd within your balance, with up to two decimals.'),{status:400});
-   const action=store.begin(id,requestId,'deposit',amount);if(action.status==='complete')return action.result;if(prior)throw Object.assign(Error('Deposit submitted previously; awaiting reconciliation. Do not repeat it.'),{status:409});
+   const action=store.begin(id,requestId,'deposit',amount);if(action.status==='complete')return action.result;if(prior){
+    if(!prior.depositTxId)throw Object.assign(Error('Deposit needs operator review. No shares or payment are repeated.'),{status:409});
+    const result=await reconcileDeposit(network,{transactionId:prior.depositTxId,assetId:asset.tokenId,shareId:reg.shareTokenId,poolId:reg.poolAccountId,treasuryId:agent.id.toString(),accountId:store.account(id).accountId,amount:prior.amount});
+    store.finish(id,requestId,result);return result;
+   }
    const lp=signer(id),result=await deposit(client,{tokenId:TokenId.fromString(reg.shareTokenId),treasuryId:agent.id,poolId:AccountId.fromString(reg.poolAccountId),lpId:lp.id,lpKey:lp.key,amountUnits:Math.round(amount*1e6),network,checkpoint:patch=>{const a=store.account(id);Object.assign(a.actions.find(x=>x.requestId===requestId),patch);store.patch(id,{actions:a.actions});}});
    const value={...result,amount,shares:result.units/1e8,poolId:reg.poolAccountId};store.finish(id,requestId,value);return value;
   },

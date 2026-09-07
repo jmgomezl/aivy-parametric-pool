@@ -5,8 +5,8 @@
 A parametric earthquake-cover prototype: a deterministic agent prices and commits
 a payout; oracle keys verify the event; Hedera executes the pre-signed transfer
 when its signature requirements are met. **Hedera-native cover meets Uniswap
-liquidity quotes through an agent API integration—without custom Solidity
-contracts.** Users can inspect what the modeled payout could buy in ETH.
+liquidity through agent APIs—without our own Solidity contracts.** Bridge demo
+aUSDd with Axelar, then approve and execute a Uniswap swap on Sepolia.
 
 [Try the demo](https://quorum.aivylabs.xyz) · [Watch the mechanism](https://quorum.aivylabs.xyz/story) · [Recording guide](docs/SUBMISSION.md)
 
@@ -15,11 +15,11 @@ contracts.** Users can inspect what the modeled payout could buy in ETH.
 
 ![Choosing a place, pricing it from the earthquake record, and committing the payout on Hedera](docs/media/quorum-flow.gif)
 
-*Pick a place, the agent prices it from 56 years of seismic record, and the payout
-is committed on Hedera — in about twenty seconds, unedited.*
+*Earlier recorded walkthrough of the cover mechanism. The current app also has
+account payments, shared-pool deposits, oracle checks and bridge/swap controls.*
 
 > Public cover is a **funded testnet demo**. `aUSDd` has no cash value; dollars are
-> model outputs. Event checks are manually requested. Mainnet settlement is a
+> model outputs. Request event checks from a policy page. Mainnet settlement is a
 > labeled recording; per-policy funding is a preview.
 
 ## Try the business model
@@ -28,6 +28,7 @@ is committed on Hedera — in about twenty seconds, unedited.*
 | --- | --- | --- |
 | Buyer | **Your demo account → Start**, then choose a place and **Pay premium & create cover** | 1,000 starter aUSDd; actual premium debit, NFT receipt and scheduled payout. |
 | LP | **Fund the pool → Deposit into shared pool** | Tokens enter the shared pool; ARPS shares arrive atomically. Balance and receipt update. |
+| Policyholder | **Policy → Check earthquake conditions** | Three policy-bound oracle requests, up to 0.003 test aUSDd via x402; qualifying signatures can release the scheduled payout. |
 | Broker | **Earn as a broker → Copy referral link** | Buyer pays the same premium; 15% goes to the broker and 85% to the pool. Commission history is visible. |
 
 No referral means 100% of the premium goes to the pool. There is no separate
@@ -183,8 +184,8 @@ NFT receipts or multisignatures.
 | **Policy-bound, x402-paid oracle services** | Connects paid catalogue access with constrained signing; payment itself never authorizes a claim. |
 | **Verifiable, geographic cover UX** | Makes location, payout, funding risk and chain evidence understandable through maps, receipts and signature diagrams. |
 
-The Uniswap plugin predates this event; its live payout-quote integration here is
-new. Earlier Aivy work also used HTS pools and scheduling. The detailed
+The Uniswap and Axelar plugins predate this event; their guarded quote, bridge
+and swap integration here is new. Earlier Aivy work also used HTS pools and scheduling. The detailed
 [continuity disclosure](#prior-work-boundary-continuity-track) identifies reuse,
 event work and the Agent Kit contribution. [AI assistance is disclosed](docs/AI-ASSISTANCE.md).
 
@@ -199,7 +200,7 @@ its transfers — all linking out to HashScan.*
 | --- | --- |
 | Open **How it works → Release** | Recorded **4 HBAR mainnet** transfer, with receipt. Controlled signatures, not a real earthquake claim. |
 | Open a policy → **Agent guardrails & proof** | Runtime limits plus separate mainnet controls: [1 HBAR transferred](https://hashscan.io/mainnet/schedule/0.0.10843723), [5 HBAR blocked](https://hashscan.io/mainnet/schedule/0.0.10843725) without the agent signature. |
-| Open **Move funds & swap → Uniswap** | Live mainnet quote; switch Base/Unichain and inspect route/quote ID. [Saved evidence](docs/evidence/uniswap-quotes.json). |
+| Open **Move funds & swap** | Real Hedera → Axelar → Sepolia → Uniswap test-token flow. [Receipts](docs/evidence/cross-chain-testnet.json). Mainnet prices are a separate preview. |
 | Open **Onchain / Verify** | Testnet NFT, transfers and paid oracle evidence. [x402 payment receipt](docs/evidence/x402-testnet.json); self-hosted facilitator. |
 | Open **Funding estimate** | Proposed per-policy contribution, premium share and capital-at-risk outcomes. No deposit or LP NFT is issued; actual LP primitives use shared-pool fungible shares. |
 

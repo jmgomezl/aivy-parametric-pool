@@ -16,19 +16,22 @@ export function scheduleState(raw, { agentPublicKey, oraclePublicKeys = [], orac
   return { state: executedAt ? 'paid' : raw.deleted || expiresAt && Date.parse(expiresAt) <= now ? 'expired' : !agentSigned ? 'unavailable' : oracles.some(o=>o.signed) ? 'confirming' : 'active', executedAt,
     ledger: { checkedAt: new Date(now).toISOString(), available: true, agentSigned, oracles, executedAt } };
 }
-const cache = new Map();
+const cache = new Map(), inflight = new Map();
 export async function readPolicies(network, book, identities, { fetcher = fetch, cacheMs = 8000 } = {}) {
   return Promise.all(book.map(async p => {
     const key=`${network}:${p.scheduleId}`, cached=cache.get(key);
     if(cached && Date.now()-cached.at<cacheMs)return {...p,network,...cached.status,settled:cached.status.state==='paid'};
+    if(!inflight.has(key))inflight.set(key,(async()=>{
     try {
       const raw=await mirrorGet(network,`/schedules/${encodeURIComponent(p.scheduleId)}`,fetcher);
       const status=scheduleState(raw,identities);
       cache.set(key,{at:Date.now(),status});
-      return {...p,network,...status,settled:status.state==='paid'};
+      return {...status,settled:status.state==='paid'};
     } catch(error) {
       // Never manufacture an unsigned or expired state when the ledger cannot be reached.
-      return {...p,network,state:'unavailable',ledger:{checkedAt:new Date().toISOString(),available:false,agentSigned:false,oracles:[],executedAt:p.executedAt??null,error:error.message}};
+      return {state:'unavailable',ledger:{checkedAt:new Date().toISOString(),available:false,agentSigned:false,oracles:[],executedAt:p.executedAt??null,error:error.message}};
     }
+    })().finally(()=>inflight.delete(key)));
+    return {...p,network,...await inflight.get(key)};
   }));
 }

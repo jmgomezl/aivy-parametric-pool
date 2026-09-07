@@ -53,7 +53,7 @@ export async function buildPayment({ requirements, payerId, payerKey, network, p
     network: requirements.network,
     payload: { transaction: Buffer.from(signed.toBytes()).toString('base64') },
   };
-  return { payload, header: Buffer.from(JSON.stringify(payload)).toString('base64') };
+  return { payload, header: Buffer.from(JSON.stringify(payload)).toString('base64'), transactionId:signed.transactionId.toString() };
 }
 
 /**
@@ -62,14 +62,15 @@ export async function buildPayment({ requirements, payerId, payerKey, network, p
  */
 // Sign once. A lost response may follow a successful charge; a fresh payment
 // on an ambiguous failure could double-charge the caller.
-export async function fetchPaid(url, { payerId, payerKey, network, policy, init = {} } = {}) {
+export async function fetchPaid(url, { payerId, payerKey, network, policy, init = {}, checkpoint = () => {} } = {}) {
   if(url!==policy?.resource)throw new Error('Resource is not authorized by the payment policy.');
   const first = await fetch(url, {...init,redirect:'error',signal:AbortSignal.timeout(30_000)});
   if (first.status !== 402) return { response: first, paid: false };
   const body = await first.json();
   const requirements = (body.accepts ?? [])[0];
   validatePaymentTerms(requirements,{network,policy});
-  const { header } = await buildPayment({ requirements, payerId, payerKey, network, policy });
+  const { header, transactionId } = await buildPayment({ requirements, payerId, payerKey, network, policy });
+  await checkpoint({transactionId,amount:requirements.amount,asset:requirements.asset,resource:url});
   try {
     const response = await fetch(url, {...init,redirect:'error',signal:AbortSignal.timeout(30_000),headers:{...(init.headers??{}),'X-PAYMENT':header}});
     const receipt=await response.clone().json().catch(()=>null);

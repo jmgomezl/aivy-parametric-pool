@@ -13,6 +13,7 @@ export function refresh():Promise<void>{
     try{
       const previousNetwork=state.network;
       const h=await agent.health();
+      if(h.ok!==true||!['testnet','mainnet'].includes(h.network)||typeof h.writesAllowed!=='boolean')throw Error('Invalid health response');
       state={...state,checked:true,online:h.ok,network:h.network,writesAllowed:h.writesAllowed,...(previousNetwork!==h.network?{pool:null,poolAt:null,policies:null}: {})};
       subs.forEach(f=>f(state));
       const [pool,book]=await Promise.allSettled([agent.pool(),agent.policies()]);

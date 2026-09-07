@@ -75,3 +75,9 @@ test('chunked HCS terms are reassembled without mixing another transaction',asyn
   assert.deepEqual(await readTermsMessage('testnet','0.0.3',first,fetcher),terms);
   await assert.rejects(readTermsMessage('testnet','0.0.3',first,async()=>({ok:true,json:async()=>({messages:[unrelated]})})),/incomplete/);
 });
+
+test('concurrent policy and pool refreshes share one ledger request per schedule',async()=>{
+ let calls=0;const fetcher=async()=>{calls++;await new Promise(r=>setTimeout(r,20));return{ok:true,json:async()=>schedule()};};
+ const book=[{serial:'qa',scheduleId:'0.0.999991',lapsesAt:terms.lapsesAt}];
+ const [a,b]=await Promise.all([readPolicies('testnet',book,identities,{fetcher,cacheMs:0}),readPolicies('testnet',book,identities,{fetcher,cacheMs:0})]);assert.equal(calls,1);assert.equal(a[0].ledger.available,true);assert.equal(b[0].state,'active');
+});
