@@ -1,5 +1,8 @@
 # Final security review · September 8, 2026
 
+**Verdict: ready to record the verified demo flows.** Complete the external
+submission steps and choose prizes against their actual requirements below.
+
 The final review of the recent recovery, oracle-payment and HCS changes found
 three issues. Each has a focused regression test and an implemented correction.
 
@@ -19,7 +22,34 @@ three issues. Each has a focused regression test and an implemented correction.
 - Lock recovery does not clear reservations, reset budgets or retry uncertain
   transactions. Contradictory paid/unavailable oracle responses remain reviewable.
 
-Deployment and public-flow verification are recorded below after the live checks.
+## Deployed and checked live
+
+Implementation **`faa6489`** is on GitHub and deployed to the agent and all three
+oracle services. The Linux dependency tree was built and tested in isolation;
+existing services were drained/stopped before switching lock protocols. Private
+journals and credentials stayed on the VPS. Live source, UI assets and revision
+markers were compared against the tested local build. Local development still
+reaches the deployed API through its existing tunnel.
+
+| Live check | Result |
+| --- | --- |
+| New Tokyo cover **#32** | 4 aUSDd premium transferred; NFT minted/delivered; 110.792422 aUSDd payout scheduled. |
+| Three policy-bound x402 requests | USGS, EMSC and GEOFON each settled 0.001 test aUSDd and returned no match. No oracle signature was added; the payout remains pending. |
+| Invalid payment headers | Nine live requests across the three services rejected missing, malformed or wrong-context headers with 400/402 and no payment receipt. Unit tests separately verify that catalogue I/O is not invoked. |
+| Managed Uniswap swap | Exact aUSDd approval and 0.01 bridged test aUSDd swap both confirmed on Sepolia. |
+| Ledger evidence | Eight newly executed transactions independently confirmed through Hedera Mirror Node and Sepolia RPC. Nine previously published receipts, including the controlled mainnet payout and LP exit, also rechecked. |
+| Responsive UI | 54 route/width checks, 320–1440 px: no horizontal overflow or browser exceptions. Desktop and phone screenshots inspected. |
+| Historical chart | Seven widths, 320–1920 px: right-side placement, click/drag selection, keyboard, playback and close behavior pass. |
+| Judge journeys | Medellín search, quote controls, account dismissal, policy/funding navigation, six story scenes, evidence tabs, missing-page recovery and expired swap/LP quote refresh pass. No wallet-extension access. |
+
+[New testnet receipts and request results](../evidence/security-final-testnet.json)
+· [Cover #32](https://quorum.aivylabs.xyz/policy/32)
+· [Confirmed managed swap](https://sepolia.etherscan.io/tx/0x02e061bc5ee0159f0c7e1c9dae037b9c5bc876312ef0e8c1d8e4dbcea8668772).
+
+At the final pool check, 176,038.035478 aUSDd was free to back new cover; the rolling
+budget had 96 of 100 policy slots remaining and approximately $98,702 modeled
+cover capacity remaining. These are time-dependent demo limits, not real dollars.
+No budgets or journals were reset for the rehearsal.
 
 ## Operating boundaries
 

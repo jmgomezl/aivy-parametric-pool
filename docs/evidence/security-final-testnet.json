@@ -1,0 +1,180 @@
+{
+  "checkedAt": "2026-09-08T05:57:21.417Z",
+  "implementationRevision": "faa6489dbfbbcbcb904f8503cacfae93aaf5211f",
+  "scope": "New testnet transactions after deployment; no cash-value assets or mainnet spending.",
+  "policy": {
+    "serial": "32",
+    "place": "Tokyo, Japan",
+    "premium": 4,
+    "payoutUnits": 110792422,
+    "asset": "aUSDd",
+    "schedule": "0.0.10417159",
+    "terms": "hcs://0.0.10373727/59",
+    "state": "active",
+    "agentSigned": true,
+    "oracleSignatures": 0,
+    "link": "https://quorum.aivylabs.xyz/policy/32"
+  },
+  "oracleCheck": {
+    "cost": 0.003,
+    "needsReview": false,
+    "checks": [
+      {
+        "source": "usgs",
+        "status": "no-match",
+        "paid": true,
+        "payment": "0.0.7231440@1788846861.791805749"
+      },
+      {
+        "source": "emsc",
+        "status": "no-match",
+        "paid": true,
+        "payment": "0.0.7231440@1788846867.951482855"
+      },
+      {
+        "source": "geofon",
+        "status": "no-match",
+        "paid": true,
+        "payment": "0.0.7231440@1788846869.331173463"
+      }
+    ]
+  },
+  "invalidHeaderChecks": [
+    {
+      "source": "usgs",
+      "header": "missing",
+      "status": 402,
+      "error": "payment_required"
+    },
+    {
+      "source": "usgs",
+      "header": "malformed",
+      "status": 400,
+      "error": "malformed_payment_header"
+    },
+    {
+      "source": "usgs",
+      "header": "wrong context",
+      "status": 402,
+      "error": "payment_context_mismatch"
+    },
+    {
+      "source": "emsc",
+      "header": "missing",
+      "status": 402,
+      "error": "payment_required"
+    },
+    {
+      "source": "emsc",
+      "header": "malformed",
+      "status": 400,
+      "error": "malformed_payment_header"
+    },
+    {
+      "source": "emsc",
+      "header": "wrong context",
+      "status": 402,
+      "error": "payment_context_mismatch"
+    },
+    {
+      "source": "geofon",
+      "header": "missing",
+      "status": 402,
+      "error": "payment_required"
+    },
+    {
+      "source": "geofon",
+      "header": "malformed",
+      "status": 400,
+      "error": "malformed_payment_header"
+    },
+    {
+      "source": "geofon",
+      "header": "wrong context",
+      "status": 402,
+      "error": "payment_context_mismatch"
+    }
+  ],
+  "swap": {
+    "wallet": "0xf017332e6099d25889bad4b2bb98078f56487f4d",
+    "amountInUnits": "10000",
+    "assetIn": "bridged test aUSDd",
+    "assetOut": "test USDC",
+    "result": {
+      "transactionHash": "0x02e061bc5ee0159f0c7e1c9dae037b9c5bc876312ef0e8c1d8e4dbcea8668772",
+      "tokenId": null
+    }
+  },
+  "transactions": [
+    {
+      "kind": "premium",
+      "network": "Hedera testnet",
+      "transaction": "0.0.7231440-1788846827-206985108",
+      "result": "SUCCESS",
+      "type": "CRYPTOTRANSFER",
+      "consensusTimestamp": "1788846832.439301104",
+      "explorer": "https://hashscan.io/testnet/transaction/0.0.7231440-1788846827-206985108"
+    },
+    {
+      "kind": "NFT mint",
+      "network": "Hedera testnet",
+      "transaction": "0.0.7231440-1788846825-643055868",
+      "result": "SUCCESS",
+      "type": "TOKENMINT",
+      "consensusTimestamp": "1788846830.489882813",
+      "explorer": "https://hashscan.io/testnet/transaction/0.0.7231440-1788846825-643055868"
+    },
+    {
+      "kind": "NFT delivery",
+      "network": "Hedera testnet",
+      "transaction": "0.0.7231440-1788846826-744649713",
+      "result": "SUCCESS",
+      "type": "CRYPTOTRANSFER",
+      "consensusTimestamp": "1788846834.510276104",
+      "explorer": "https://hashscan.io/testnet/transaction/0.0.7231440-1788846826-744649713"
+    },
+    {
+      "kind": "x402 usgs",
+      "network": "Hedera testnet",
+      "transaction": "0.0.7231440-1788846861-791805749",
+      "result": "SUCCESS",
+      "type": "CRYPTOTRANSFER",
+      "consensusTimestamp": "1788846868.761935104",
+      "explorer": "https://hashscan.io/testnet/transaction/0.0.7231440-1788846861-791805749"
+    },
+    {
+      "kind": "x402 emsc",
+      "network": "Hedera testnet",
+      "transaction": "0.0.7231440-1788846867-951482855",
+      "result": "SUCCESS",
+      "type": "CRYPTOTRANSFER",
+      "consensusTimestamp": "1788846873.210111789",
+      "explorer": "https://hashscan.io/testnet/transaction/0.0.7231440-1788846867-951482855"
+    },
+    {
+      "kind": "x402 geofon",
+      "network": "Hedera testnet",
+      "transaction": "0.0.7231440-1788846869-331173463",
+      "result": "SUCCESS",
+      "type": "CRYPTOTRANSFER",
+      "consensusTimestamp": "1788846877.529886106",
+      "explorer": "https://hashscan.io/testnet/transaction/0.0.7231440-1788846869-331173463"
+    },
+    {
+      "kind": "approve-aUSDd",
+      "network": "Ethereum Sepolia",
+      "transaction": "0xcbe53f027e096aee4b1142b230d85017c5a4550f524a2ae9df4d0ee87b128ecc",
+      "result": "confirmed",
+      "block": 11659241,
+      "explorer": "https://sepolia.etherscan.io/tx/0xcbe53f027e096aee4b1142b230d85017c5a4550f524a2ae9df4d0ee87b128ecc"
+    },
+    {
+      "kind": "swap",
+      "network": "Ethereum Sepolia",
+      "transaction": "0x02e061bc5ee0159f0c7e1c9dae037b9c5bc876312ef0e8c1d8e4dbcea8668772",
+      "result": "confirmed",
+      "block": 11659242,
+      "explorer": "https://sepolia.etherscan.io/tx/0x02e061bc5ee0159f0c7e1c9dae037b9c5bc876312ef0e8c1d8e4dbcea8668772"
+    }
+  ]
+}

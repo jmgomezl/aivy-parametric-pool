@@ -71,6 +71,11 @@ receipts. Use the existing demo policies if a new issuance is interrupted; do no
 repeat an uncertain request with a fresh identifier. Record on the public HTTPS
 site. Record your own voice and edit waiting time out without speeding up footage.
 
+The September 8 rehearsal created [Tokyo cover #32](https://quorum.aivylabs.xyz/policy/32),
+paid all three oracles and executed a managed Uniswap swap. Its
+[verified receipts](evidence/security-final-testnet.json) provide a recent fallback
+if an upstream catalogue, mirror or bridge is slow during recording.
+
 ## Reproduce the x402 evidence
 
 `node scripts/demo-x402.js --execute` uses the dedicated testnet payer credentials
