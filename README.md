@@ -12,6 +12,10 @@ Transactions are real; test tokens have no cash value.
 
 [Try the demo](https://quorum.aivylabs.xyz) · [Bridge & swap](https://quorum.aivylabs.xyz/swap) · [Watch the mechanism](https://quorum.aivylabs.xyz/story) · [Recording guide](docs/SUBMISSION.md)
 
+[Demo video and narration kit](docs/demo-video/README.md) ·
+[Play the visual edit beside the script](https://quorum.aivylabs.xyz/demo-video/).
+The 3:45 edit still needs the founder's human narration before submission.
+
 **Judge shortcuts:** [Hedera](#why-hedera) · [Uniswap](#why-uniswap) ·
 [Economics](docs/ECONOMIC-MODEL.md) · [Novelty](#what-is-new) · [Security](#security-by-architecture) · [Evidence](#verify-in-one-minute)
 

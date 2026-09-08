@@ -1,0 +1,35 @@
+[0:00–0:20]
+An earthquake lasts seconds. The cost stays with you. Imagine a small shop in Colombia: a cracked window, lost stock, a day without income. The loss can sit below a deductible—and still be more than your savings.
+
+[0:20–0:34]
+I built Aivy Quorum around parametric cover: agree on an earthquake trigger and a fixed payout before it happens. Verify the event, not every broken window.
+
+[0:34–0:53]
+Let's try Medellín. Choose the place, review the premium, and see the conditions. The history chart compares premiums for the same eight-hundred-dollar payout. It's a model, not a forecast. Damage alone doesn't trigger payment.
+
+[0:53–1:17]
+Now I pay with funded test tokens. No wallet extension. This creates a real cover NFT, publishes the terms, and schedules the payout on Hedera. Here's the receipt. The demo tokens have no cash value, but these transactions really happened.
+
+[1:17–1:39]
+The agent pays three oracle services through Blocky402 using x402. Each checks the policy's recorded conditions. Here are the payment receipts. These checks found no matching earthquake, so the payout stays locked. Buying data is not buying approval.
+
+[1:39–2:05]
+This is why Hedera matters. The agent signs the exact transfer in advance. Two of three oracle keys must also sign. Then Hedera executes it, without a separate executor transaction. This recorded mainnet experiment moved four HBAR. Those were controlled signatures—not a real earthquake claim.
+
+[2:05–2:19]
+An AI model cannot authorize a payout. The workflow is deterministic, with spending limits and saved transaction IDs. In this control, even all three oracle keys could not spend without the agent.
+
+[2:19–2:52]
+Here, I'm moving demo-account tokens, not the locked cover reserve. Our Hedera Agent Kit Axelar plugin builds the bridge to Sepolia. Uniswap's Trading API prepares the swap. Review, confirm, and inspect both receipts. A Hedera-native app reaches EVM liquidity without its own Solidity contracts. Test tokens and gas are supplied, so a judge can try it without a wallet extension.
+
+[2:52–3:05]
+Uniswap also provides a real position NFT, fee collection, and withdrawal. That's trading liquidity. Funding earthquake cover is different: deposits go into one shared Hedera pool.
+
+[3:05–3:21]
+Here, twenty-five test tokens buy twenty-five ARPS. ARPS earnings and exits aren't enabled yet. Brokers can earn referral commissions. Long term, Quorum could earn service fees from insurance partners.
+
+[3:21–3:37]
+Earlier Aivy infrastructure and the Uniswap and Axelar plugins already existed. What's new here is the guarded policy flow: pricing, paid verification, native settlement, cross-chain integration, and a reusable settlement plugin.
+
+[3:37–3:45]
+The goal is simple: less uncertainty when people need help. A promise you can actually verify.

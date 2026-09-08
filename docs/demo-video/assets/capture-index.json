@@ -1,0 +1,253 @@
+{
+  "map": {
+    "site": "https://quorum.aivylabs.xyz",
+    "capturedAt": "2026-09-08T21:09:15.274Z",
+    "viewport": {
+      "width": 1440,
+      "height": 780
+    },
+    "marks": [
+      {
+        "name": "atlas",
+        "time": 3.536
+      },
+      {
+        "name": "search",
+        "time": 9.341
+      },
+      {
+        "name": "quote",
+        "time": 15.964
+      },
+      {
+        "name": "history",
+        "time": 21.337
+      },
+      {
+        "name": "end",
+        "time": 29.834
+      }
+    ],
+    "errors": []
+  },
+  "cover": {
+    "site": "https://quorum.aivylabs.xyz",
+    "capturedAt": "2026-09-08T21:10:06.034Z",
+    "viewport": {
+      "width": 1440,
+      "height": 780
+    },
+    "marks": [
+      {
+        "name": "before",
+        "time": 4.33
+      },
+      {
+        "name": "submitted",
+        "time": 5.444
+      },
+      {
+        "name": "confirmed",
+        "time": 21.349
+      },
+      {
+        "name": "nft",
+        "time": 26.588
+      },
+      {
+        "name": "proof",
+        "time": 33.938
+      },
+      {
+        "name": "end",
+        "time": 40.046
+      }
+    ],
+    "errors": []
+  },
+  "oracle": {
+    "site": "https://quorum.aivylabs.xyz",
+    "capturedAt": "2026-09-08T21:12:49.171Z",
+    "viewport": {
+      "width": 1440,
+      "height": 780
+    },
+    "marks": [
+      {
+        "name": "before",
+        "time": 2.608
+      },
+      {
+        "name": "submitted",
+        "time": 6.731
+      },
+      {
+        "name": "confirmed",
+        "time": 23.271
+      },
+      {
+        "name": "receipts",
+        "time": 25.623
+      },
+      {
+        "name": "end",
+        "time": 32.699
+      }
+    ],
+    "errors": []
+  },
+  "story": {
+    "site": "https://quorum.aivylabs.xyz",
+    "capturedAt": "2026-09-08T21:12:42.769Z",
+    "viewport": {
+      "width": 1440,
+      "height": 780
+    },
+    "marks": [
+      {
+        "name": "one",
+        "time": 2.546
+      },
+      {
+        "name": "release",
+        "time": 9.905
+      },
+      {
+        "name": "guard",
+        "time": 19.292
+      },
+      {
+        "name": "end",
+        "time": 26.412
+      }
+    ],
+    "errors": []
+  },
+  "bridge": {
+    "site": "https://quorum.aivylabs.xyz",
+    "capturedAt": "2026-09-08T21:11:29.412Z",
+    "viewport": {
+      "width": 1440,
+      "height": 780
+    },
+    "marks": [
+      {
+        "name": "before",
+        "time": 3.173
+      },
+      {
+        "name": "submitted",
+        "time": 8.408
+      },
+      {
+        "name": "source",
+        "time": 13.247
+      },
+      {
+        "name": "end",
+        "time": 18.341
+      }
+    ],
+    "errors": []
+  },
+  "swap": {
+    "site": "https://quorum.aivylabs.xyz",
+    "capturedAt": "2026-09-08T21:14:56.757Z",
+    "viewport": {
+      "width": 1440,
+      "height": 780
+    },
+    "marks": [
+      {
+        "name": "before",
+        "time": 3.348
+      },
+      {
+        "name": "quote",
+        "time": 10.708
+      },
+      {
+        "name": "submitted",
+        "time": 14.81
+      },
+      {
+        "name": "returned",
+        "time": 17.107
+      },
+      {
+        "name": "confirmed",
+        "time": 57.829
+      },
+      {
+        "name": "end",
+        "time": 63.916
+      }
+    ],
+    "errors": []
+  },
+  "liquidity": {
+    "site": "https://quorum.aivylabs.xyz",
+    "capturedAt": "2026-09-08T21:13:45.029Z",
+    "viewport": {
+      "width": 1440,
+      "height": 780
+    },
+    "marks": [
+      {
+        "name": "lp",
+        "time": 8.529
+      },
+      {
+        "name": "end",
+        "time": 15.584
+      }
+    ],
+    "errors": []
+  },
+  "fund": {
+    "site": "https://quorum.aivylabs.xyz",
+    "capturedAt": "2026-09-08T21:13:44.032Z",
+    "viewport": {
+      "width": 1440,
+      "height": 780
+    },
+    "marks": [
+      {
+        "name": "before",
+        "time": 2.409
+      },
+      {
+        "name": "submitted",
+        "time": 6.584
+      },
+      {
+        "name": "confirmed",
+        "time": 9.416
+      },
+      {
+        "name": "end",
+        "time": 14.581
+      }
+    ],
+    "errors": []
+  },
+  "fund-position": {
+    "site": "https://quorum.aivylabs.xyz",
+    "capturedAt": "2026-09-08T21:34:09.424Z",
+    "viewport": {
+      "width": 1440,
+      "height": 780
+    },
+    "marks": [
+      {
+        "name": "position",
+        "time": 2.617
+      },
+      {
+        "name": "end",
+        "time": 10.761
+      }
+    ],
+    "errors": []
+  }
+}

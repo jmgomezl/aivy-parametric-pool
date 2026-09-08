@@ -1,0 +1,26 @@
+{
+  "network": "Ethereum Sepolia",
+  "chainId": 11155111,
+  "status": "complete",
+  "wallet": "0xf017332e6099d25889bad4b2bb98078f56487f4d",
+  "steps": [
+    {
+      "name": "approve-aUSDd",
+      "hash": "0xe5b45557742cfbcd8ca71c6b0186f62579d8d4de4560d50c4d5d8b18525de602",
+      "status": "confirmed"
+    },
+    {
+      "name": "gas-swap",
+      "hash": "0xda7c5047d8206483902df5f19668bf037f62776b4914c47536905aa7f3071d5a",
+      "status": "confirmed"
+    },
+    {
+      "name": "swap",
+      "hash": "0x2676ea1b5b9ee1b571c94a3e9b0d1ea6996a50fa08a05199c7b0b502145c389c",
+      "status": "confirmed"
+    }
+  ],
+  "transactionHash": "0x2676ea1b5b9ee1b571c94a3e9b0d1ea6996a50fa08a05199c7b0b502145c389c",
+  "source": "Public Quorum demo API confirmed operation; explorer links permit independent verification",
+  "explorer": "https://sepolia.etherscan.io/tx/0x2676ea1b5b9ee1b571c94a3e9b0d1ea6996a50fa08a05199c7b0b502145c389c"
+}

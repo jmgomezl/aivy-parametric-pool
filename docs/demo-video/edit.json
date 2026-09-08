@@ -1,0 +1,234 @@
+{
+  "duration": 225,
+  "resolution": [
+    1920,
+    1080
+  ],
+  "fps": 30,
+  "sourcePlaybackRate": 1,
+  "shots": [
+    {
+      "scene": "hook",
+      "duration": 4,
+      "clip": null,
+      "start": 0
+    },
+    {
+      "scene": "events",
+      "duration": 6,
+      "clip": null,
+      "start": 4
+    },
+    {
+      "scene": "shop",
+      "duration": 10,
+      "clip": null,
+      "start": 10
+    },
+    {
+      "scene": "intro",
+      "duration": 8,
+      "clip": null,
+      "start": 20
+    },
+    {
+      "scene": "map",
+      "duration": 6,
+      "source": "assets/footage/04-map.mp4",
+      "start": 28
+    },
+    {
+      "scene": "map",
+      "duration": 10,
+      "source": "assets/footage/05-map.mp4",
+      "start": 34
+    },
+    {
+      "scene": "history",
+      "duration": 9,
+      "rect": [
+        1082,
+        202,
+        616,
+        714
+      ],
+      "source": "assets/footage/06-map.mp4",
+      "start": 44
+    },
+    {
+      "scene": "create",
+      "duration": 6,
+      "source": "assets/footage/07-cover.mp4",
+      "start": 53
+    },
+    {
+      "scene": "create",
+      "duration": 5,
+      "source": "assets/footage/08-cover.mp4",
+      "start": 59
+    },
+    {
+      "scene": "nft",
+      "duration": 7,
+      "clip": null,
+      "start": 64
+    },
+    {
+      "scene": "receipt",
+      "duration": 6,
+      "clip": null,
+      "still": "premium-explorer.png",
+      "query": "network=HEDERA%20TESTNET&title=Premium%20paid.%20A%20real%20ledger%20record.",
+      "crop": "1440:800:0:160",
+      "rect": [
+        100,
+        327,
+        1720,
+        650
+      ],
+      "start": 71
+    },
+    {
+      "scene": "oracle",
+      "duration": 6,
+      "source": "assets/footage/11-oracle.mp4",
+      "start": 77
+    },
+    {
+      "scene": "oracle",
+      "duration": 8,
+      "source": "assets/footage/12-oracle.mp4",
+      "start": 83
+    },
+    {
+      "scene": "oracle-closeup",
+      "duration": 8,
+      "mediaCrop": "430:630:740:10",
+      "rect": [
+        1120,
+        180,
+        580,
+        850
+      ],
+      "source": "assets/footage/13-oracle.mp4",
+      "start": 91
+    },
+    {
+      "scene": "gate",
+      "duration": 11,
+      "clip": null,
+      "start": 99
+    },
+    {
+      "scene": "release",
+      "duration": 7,
+      "source": "assets/footage/15-story.mp4",
+      "start": 110
+    },
+    {
+      "scene": "release",
+      "duration": 4,
+      "source": "assets/footage/16-story.mp4",
+      "start": 117
+    },
+    {
+      "scene": "receipt",
+      "duration": 4,
+      "clip": null,
+      "still": "mainnet-explorer.png",
+      "query": "network=RECORDED%20MAINNET&title=Four%20HBAR.%20Actually%20transferred.",
+      "crop": "1440:800:0:160",
+      "rect": [
+        100,
+        327,
+        1720,
+        650
+      ],
+      "start": 121
+    },
+    {
+      "scene": "guard",
+      "duration": 14,
+      "source": "assets/footage/18-story.mp4",
+      "start": 125
+    },
+    {
+      "scene": "crosschain",
+      "duration": 7,
+      "clip": null,
+      "start": 139
+    },
+    {
+      "scene": "bridge",
+      "duration": 6,
+      "source": "assets/footage/20-bridge.mp4",
+      "start": 146
+    },
+    {
+      "scene": "bridge",
+      "duration": 5,
+      "source": "assets/footage/21-bridge.mp4",
+      "start": 152
+    },
+    {
+      "scene": "swap",
+      "duration": 6,
+      "source": "assets/footage/22-swap.mp4",
+      "start": 157
+    },
+    {
+      "scene": "swap",
+      "duration": 5,
+      "source": "assets/footage/23-swap.mp4",
+      "start": 163
+    },
+    {
+      "scene": "swap-proof",
+      "duration": 4,
+      "clip": null,
+      "start": 168
+    },
+    {
+      "scene": "lp",
+      "duration": 8,
+      "source": "assets/footage/25-liquidity.mp4",
+      "start": 172
+    },
+    {
+      "scene": "fund",
+      "duration": 5,
+      "source": "assets/footage/26-fund.mp4",
+      "start": 180
+    },
+    {
+      "scene": "fund",
+      "duration": 3,
+      "source": "assets/footage/27-fund.mp4",
+      "start": 185
+    },
+    {
+      "scene": "fund",
+      "duration": 5,
+      "source": "assets/footage/28-fund-position.mp4",
+      "start": 188
+    },
+    {
+      "scene": "business",
+      "duration": 8,
+      "clip": null,
+      "start": 193
+    },
+    {
+      "scene": "novelty",
+      "duration": 16,
+      "clip": null,
+      "start": 201
+    },
+    {
+      "scene": "close",
+      "duration": 8,
+      "clip": null,
+      "start": 217
+    }
+  ]
+}

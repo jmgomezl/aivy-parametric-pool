@@ -1,0 +1,316 @@
+{
+  "checkedAt": "2026-09-08T21:37:45.991Z",
+  "scope": "Video recording on September 8, 2026; all new writes are testnet only.",
+  "policy": {
+    "serial": 33,
+    "schedule": "0.0.10427620",
+    "premium": 4,
+    "payout": 559.519216,
+    "asset": "aUSDd",
+    "place": "Medellín, Colombia",
+    "terms": "hcs://0.0.10373727/61"
+  },
+  "oracleOutcome": "Three no-match catalogue results; no oracle signature or payout.",
+  "hedera": [
+    {
+      "role": "premium",
+      "id": "0.0.7231440@1788901774.667959908",
+      "status": "SUCCESS",
+      "type": "CRYPTOTRANSFER",
+      "consensusTimestamp": "1788901780.019626104",
+      "tokenTransfers": [
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10373722",
+          "amount": 4000000,
+          "is_approval": false
+        },
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10427613",
+          "amount": -4000000,
+          "is_approval": false
+        }
+      ],
+      "nftTransfers": [],
+      "hbarTransfers": [
+        {
+          "account": "0.0.802",
+          "amount": 1386076,
+          "is_approval": false
+        },
+        {
+          "account": "0.0.7231440",
+          "amount": -1386076,
+          "is_approval": false
+        }
+      ],
+      "explorer": "https://hashscan.io/testnet/transaction/0.0.7231440-1788901774-667959908",
+      "source": "https://testnet.mirrornode.hedera.com/api/v1/transactions/0.0.7231440-1788901774-667959908"
+    },
+    {
+      "role": "nftMint",
+      "id": "0.0.7231440@1788901774.912603251",
+      "status": "SUCCESS",
+      "type": "TOKENMINT",
+      "consensusTimestamp": "1788901778.149582104",
+      "tokenTransfers": [],
+      "nftTransfers": [
+        {
+          "is_approval": false,
+          "receiver_account_id": "0.0.7231440",
+          "sender_account_id": null,
+          "serial_number": 33,
+          "token_id": "0.0.10373726"
+        }
+      ],
+      "hbarTransfers": [
+        {
+          "account": "0.0.802",
+          "amount": 25201400,
+          "is_approval": false
+        },
+        {
+          "account": "0.0.7231440",
+          "amount": -25201400,
+          "is_approval": false
+        }
+      ],
+      "explorer": "https://hashscan.io/testnet/transaction/0.0.7231440-1788901774-912603251",
+      "source": "https://testnet.mirrornode.hedera.com/api/v1/transactions/0.0.7231440-1788901774-912603251"
+    },
+    {
+      "role": "nftDelivery",
+      "id": "0.0.7231440@1788901777.829385744",
+      "status": "SUCCESS",
+      "type": "CRYPTOTRANSFER",
+      "consensusTimestamp": "1788901781.794922104",
+      "tokenTransfers": [],
+      "nftTransfers": [
+        {
+          "is_approval": false,
+          "receiver_account_id": "0.0.10427613",
+          "sender_account_id": "0.0.7231440",
+          "serial_number": 33,
+          "token_id": "0.0.10373726"
+        }
+      ],
+      "hbarTransfers": [
+        {
+          "account": "0.0.802",
+          "amount": 1260069,
+          "is_approval": false
+        },
+        {
+          "account": "0.0.7231440",
+          "amount": -1260069,
+          "is_approval": false
+        }
+      ],
+      "explorer": "https://hashscan.io/testnet/transaction/0.0.7231440-1788901777-829385744",
+      "source": "https://testnet.mirrornode.hedera.com/api/v1/transactions/0.0.7231440-1788901777-829385744"
+    },
+    {
+      "role": "usgs",
+      "id": "0.0.7162784@1788901935.694660044",
+      "status": "SUCCESS",
+      "type": "CRYPTOTRANSFER",
+      "consensusTimestamp": "1788901946.510025418",
+      "tokenTransfers": [
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10386832",
+          "amount": 1000,
+          "is_approval": false
+        },
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10408125",
+          "amount": -1000,
+          "is_approval": false
+        }
+      ],
+      "nftTransfers": [],
+      "hbarTransfers": [
+        {
+          "account": "0.0.802",
+          "amount": 1386076,
+          "is_approval": false
+        },
+        {
+          "account": "0.0.7162784",
+          "amount": -1386076,
+          "is_approval": false
+        }
+      ],
+      "explorer": "https://hashscan.io/testnet/transaction/0.0.7162784-1788901935-694660044",
+      "source": "https://testnet.mirrornode.hedera.com/api/v1/transactions/0.0.7162784-1788901935-694660044"
+    },
+    {
+      "role": "emsc",
+      "id": "0.0.7162784@1788901942.664807886",
+      "status": "SUCCESS",
+      "type": "CRYPTOTRANSFER",
+      "consensusTimestamp": "1788901951.079792483",
+      "tokenTransfers": [
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10386833",
+          "amount": 1000,
+          "is_approval": false
+        },
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10408125",
+          "amount": -1000,
+          "is_approval": false
+        }
+      ],
+      "nftTransfers": [],
+      "hbarTransfers": [
+        {
+          "account": "0.0.802",
+          "amount": 1386076,
+          "is_approval": false
+        },
+        {
+          "account": "0.0.7162784",
+          "amount": -1386076,
+          "is_approval": false
+        }
+      ],
+      "explorer": "https://hashscan.io/testnet/transaction/0.0.7162784-1788901942-664807886",
+      "source": "https://testnet.mirrornode.hedera.com/api/v1/transactions/0.0.7162784-1788901942-664807886"
+    },
+    {
+      "role": "geofon",
+      "id": "0.0.7162784@1788901945.581906620",
+      "status": "SUCCESS",
+      "type": "CRYPTOTRANSFER",
+      "consensusTimestamp": "1788901955.918884515",
+      "tokenTransfers": [
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10386835",
+          "amount": 1000,
+          "is_approval": false
+        },
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10408125",
+          "amount": -1000,
+          "is_approval": false
+        }
+      ],
+      "nftTransfers": [],
+      "hbarTransfers": [
+        {
+          "account": "0.0.802",
+          "amount": 1386076,
+          "is_approval": false
+        },
+        {
+          "account": "0.0.7162784",
+          "amount": -1386076,
+          "is_approval": false
+        }
+      ],
+      "explorer": "https://hashscan.io/testnet/transaction/0.0.7162784-1788901945-581906620",
+      "source": "https://testnet.mirrornode.hedera.com/api/v1/transactions/0.0.7162784-1788901945-581906620"
+    },
+    {
+      "role": "deposit",
+      "id": "0.0.7231440@1788902010.615613885",
+      "status": "SUCCESS",
+      "type": "CRYPTOTRANSFER",
+      "consensusTimestamp": "1788902017.358438994",
+      "tokenTransfers": [
+        {
+          "token_id": "0.0.10373724",
+          "account": "0.0.7231440",
+          "amount": -2500000000,
+          "is_approval": false
+        },
+        {
+          "token_id": "0.0.10373724",
+          "account": "0.0.10408125",
+          "amount": 2500000000,
+          "is_approval": false
+        },
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10373722",
+          "amount": 25000000,
+          "is_approval": false
+        },
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10408125",
+          "amount": -25000000,
+          "is_approval": false
+        }
+      ],
+      "nftTransfers": [],
+      "hbarTransfers": [
+        {
+          "account": "0.0.802",
+          "amount": 1638090,
+          "is_approval": false
+        },
+        {
+          "account": "0.0.7231440",
+          "amount": -1638090,
+          "is_approval": false
+        }
+      ],
+      "explorer": "https://hashscan.io/testnet/transaction/0.0.7231440-1788902010-615613885",
+      "source": "https://testnet.mirrornode.hedera.com/api/v1/transactions/0.0.7231440-1788902010-615613885"
+    },
+    {
+      "role": "bridgeSource",
+      "id": "0.0.10408125@1788901876.614054576",
+      "status": "SUCCESS",
+      "type": "CONTRACTCALL",
+      "consensusTimestamp": "1788901881.889830280",
+      "tokenTransfers": [],
+      "nftTransfers": [],
+      "hbarTransfers": [
+        {
+          "account": "0.0.802",
+          "amount": 13572950,
+          "is_approval": false
+        },
+        {
+          "account": "0.0.4867605",
+          "amount": 21027969,
+          "is_approval": false
+        },
+        {
+          "account": "0.0.10408125",
+          "amount": -34600919,
+          "is_approval": false
+        }
+      ],
+      "explorer": "https://hashscan.io/testnet/transaction/0.0.10408125-1788901876-614054576",
+      "source": "https://testnet.mirrornode.hedera.com/api/v1/transactions/0.0.10408125-1788901876-614054576"
+    }
+  ],
+  "swap": {
+    "hash": "0x2676ea1b5b9ee1b571c94a3e9b0d1ea6996a50fa08a05199c7b0b502145c389c",
+    "status": 1,
+    "blockNumber": 11663559,
+    "from": "0xF017332e6099d25889bAd4b2Bb98078f56487f4d",
+    "to": "0x3A9D48AB9751398BbFa63ad67599Bb04e4BdF98b",
+    "gasUsed": "142321",
+    "explorer": "https://sepolia.etherscan.io/tx/0x2676ea1b5b9ee1b571c94a3e9b0d1ea6996a50fa08a05199c7b0b502145c389c"
+  },
+  "sourceOfSwapTokens": "Previously bridged sponsor starter inventory, not attributed to this new 0.01 source transfer.",
+  "bridgeDeliveryAtCapture": "Pending; source confirmation is the only new bridge outcome shown.",
+  "mainnet": {
+    "date": "2026-09-04",
+    "scope": "Separate controlled signature recording, not a live earthquake claim.",
+    "amountHbar": 4,
+    "receipt": "https://hashscan.io/mainnet/transaction/1788563478.715401105",
+    "blockedSchedule": "https://hashscan.io/mainnet/schedule/0.0.10843725"
+  }
+}

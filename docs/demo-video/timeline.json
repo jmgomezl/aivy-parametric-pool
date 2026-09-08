@@ -1,0 +1,92 @@
+{
+  "title": "Aivy Quorum — ready before it happens",
+  "duration": 225,
+  "language": "en",
+  "status": "Visual edit; human narration required before submission",
+  "chapters": [
+    {
+      "start": 0,
+      "end": 20,
+      "title": "When a small loss is a big problem",
+      "direction": "Start quietly. Leave a small pause after ‘seconds’. This is a hypothetical shop, not a claim about your personal experience.",
+      "script": "An earthquake lasts seconds. The cost stays with you. Imagine a small shop in Colombia: a cracked window, lost stock, a day without income. The loss can sit below a deductible—and still be more than your savings."
+    },
+    {
+      "start": 20,
+      "end": 34,
+      "title": "A promise made before the earthquake",
+      "direction": "Sound curious and personal. Stress ‘before’.",
+      "script": "I built Aivy Quorum around parametric cover: agree on an earthquake trigger and a fixed payout before it happens. Verify the event, not every broken window."
+    },
+    {
+      "start": 34,
+      "end": 53,
+      "title": "Choose a place",
+      "direction": "Conversational, as if showing a friend. Pause while the chart moves.",
+      "script": "Let's try Medellín. Choose the place, review the premium, and see the conditions. The history chart compares premiums for the same eight-hundred-dollar payout. It's a model, not a forecast. Damage alone doesn't trigger payment."
+    },
+    {
+      "start": 53,
+      "end": 77,
+      "title": "Create real testnet cover",
+      "direction": "Let the confirmation breathe. Point with your voice to the NFT, then to the evidence.",
+      "script": "Now I pay with funded test tokens. No wallet extension. This creates a real cover NFT, publishes the terms, and schedules the payout on Hedera. Here's the receipt. The demo tokens have no cash value, but these transactions really happened."
+    },
+    {
+      "start": 77,
+      "end": 99,
+      "title": "The agent pays for evidence",
+      "direction": "Make the difference between paying for data and approving a claim very clear.",
+      "script": "The agent pays three oracle services through Blocky402 using x402. Each checks the policy's recorded conditions. Here are the payment receipts. These checks found no matching earthquake, so the payout stays locked. Buying data is not buying approval."
+    },
+    {
+      "start": 99,
+      "end": 125,
+      "title": "Why Hedera",
+      "direction": "Slow down at ‘two of three’. The displayed mainnet experiment is a separate recording.",
+      "script": "This is why Hedera matters. The agent signs the exact transfer in advance. Two of three oracle keys must also sign. Then Hedera executes it, without a separate executor transaction. This recorded mainnet experiment moved four HBAR. Those were controlled signatures—not a real earthquake claim."
+    },
+    {
+      "start": 125,
+      "end": 139,
+      "title": "Authority is deliberately limited",
+      "direction": "Confident and factual. Do not suggest that separate keys mean independent operators.",
+      "script": "An AI model cannot authorize a payout. The workflow is deterministic, with spending limits and saved transaction IDs. In this control, even all three oracle keys could not spend without the agent."
+    },
+    {
+      "start": 139,
+      "end": 172,
+      "title": "Why Axelar and Uniswap",
+      "direction": "Three distinct roles. A brief pause between Hedera, Axelar and Uniswap.",
+      "script": "Here, I'm moving demo-account tokens, not the locked cover reserve. Our Hedera Agent Kit Axelar plugin builds the bridge to Sepolia. Uniswap's Trading API prepares the swap. Review, confirm, and inspect both receipts. A Hedera-native app reaches EVM liquidity without its own Solidity contracts. Test tokens and gas are supplied, so a judge can try it without a wallet extension."
+    },
+    {
+      "start": 172,
+      "end": 185,
+      "title": "Two pools, two purposes",
+      "direction": "Keep the distinction simple. ARPS is not a Uniswap position.",
+      "script": "Uniswap also provides a real position NFT, fee collection, and withdrawal. That's trading liquidity. Funding earthquake cover is different: deposits go into one shared Hedera pool."
+    },
+    {
+      "start": 185,
+      "end": 201,
+      "title": "An honest business model",
+      "direction": "Explain today's limits clearly; commercial revenue is a proposal.",
+      "script": "Here, twenty-five test tokens buy twenty-five ARPS. ARPS earnings and exits aren't enabled yet. Brokers can earn referral commissions. Long term, Quorum could earn service fees from insurance partners."
+    },
+    {
+      "start": 201,
+      "end": 217,
+      "title": "What I reused, what I added",
+      "direction": "Matter-of-fact. This is a strength: a clear contribution boundary.",
+      "script": "Earlier Aivy infrastructure and the Uniswap and Axelar plugins already existed. What's new here is the guarded policy flow: pricing, paid verification, native settlement, cross-chain integration, and a reusable settlement plugin."
+    },
+    {
+      "start": 217,
+      "end": 225,
+      "title": "Ready before it happens",
+      "direction": "Warm finish. Pause before the final sentence.",
+      "script": "The goal is simple: less uncertainty when people need help. A promise you can actually verify."
+    }
+  ]
+}

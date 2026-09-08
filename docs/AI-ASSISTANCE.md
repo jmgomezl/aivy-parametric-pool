@@ -21,6 +21,12 @@ For the work represented in this task, Codex assistance includes:
 - Earlier audit work in this task assisted issuance locking/recovery, policy-bound
   oracle verification, payment validation, tests and reproduction documentation.
 - READMEs, `AUDIT-IMPLEMENTATION.md`, and `docs/`: explanation, audit and recording guidance.
+- `docs/demo-video/`: AI-assisted narration draft, original SVG/HTML visual
+  composition, capture/edit scripts, a browser rehearsal and voice-recording page,
+  and the silent visual edit. The founder directed the emotional problem framing,
+  requested real product flows and onchain evidence, and will supply human
+  narration. USGS earthquake images are attributed public-domain source material;
+  no AI voiceover or synthetic disaster photography was used.
 
 The geographic art uses code-rendered Natural Earth / world-atlas data; worldwide
 place search uses Photon/OpenStreetMap. These are external data sources, not
