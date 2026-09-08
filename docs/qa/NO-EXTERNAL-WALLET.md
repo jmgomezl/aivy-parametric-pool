@@ -29,3 +29,8 @@ seeded with the old `own` preference and old pending journals. An injected
 The production build contains no injected-wallet connection or signing calls.
 `npm test`: 89 passing; UI production build passes. README instructions and UI
 screenshots now show the single funded flow.
+
+The same 18 checks also passed on **https://quorum.aivylabs.xyz** after deployment,
+with zero extension access and zero browser errors. Served JS/CSS matched the
+local production build. The README’s earlier external-wallet screenshot was
+replaced with the current bridge flow.
