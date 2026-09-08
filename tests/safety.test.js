@@ -76,6 +76,19 @@ test('chunked HCS terms are reassembled without mixing another transaction',asyn
   await assert.rejects(readTermsMessage('testnet','0.0.3',first,async()=>({ok:true,json:async()=>({messages:[unrelated]})})),/incomplete/);
 });
 
+test('terms whose chunks reached consensus out of order are still readable',async()=>{
+  // Observed on testnet: chunk 2 of policy 26 reached consensus 156ms before
+  // chunk 1, so a forward-only scan could never reassemble it.
+  const raw=JSON.stringify(terms),encode=s=>Buffer.from(s).toString('base64');
+  const chunk_info={number:1,total:2,initial_transaction_id:{account_id:'0.0.1',transaction_valid_start:'123.4'}};
+  const first={sequence_number:48,chunk_info,message:encode(raw.slice(0,100))};
+  const earlier={sequence_number:47,chunk_info:{...chunk_info,number:2},message:encode(raw.slice(100))};
+  let queried='';
+  const fetcher=async(url)=>{queried=String(url);return{ok:true,json:async()=>({messages:[earlier,first],links:{next:null}})};};
+  assert.deepEqual(await readTermsMessage('testnet','0.0.3',first,fetcher),terms);
+  assert.match(queried,/sequencenumber=gte:47/,'the scan window must reach back far enough to include the earlier chunk');
+});
+
 test('concurrent policy and pool refreshes share one ledger request per schedule',async()=>{
  let calls=0;const fetcher=async()=>{calls++;await new Promise(r=>setTimeout(r,20));return{ok:true,json:async()=>schedule()};};
  const book=[{serial:'qa',scheduleId:'0.0.999991',lapsesAt:terms.lapsesAt}];

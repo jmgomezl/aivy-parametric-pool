@@ -41,10 +41,16 @@ export async function readTermsMessage(network,topicId,first,fetcher=fetch){
   const identity=c=>{const t=c.initial_transaction_id;return t?`${t.account_id}/${t.transaction_valid_start}/${t.nonce??0}/${t.scheduled??false}`:'';};
   const expected=identity(chunk);if(!expected)throw new Error('Missing chunk identity');
   const parts=new Map([[1,first.message]]);
-  let path=`/topics/${topicId}/messages?sequencenumber=gt:${first.sequence_number}&order=asc&limit=100`;
+  // Chunks of one submission can reach consensus out of order, so a sibling may
+  // sit *before* the pointer. Scanning only forward would leave those terms
+  // permanently unreadable even though every byte is on the ledger.
+  const from=Math.max(1,first.sequence_number-(chunk.total-1));
+  let path=`/topics/${topicId}/messages?sequencenumber=gte:${from}&order=asc&limit=100`;
   for(let page=0;page<5&&parts.size<chunk.total&&path;page++){
     const result=await mirrorGet(network,path,fetcher);
-    for(const message of result.messages??[]){const c=message.chunk_info;if(!c||identity(c)!==expected)continue;
+    for(const message of result.messages??[]){const c=message.chunk_info;
+      if(message.sequence_number===first.sequence_number)continue;
+      if(!c||identity(c)!==expected)continue;
       if(c.total!==chunk.total||c.number<1||c.number>chunk.total||parts.has(c.number))throw new Error('Inconsistent policy message chunks');
       parts.set(c.number,message.message);
     }
