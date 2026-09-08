@@ -20,3 +20,10 @@ loading between scenes is omitted. No transactions were submitted for this refre
 Testnet tokens have no cash value. Quotes, balances and block numbers are capture-time
 snapshots. Per-policy funding estimates are previews; the mainnet story replays
 controlled experiments from September 4, 2026.
+
+### Funding economics · September 8 follow-up
+
+`11-funding-economics.png` captures the public app after asset-specific capacity
+accounting: actual ARPS holdings, one shared-pool deposit and corrected aUSDd
+commitments. Read-only authenticated session; no deposit was submitted for the
+screenshot. [Economic model and evidence](../ECONOMIC-MODEL.md).

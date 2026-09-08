@@ -29,6 +29,8 @@ conditions and the agent + oracle signature gate. A paid oracle query is a
 separate expense for the requesting demo account; it is not premium income.
 Blocky402 sponsors the query payment's network fee.
 
+![Live shared-pool funding: ARPS holding percentage, deposit limits and separate capital and payout commitments](media/11-funding-economics.png)
+
 ## The numbers, with one small example
 
 Suppose a policy has an **800 payout**, an **8 premium**, a **30-day term** and
@@ -114,6 +116,12 @@ calculation; new records preserve the exact asset identity.
 Low utilization matters: a fully-funded policy's premium/capital ratio cannot be
 applied to the whole pool balance. An illustrative portfolio margin is
 `(earned pool premiums − incurred claims − operating costs) / average equity`.
+For the 20 active aUSDd policies reviewed, full-term premiums reaching the pool
+total **78.40** and modeled claim costs total **39.50**: **38.90 before operating
+costs** over their 30-day terms. Repeating that same book without idle gaps would
+be roughly **0.24% per year on the current balance**, before costs—not the much
+higher annual premium ratio on an individual fully-funded Tokyo policy. This
+comparison is not realized profit or an available ARPS return.
 Current historical policies and operator subsidies do not establish a sustainable
 portfolio return. One earthquake can trigger several nearby policies, so geographic
 labels alone do not establish independent risks.
@@ -154,6 +162,11 @@ claim/expiry settlement. A card and percentage slider cannot create that isolati
 [Live deposit page](https://quorum.aivylabs.xyz/policies?view=fund) ·
 [Public ledger and pricing evidence](evidence/funding-economics.json) ·
 [Exposure accounting](../src/pool/exposure.js) · [Economic regression tests](../tests/economics.test.js).
+
+**Verified:** 122 tests passed locally and on Linux. Public funding and policy
+views passed at 320, 390, 768 and 1440 px; authenticated ARPS balances and their
+holding percentage were checked at 320 and 1440 px. No new ledger writes were
+made for this review.
 
 Run `node scripts/audit-economics.js --require-api-match` for a fresh read-only
 comparison of public HCS prices, premium transfers, a real deposit, token supply

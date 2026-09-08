@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-09-08T20:19:56.778Z",
+  "checkedAt": "2026-09-08T20:28:26.766Z",
   "scope": "Read-only economic and receipt review; no transfers, deposits or claims sent.",
   "policiesReviewed": 31,
   "allPremiumTransfersVerified": true,
@@ -12,8 +12,8 @@
     "headroom": 184177.651261,
     "reservedPercent": 7.941737712579425,
     "obligations": 20,
-    "previousApiCommitted": 24028.364522,
-    "apiExposureMatches": false,
+    "previousApiCommitted": 15888.748739,
+    "apiExposureMatches": true,
     "legacyHbar": {
       "capital": 360.40485636,
       "committed": 81.39615783
