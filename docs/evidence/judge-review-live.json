@@ -1,0 +1,246 @@
+{
+  "checkedAt": "2026-09-08T18:04:55.217Z",
+  "implementationRevision": "fe4aecfdd476629609df1cc343de6b82e837a7d8",
+  "errorHandlerRevision": "088c2cb",
+  "scope": "New testnet transactions after deployment of payer-signature preflight and dependency correction; no mainnet spending.",
+  "policy": "32",
+  "oracleCheck": {
+    "cost": 0.003,
+    "needsReview": false,
+    "payments": [
+      {
+        "source": "usgs",
+        "status": "no-match",
+        "paid": true,
+        "transaction": "0.0.7231440@1788890136.747454509",
+        "consensus": "1788890142.645392104",
+        "transfers": [
+          {
+            "token_id": "0.0.10374011",
+            "account": "0.0.10386832",
+            "amount": 1000,
+            "is_approval": false
+          },
+          {
+            "token_id": "0.0.10374011",
+            "account": "0.0.10408125",
+            "amount": -1000,
+            "is_approval": false
+          }
+        ],
+        "explorer": "https://hashscan.io/testnet/transaction/0.0.7231440-1788890136-747454509"
+      },
+      {
+        "source": "emsc",
+        "status": "no-match",
+        "paid": true,
+        "transaction": "0.0.7231440@1788890137.830089477",
+        "consensus": "1788890144.770176049",
+        "transfers": [
+          {
+            "token_id": "0.0.10374011",
+            "account": "0.0.10386833",
+            "amount": 1000,
+            "is_approval": false
+          },
+          {
+            "token_id": "0.0.10374011",
+            "account": "0.0.10408125",
+            "amount": -1000,
+            "is_approval": false
+          }
+        ],
+        "explorer": "https://hashscan.io/testnet/transaction/0.0.7231440-1788890137-830089477"
+      },
+      {
+        "source": "geofon",
+        "status": "no-match",
+        "paid": true,
+        "transaction": "0.0.7231440@1788890139.817467209",
+        "consensus": "1788890151.472845094",
+        "transfers": [
+          {
+            "token_id": "0.0.10374011",
+            "account": "0.0.10386835",
+            "amount": 1000,
+            "is_approval": false
+          },
+          {
+            "token_id": "0.0.10374011",
+            "account": "0.0.10408125",
+            "amount": -1000,
+            "is_approval": false
+          }
+        ],
+        "explorer": "https://hashscan.io/testnet/transaction/0.0.7231440-1788890139-817467209"
+      }
+    ]
+  },
+  "swap": {
+    "wallet": "0xf017332e6099d25889bad4b2bb98078f56487f4d",
+    "transaction": "0x3a37d4619475c3ec225a4c98b084291c96ecf34b0a237bc91693bf74142cce89",
+    "steps": [
+      {
+        "name": "approve-aUSDd",
+        "hash": "0x53bdc710d120969cd86db794c19eaaffef147d67e041b3b06c67403ed2d0676d",
+        "status": "confirmed"
+      },
+      {
+        "name": "gas-swap",
+        "hash": "0x6458afc09309d419cbe12521ea71eca1a47ba8aee64629b6a8881b97ac6e683c",
+        "status": "confirmed"
+      },
+      {
+        "name": "swap",
+        "hash": "0x3a37d4619475c3ec225a4c98b084291c96ecf34b0a237bc91693bf74142cce89",
+        "status": "confirmed"
+      }
+    ],
+    "block": 11662631,
+    "transfers": [
+      {
+        "token": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+        "from": "0x520388428673bc16fad5aa5e49fdb1d30727ceb3",
+        "to": "0xf017332e6099d25889bad4b2bb98078f56487f4d",
+        "units": "9743"
+      },
+      {
+        "token": "0x5685b5660a86028d8a50c9e4fc33ff081b3cd9e9",
+        "from": "0xf017332e6099d25889bad4b2bb98078f56487f4d",
+        "to": "0x520388428673bc16fad5aa5e49fdb1d30727ceb3",
+        "units": "10000"
+      }
+    ],
+    "explorer": "https://sepolia.etherscan.io/tx/0x3a37d4619475c3ec225a4c98b084291c96ecf34b0a237bc91693bf74142cce89"
+  },
+  "refusals": [
+    {
+      "source": "usgs",
+      "mode": "unsigned",
+      "status": 402,
+      "error": "missing_payer_signature"
+    },
+    {
+      "source": "usgs",
+      "mode": "foreign signer",
+      "status": 402,
+      "error": "invalid_payer_signature"
+    },
+    {
+      "source": "emsc",
+      "mode": "unsigned",
+      "status": 402,
+      "error": "missing_payer_signature"
+    },
+    {
+      "source": "emsc",
+      "mode": "foreign signer",
+      "status": 402,
+      "error": "invalid_payer_signature"
+    },
+    {
+      "source": "geofon",
+      "mode": "unsigned",
+      "status": 402,
+      "error": "missing_payer_signature"
+    },
+    {
+      "source": "geofon",
+      "mode": "foreign signer",
+      "status": 402,
+      "error": "invalid_payer_signature"
+    },
+    {
+      "path": "/api/demo",
+      "method": "GET",
+      "status": 401,
+      "error": "service_unavailable",
+      "elapsedMs": 343
+    },
+    {
+      "path": "/api/demo/evm",
+      "method": "GET",
+      "status": 401,
+      "error": "service_unavailable",
+      "elapsedMs": 341
+    },
+    {
+      "path": "/api/policies",
+      "method": "POST",
+      "status": 400,
+      "error": "invalid_input",
+      "elapsedMs": 85
+    },
+    {
+      "path": "/api/policies",
+      "method": "POST",
+      "status": 400,
+      "error": "invalid_input",
+      "elapsedMs": 99
+    },
+    {
+      "path": "/api/health",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 84
+    }
+  ],
+  "health": {
+    "ok": true,
+    "network": "testnet",
+    "writesAllowed": true
+  },
+  "pool": {
+    "network": "testnet",
+    "poolAccountId": "0.0.10373722",
+    "policyTokenId": "0.0.10373726",
+    "asset": {
+      "symbol": "aUSDd",
+      "tokenId": "0.0.10374011",
+      "isUsdc": false
+    },
+    "capital": 200066.4,
+    "committed": 24028.364522,
+    "headroom": 176038.035478,
+    "capitalHbar": 200066.4,
+    "committedHbar": 24028.364522,
+    "headroomHbar": 176038.035478,
+    "livePolicies": 27,
+    "budgetToday": {
+      "policies": 2,
+      "usd": 242.18082239791215,
+      "limits": {
+        "policies": 100,
+        "usd": 100000
+      }
+    },
+    "hashscan": "https://hashscan.io/testnet/account/0.0.10373722"
+  },
+  "guardrails": {
+    "network": "testnet",
+    "execution": "deterministic",
+    "publicWrites": true,
+    "limits": {
+      "perIpPerHour": 12,
+      "policiesPerDay": 100,
+      "usdPerDay": 100000
+    },
+    "budget": {
+      "policies": 2,
+      "usd": 242.18082239791215,
+      "limits": {
+        "policies": 100,
+        "usd": 100000
+      }
+    },
+    "checkedAt": "2026-09-08T18:04:52.861Z",
+    "custody": "Shared demo host; separate keys are not independent operators.",
+    "authorization": "Agent AND 2 of 3 oracle keys",
+    "signing": "Fixed scheduled transfer; oracle verifies recorded terms and transfer bytes."
+  },
+  "managedWallet": {
+    "status": "ready",
+    "pendingActions": 0
+  },
+  "probeNote": "Unauthenticated probes exposed a route-scope error in the API catch block. The separate error handler fixed it; live 401/400/200 checks passed after deployment. No new payment identifier was used to retry an uncertain ledger request."
+}

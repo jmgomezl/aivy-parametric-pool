@@ -1,15 +1,17 @@
 # QA and judge review · September 8, 2026
 
-The app's core demonstration is ready for a recording rehearsal. Final deployment
-and a fresh paid-request check are being verified in this review; the result and
-receipt will be recorded here before the review is marked complete.
+**Ready to record the core demonstration.** The reviewed fixes are deployed.
+Three fresh x402 oracle payments and a managed Uniswap swap confirmed on testnet.
+No unresolved application blocker remains in the checked recording paths; prize
+registration, feedback submission and the final video still need completion.
 
 ## What was fixed
 
 | Finding | Result |
 | --- | --- |
+| API errors could hang because the catch block referenced a route variable outside its scope | Moved failure handling into a tested HTTP wrapper. Live unauthorized requests now return 401 in about 340 ms; malformed inputs return 400. Unexpected internals stay out of the public response. |
 | A structurally valid but unsigned payment could start a catalogue query before Hedera rejected payment | Verify the debit-account signature on every node body, transaction lifetime, current key and funds before resource work and again before fee signing. Invalid requests fail closed. |
-| A normal clean install pulled an unused legacy Agent Kit peer tree | Alias the legacy peer name to the current scoped 4.1.0 kit. Clean installs on macOS and Linux pass all 110 tests; root and UI audits report zero advisories at review time. The old lockfile reported 23. This was a reproducibility issue, not evidence that an unused PDF feature was publicly exposed. |
+| A normal clean install pulled an unused legacy Agent Kit peer tree | Alias the legacy peer name to the current scoped 4.1.0 kit. Clean installs on macOS and Linux pass all 111 tests; root and UI audits report zero advisories at review time. The old lockfile reported 23. This was a reproducibility issue, not evidence that an unused PDF feature was publicly exposed. |
 | Three checked-in oracle nginx templates had incomplete server blocks | Replaced with valid initial HTTP templates; all three pass an isolated Linux `nginx -t`. Existing live TLS configuration remains separate. |
 | UI and deployment instructions described older functionality | Documented managed bridge/swap/LP actions, ARPS limitations, Node 22, private journals, safe dependency switching and permanent lock files. Added the MIT license already declared by the package. |
 
@@ -17,12 +19,14 @@ receipt will be recorded here before the review is marked complete.
 
 | Check | Result |
 | --- | --- |
-| Unit, security and recovery tests | **110/110 pass** on Node 22 macOS and clean Linux install; zero skips |
+| Unit, security and recovery tests | **111/111 pass** on Node 22 macOS and clean Linux install; zero skips |
 | Frontend | TypeScript and Vite build pass; root and UI audit report zero advisories at review time |
 | Responsive routes | **54 views** across 320, 390, 768, 900, 1024 and 1440 px; no horizontal overflow or browser exceptions |
 | User flows | Six groups pass: quotes/popups, worldwide search, funding/oracle detail, all six story scenes, extension-free managed quote, expired swap/LP review recovery |
 | Map and chart | Five viewport/DPR interaction checks (up to 2732 px), five cursor/accessibility modes, seven history-sidebar widths; pointer, keyboard and playback stay synchronized |
 | Receipt authenticity | **14 independent ledger checks**: NFT/premium/x402 records, actual mainnet 4 HBAR scheduled transfer and pool key, Axelar source/delivery, Uniswap swaps and LP creation/exit |
+| Fresh deployed actions | Three signed testnet oracle payments (0.003 aUSDd total), no-match results without payout signatures, plus exact approval, sponsored gas and a 0.01 aUSDd Uniswap swap; receipts independently verified |
+| Live refusal paths | Unsigned and foreign-signed payments refused by all three oracles; unauthenticated account requests and malformed policy input return bounded errors; health remains available |
 | Public source hygiene | 212 tracked text files checked for common credential patterns; no matching secrets found. This is a bounded scan, not a secret-detection guarantee. |
 
 The responsive run used the public HTTPS application. Read-only browser checks
@@ -30,9 +34,16 @@ blocked transaction submissions; the expired-review cases used explicit fixtures
 An older chart test expected a removed close button; it was updated to use the
 current **Explore data** toggle and passed. No application change was needed.
 
-[Ledger recheck evidence](../evidence/judge-review-ledgers.json) ·
+[Fresh transactions and refusals](../evidence/judge-review-live.json) ·
+[Recorded ledger rechecks](../evidence/judge-review-ledgers.json) ·
 [Payment regression cases](../../tests/payment-authorization.test.js) ·
 [Security architecture](../AGENT-SECURITY.md)
+
+The pool had about **176,038 aUSDd free** after this rehearsal; the managed wallet
+had no pending actions. These are a point-in-time capacity check, not a promise
+that future quotas, gas or external services cannot run out. The first negative
+HTTP probe exposed the error-handler bug above; it was fixed and rechecked rather
+than counted as a successful run.
 
 ## Judge assessment
 

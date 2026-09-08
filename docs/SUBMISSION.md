@@ -99,6 +99,10 @@ provides EVM liquidity. The app uses reusable agent tools and validates their
 transactions before signing.” Sponsored test liquidity is not a USD peg. The
 mainnet price preview is quote-only. ARPS is not traded in this Uniswap pool.
 
+The final [judge review rehearsal](evidence/judge-review-live.json) repeated all
+three paid oracle checks and a managed Uniswap swap after the security changes.
+It also verified unsigned-payment and API-error refusals.
+
 ## Technical judge: agent protection
 
 Open any policy → **Agent guardrails & proof**. Explain that the public agent is a

@@ -133,7 +133,7 @@ flowchart LR
 | Technology | Concrete role | Why it fits |
 | --- | --- | --- |
 | **Hedera HTS + scheduled transfers** | Issue the asset and execute conditional cover | Native tokens and signature conditions without our own Solidity settlement contract |
-| **Your `hak-axelar-plugin` · `axelar_send_token`** | Build the real Hedera ITS transfer inside the existing HAK tool interface | Reuses a modular agent capability; Quorum adds application-specific spending restrictions |
+| **`hak-axelar-plugin` · `axelar_send_token`** | Build the real Hedera ITS transfer inside the existing HAK tool interface | Reuses a modular agent capability; Quorum adds application-specific spending restrictions |
 | **Axelar ITS** | Lock canonical aUSDd on Hedera and deliver its linked Sepolia token | Provides the cross-chain transport; Uniswap is not the bridge |
 | **Uniswap Trading API `/quote` + `/swap`** | Route linked aUSDd → test USDC and prepare Universal Router calldata | Gives a Hedera-origin user access to an actual EVM liquidity pool |
 | **Uniswap LP API** | Build V3 position creation, increases, fee collection and withdrawals | Users can also supply the trading liquidity; their wallet owns a genuine position NFT |
@@ -233,7 +233,7 @@ wallet gas checks; bounded API calls; persisted pending transactions and
 same-request reconciliation. An uncertain transfer is never automatically repeated.
 
 [Bridge](src/settlement/bridge.js) · [Trading API adapter](src/settlement/bridgedSwap.js)
-· [Wallet UI](ui/src/app/BridgedSwap.tsx) · [Security](docs/AGENT-SECURITY.md)
+· [Wallet UI](ui/src/app/DemoEvm.tsx) · [Security](docs/AGENT-SECURITY.md)
 
 ## What is new
 
@@ -529,7 +529,7 @@ The UI's frozen mainnet record is not replaced automatically.
 
 </details>
 
-Latest [QA and judge review](docs/qa/JUDGE-REVIEW.md): reproducible installs, payer-signature preflight, responsive flows and verified receipts.
+Latest [QA and judge review](docs/qa/JUDGE-REVIEW.md): 111 passing tests, reproducible installs, payer-signature preflight, reliable API errors, responsive flows and fresh testnet receipts.
 
 ## Prior work boundary (CONTINUITY track)
 

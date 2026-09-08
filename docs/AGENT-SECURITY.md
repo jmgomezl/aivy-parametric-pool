@@ -46,7 +46,10 @@ flowchart TD
 The deployed Node listeners for this project are loopback-only behind TLS nginx.
 The environment and registry files checked on the VPS are mode 0600, and the
 artifact directory is mode 0700. Registry writes now preserve private permissions.
-The API no longer reflects arbitrary internal exception text to visitors.
+The API no longer reflects arbitrary internal exception text to visitors. A
+separate HTTP error wrapper ensures authorization and validation refusals actually
+return a response; a route-local variable cannot break the catch path. Real HTTP
+regressions cover 401, 400 and sanitized 503 responses plus continued availability.
 
 This deployment still uses hot keys and a shared VPS/administrative trust domain.
 A process separation or different public keys does **not** protect against a
