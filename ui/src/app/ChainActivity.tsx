@@ -1,5 +1,5 @@
 import {SwapEvidence} from '../components/SwapEvidence';
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { useAgent } from '../lib/store';
 import { activity, type Network, type PaymentReceipt, type Policy } from '../lib/agent';
 import { hashscan, hsNft, hsPointer } from '../lib/hashscan';
@@ -36,6 +36,7 @@ const mainnetProofs: Proof[] = [
 
 export function ChainActivity({ serial, story = false, swap = false }: { serial?: string; story?: boolean; swap?: boolean }) {
   const a = useAgent(), id = useId();
+  const toggle=useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false), [tab, setTab] = useState<'live' | 'mainnet' | 'x402' | 'bridge'>(story ? 'mainnet' : swap ? 'bridge' : 'live');
   const [selected, setSelected] = useState('');
   const [payments, setPayments] = useState<PaymentReceipt[]>([]), [paymentState, setPaymentState] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -51,8 +52,8 @@ export function ChainActivity({ serial, story = false, swap = false }: { serial?
     return () => { live = false; window.clearInterval(timer); };
   }, [open, tab]);
   const proofs = p ? policyProofs(p, a.network, a.pool?.policyTokenId) : [];
-  return <section className="chain-activity" aria-label="Blockchain activity">
-    <button className="chain-toggle" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}><span className="chain-toggle-title"><span aria-hidden="true">◈</span> Onchain <span className="chain-scope">{story ? 'Mainnet · recorded settlement' : swap ? 'Testnet · Hedera → Sepolia → Uniswap' : p ? `${!a.online ? 'Last known' : a.network === 'testnet' ? 'Testnet' : 'Mainnet'} · ${serial?'Policy':'Latest policy'} #${p.serial} · ${p.ledger?.available ? p.state === 'paid' ? 'Paid' : `${p.ledger.oracles.filter(o=>o.signed).length}/2 oracle signatures` : 'Proofs available'}` : serial ? `Policy #${serial} · receipts unavailable` : 'Testnet + mainnet proofs'}</span></span><span>{open ? 'Close −' : 'Verify ↗'}</span></button>
+  return <section className="chain-activity" aria-label="Blockchain activity" onKeyDown={event=>{if(open&&event.key==='Escape'){event.preventDefault();event.stopPropagation();setOpen(false);toggle.current?.focus();}}}>
+    <button ref={toggle} className="chain-toggle" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}><span className="chain-toggle-title"><span aria-hidden="true">◈</span> Onchain <span className="chain-scope">{story ? 'Mainnet · recorded settlement' : swap ? 'Testnet · Hedera → Sepolia → Uniswap' : p ? `${!a.online ? 'Last known' : a.network === 'testnet' ? 'Testnet' : 'Mainnet'} · ${serial?'Policy':'Latest policy'} #${p.serial} · ${p.ledger?.available ? p.state === 'paid' ? 'Paid' : `${p.ledger.oracles.filter(o=>o.signed).length}/2 oracle signatures` : 'Proofs available'}` : serial ? `Policy #${serial} · receipts unavailable` : 'Testnet + mainnet proofs'}</span></span><span>{open ? 'Close −' : 'Verify ↗'}</span></button>
     {open ? <div id={id} className="chain-panel">
       <div className="chain-tabs" role="group" aria-label="Evidence source">{([['live','Live cover'],['mainnet','Mainnet record'],['bridge','Bridge & swap'],['x402','x402']] as const).map(([value,label]) => <button key={value} aria-pressed={tab===value} onClick={()=>setTab(value)}>{label}</button>)}</div>
       {tab === 'live' ? <>

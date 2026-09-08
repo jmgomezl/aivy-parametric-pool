@@ -1,0 +1,56 @@
+{
+  "checkedAt": "2026-09-08T03:39:24.650Z",
+  "rows": [
+    {
+      "kind": "swap",
+      "action": "swap",
+      "hash": "0xc73c556612ac939492f66dd3e94b18477514265af790269b4303a947cf586855",
+      "status": "confirmed",
+      "block": 11658243
+    },
+    {
+      "kind": "lp",
+      "action": "create",
+      "hash": "0xafa88d9bf9f4d7596d10ec57e6cbc12d22624b3fcdd72be15004e92772253c5b",
+      "status": "confirmed",
+      "block": 11658247
+    },
+    {
+      "kind": "lp",
+      "action": "remove",
+      "hash": "0xb3463367417974cd0cdfc660e98e08b6d5cb0a04df133ad1fe2f0612e453b699",
+      "status": "confirmed",
+      "block": 11658255
+    },
+    {
+      "kind": "Axelar delivery",
+      "hash": "0x506bc1df0c3a1948a0b954cf3d1cd6b08c019fb06be9258988bc69ef5c6d4500",
+      "status": "confirmed"
+    },
+    {
+      "kind": "premium",
+      "transaction": "0.0.7231440-1788791977-019730808",
+      "status": "SUCCESS"
+    },
+    {
+      "kind": "nftMint",
+      "transaction": "0.0.7231440-1788791973-413629793",
+      "status": "SUCCESS"
+    },
+    {
+      "kind": "nftDelivery",
+      "transaction": "0.0.7231440-1788791975-608023326",
+      "status": "SUCCESS"
+    },
+    {
+      "kind": "uiDeposit",
+      "transaction": "0.0.7231440-1788791847-478711039",
+      "status": "SUCCESS"
+    },
+    {
+      "kind": "Mainnet scheduled payout",
+      "timestamp": "1788563478.715401105",
+      "status": "SUCCESS"
+    }
+  ]
+}

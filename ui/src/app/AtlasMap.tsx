@@ -9,6 +9,7 @@ import { H, HOME, W, base, clampView, kmToPxX, kmToPxY, pan, project, unproject,
 export interface Pin { lat: number; lon: number; name?: string }
 export interface MapState { hover: Pin | null; year: number; live: boolean; now: Date; minMag: number; exploring: boolean }
 export interface Marker { lat: number; lon: number; label: string; id: string; tone?: 'ok' | 'pending' | 'neutral' }
+type LabelBounds={left:number;right:number;top:number;bottom:number};
 const normalize = (v:string) => v.normalize('NFD').replace(/(\p{Script=Latin})\p{M}+/gu,'$1').normalize('NFC').toLocaleLowerCase().trim();
 const coordinatePattern = /^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/;
 const cities = [{name:'Medellín, Antioquia, Colombia',lat:6.2443382,lon:-75.573553}, ...PLACES, ...capitalsData.rows.map(([name, country, lon, lat]) => ({ name: `${name}, ${country}`, lat: Number(lat), lon: Number(lon) }))];
@@ -19,6 +20,21 @@ export function AtlasMap({ pin, onPin, map, markers = [], onMarker, onExploringC
   markers?: Marker[]; onMarker?: (id: string) => void;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
+  const [mapWidth,setMapWidth]=useState(W);
+  const [controlsBounds,setControlsBounds]=useState<LabelBounds|null>(null);
+  useEffect(()=>{
+    const svg=svgRef.current!;
+    const observer=new ResizeObserver(()=>{
+      setMapWidth(svg.getBoundingClientRect().width||W);
+      const controls=svg.parentElement?.querySelector('.map-zoom')?.getBoundingClientRect(),matrix=svg.getScreenCTM();
+      if(controls&&matrix){
+        const point=svg.createSVGPoint();point.x=controls.left;point.y=controls.top;const start=point.matrixTransform(matrix.inverse());
+        point.x=controls.right;point.y=controls.bottom;const end=point.matrixTransform(matrix.inverse());
+        setControlsBounds({left:start.x,right:end.x,top:start.y,bottom:end.y});
+      }
+    });
+    observer.observe(svg);return()=>observer.disconnect();
+  },[]);
   const [view, setView] = useState<View>(HOME);
   const {now,minMag,exploring}=map;
   const [search, setSearch] = useState(''), [searching, setSearching] = useState(false);
@@ -62,6 +78,33 @@ export function AtlasMap({ pin, onPin, map, markers = [], onMarker, onExploringC
   const looking=searching&&search.trim().length>=2&&!coordinatePattern.test(search)&&(remote.query!==search.trim()||remote.status==='loading');
   const searchError=remote.query===search.trim()&&remote.status==='error'&&!coordinatePattern.test(search);
   const selected = pin ? project(pin.lon, pin.lat, view) : null;
+  const labelSize=Math.min(72,Math.max(15,12*W/mapWidth));
+  const selectedName=pin?(pin.name?.split(',')[0]??placeName(pin)):'';
+  const maxLabelLength=Math.floor((W-48)/(labelSize*.65));
+  const selectedLabel=selectedName.length>maxLabelLength?selectedName.slice(0,maxLabelLength-1)+'…':selectedName;
+  const selectedHalf=selectedLabel.length*labelSize*.33;
+  let selectedX=selected?Math.max(selectedHalf+12,Math.min(W-selectedHalf-12,selected.x)):0;
+  let selectedY=selected?Math.max(labelSize+12,Math.min(H-12,selected.y-labelSize*1.5)):0;
+  if(controlsBounds&&selectedX+selectedHalf>controlsBounds.left-10&&selectedY+5>controlsBounds.top-10){
+    if(controlsBounds.left-selectedHalf*2>24)selectedX=controlsBounds.left-selectedHalf-12;
+    else selectedY=Math.max(labelSize+12,controlsBounds.top-12);
+  }
+  const labels=useMemo(()=>{
+    const occupied:LabelBounds[]=controlsBounds?[controlsBounds]:[];
+    if(selected&&selected.x>=0&&selected.x<=W&&selected.y>=0&&selected.y<=H)occupied.push({left:selectedX-selectedHalf,right:selectedX+selectedHalf,top:selectedY-labelSize*1.1,bottom:selectedY+5});
+    return cities.filter((_,i)=>i<6||(view.k>2&&i%3===0)).flatMap(c=>{
+      const point=project(c.lon,c.lat,view),label=c.name.split(',')[0];
+      if(selected&&(Math.hypot(point.x-selected.x,point.y-selected.y)<labelSize*2||normalize(label)===normalize(selectedName)))return [];
+      const width=label.length*labelSize*.62,preferred=point.x+width+labelSize>W-12;
+      for(const flip of [preferred,!preferred]){
+        const x=point.x+(flip?-1:1)*labelSize*.55,y=point.y+labelSize*.3;
+        const box={left:flip?x-width:x,right:flip?x:x+width,top:y-labelSize,bottom:y+4};
+        if(box.left<12||box.right>W-12||box.top<12||box.bottom>H-12||occupied.some(b=>box.left<b.right+10&&box.right>b.left-10&&box.top<b.bottom+8&&box.bottom>b.top-8))continue;
+        occupied.push(box);return [{...c,point,label,x,y,flip}];
+      }
+      return [];
+    });
+  },[view,labelSize,selected?.x,selected?.y,selectedX,selectedY,selectedHalf,selectedName,controlsBounds]);
   const land = useMemo(() => landPath(view), [view]);
   return <div className="atlas">
     <div className="place-search">
@@ -80,13 +123,13 @@ export function AtlasMap({ pin, onPin, map, markers = [], onMarker, onExploringC
         onPointerUp={e => { const d=drag.current; drag.current=null; if(!d || d.moved) return; const point=xy(e); const p=unproject(point.x,point.y,view); if(Math.abs(p.lon)<=180 && Math.abs(p.lat)<=90) choose({lat:Number(p.lat.toFixed(3)),lon:Number(p.lon.toFixed(3))}); }}
         onPointerCancel={() => { drag.current=null; }}>
         <path d={land} fill="rgba(155,168,171,0.07)" stroke="rgba(191,205,211,0.3)" strokeWidth={0.8} />
-        {cities.filter((_,i) => i<6 || (view.k>2 && i%3===0)).map(c => { const p=project(c.lon,c.lat,view); if(p.x<30||p.x>W-110||p.y<20||p.y>H-20) return null; return <g key={`${c.name}-${c.lat}`} pointerEvents="none"><circle cx={p.x} cy={p.y} r={2.2} fill="#aeb3bc"/><text x={p.x+8} y={p.y+4} fill="#aeb3bc" fontSize={15} style={{paintOrder:'stroke',stroke:'#0a0b0d',strokeWidth:4}}>{c.name?.split(',')[0]}</text></g>; })}
+        {labels.map(c=><g key={`${c.name}-${c.lat}`} pointerEvents="none"><circle cx={c.point.x} cy={c.point.y} r={2.2} fill="#aeb3bc"/><text className="map-place-label" x={c.x} y={c.y} textAnchor={c.flip?'end':'start'} fill="#aeb3bc" fontSize={labelSize} style={{paintOrder:'stroke',stroke:'#0a0b0d',strokeWidth:4}}>{c.label}</text></g>)}
         {markers.map(m => { const p=project(m.lon,m.lat,view); return <g key={m.id} role="button" tabIndex={0} aria-label={`Open ${m.label}, policy ${m.id}`} onPointerDown={e=>e.stopPropagation()} onPointerUp={e=>{e.stopPropagation();onMarker?.(m.id);}} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();onMarker?.(m.id);}}}><circle cx={p.x} cy={p.y} r={18} fill="transparent"/><circle cx={p.x} cy={p.y} r={5} fill="#3fcf8e"/></g>; })}
-        {pin && selected ? <g pointerEvents="none"><ellipse cx={selected.x} cy={selected.y} rx={kmToPxX(MODEL.triggerRadiusKm,pin.lat,view)} ry={kmToPxY(MODEL.triggerRadiusKm,view)} fill="rgba(63,207,142,.1)" stroke="#3fcf8e" strokeWidth={2}/><circle cx={selected.x} cy={selected.y} r={5} fill="#f2f3f5"/><text x={selected.x} y={selected.y-20} textAnchor="middle" fill="#f2f3f5" fontSize={17} style={{paintOrder:'stroke',stroke:'#0a0b0d',strokeWidth:5}}>{placeName(pin)}</text></g> : null}
+        {pin && selected ? <g pointerEvents="none"><ellipse cx={selected.x} cy={selected.y} rx={kmToPxX(MODEL.triggerRadiusKm,pin.lat,view)} ry={kmToPxY(MODEL.triggerRadiusKm,view)} fill="rgba(63,207,142,.1)" stroke="#3fcf8e" strokeWidth={2}/><circle cx={selected.x} cy={selected.y} r={5} fill="#f2f3f5"/>{selected.x>=0&&selected.x<=W&&selected.y>=0&&selected.y<=H?<text className="map-selected-label" x={selectedX} y={selectedY} textAnchor="middle" fill="#f2f3f5" fontSize={labelSize*1.1} style={{paintOrder:'stroke',stroke:'#0a0b0d',strokeWidth:5}}>{selectedLabel}</text>:null}</g> : null}
       </svg>
       <div className="map-zoom"><button aria-label="Zoom in" onClick={()=>setView(v=>zoomAt(v,W/2,H/2,1.6))}>+</button><button aria-label="Zoom out" onClick={()=>setView(v=>zoomAt(v,W/2,H/2,1/1.6))}>−</button><button aria-label="Show world map" onClick={()=>setView(HOME)}>◎</button></div>
     </div>
-    <div className="map-bottom"><div className="map-legend"><span className="legend-quake"/>Recorded earthquakes<span className="legend-cover"/>100 km cover</div><button id="explore-toggle" className={`chip ${exploring ? 'chip-on' : ''}`} aria-expanded={exploring} aria-controls={exploring?"historical-exploration":undefined} onClick={()=>onExploringChange(!exploring)}>{exploring ? 'Back to cover' : 'Explore data'}</button></div>
+    <div className="map-bottom"><div className="map-legend"><span className="map-legend-item"><i className="legend-quake"/>Recorded earthquakes</span><span className="map-legend-item"><i className="legend-cover"/>100 km cover</span></div><button id="explore-toggle" className={`chip ${exploring ? 'chip-on' : ''}`} aria-expanded={exploring} aria-controls={exploring?"historical-exploration":undefined} onClick={()=>onExploringChange(!exploring)}>{exploring ? 'Back to cover' : 'Explore data'}</button></div>
 
   </div>;
 }

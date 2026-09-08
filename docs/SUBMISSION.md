@@ -8,6 +8,10 @@ Live: https://quorum.aivylabs.xyz/
 App: https://github.com/jmgomezl/aivy-parametric-pool
 Reusable plugin: https://github.com/jmgomezl/hak-scheduled-settlement
 
+Latest [readiness and UX review](qa/READINESS-REVIEW.md). Keep the recording focused
+on one complete cover journey and the Hedera → Uniswap path; technical evidence
+is one disclosure away. No extension or faucet setup is needed in the public app.
+
 ## 3-minute 15-second walkthrough
 
 | Time | Screen / action | Explain |
@@ -91,7 +95,7 @@ the demonstration wallet. Do not reset a journal to make a recording pass.
 ### Optional Uniswap liquidity close-up
 
 After the swap, reveal **Provide swap liquidity**: show the real seed NFT and
-**Your Uniswap position**, then open a collection or withdrawal receipt. Say:
+**Your demo position**, then open a collection or withdrawal receipt. Say:
 “People can fund cover on Hedera, or supply trading liquidity on Uniswap.
 These are separate positions with separate earnings.”
 

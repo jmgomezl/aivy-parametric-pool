@@ -19,7 +19,7 @@ export function SwapPage(){
   <div className="swap-workspace">
    <section className="swap-workflow" aria-label="Bridge and swap test tokens">
     <div className="swap-step-tabs" role="group" aria-label="Cross-chain steps"><button aria-pressed={step==='bridge'} onClick={()=>choose('bridge')}><span>01</span> Bridge <small>Hedera → Sepolia</small></button><button aria-pressed={step==='swap'} onClick={()=>choose('swap')}><span>02</span> Swap <small>Uniswap on Sepolia</small></button></div>
-    <p className="swap-requirements"><span className="status-dot"/>Real testnet transactions · no cash value · gas sponsored.</p>
+    <p className="swap-requirements"><span className="status-dot"/>Real testnet transactions · no cash value.</p>
     <div hidden={step!=='bridge'}><DemoBridge onSwap={()=>choose('swap')}/></div>
     <div hidden={step!=='swap'}><DemoSwap/></div>
     {step==='bridge'?<button className="text-button swap-skip" onClick={()=>choose('swap')}>Try a swap with starter tokens →</button>:null}

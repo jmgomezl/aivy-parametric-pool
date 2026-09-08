@@ -1,4 +1,8 @@
-# Final user and judge review · September 7, 2026
+# Earlier user and judge review · September 7, 2026
+
+> Superseded by the [current readiness review](READINESS-REVIEW.md). This page
+> preserves the earlier test scope. The public app now uses funded managed wallets
+> and has no external-wallet connection flow.
 
 **Verdict: ready to record the demonstrated testnet journey.** The app now makes
 Hedera’s settlement mechanism and Uniswap’s useful role discoverable from arrival.
@@ -53,7 +57,7 @@ No new ledger transaction was required for this visual review.
 
 ## Recording limits
 
-- Use a browser with an injected EVM wallet and funded **Sepolia ETH**. Missing-wallet guidance was exercised; wallet extension approval dialogs were not re-tested in this pass. Existing successful signed swaps remain in the evidence.
+- Historical setup for this earlier pass used an injected wallet. It is no longer the public flow; use the [current managed-wallet guide](../SUBMISSION.md#wallet-free-judge-interaction).
 - Public cover, deposits, x402 payments and bridge/swaps are **testnet**. Mainnet settlement is a labeled recording; Base/Unichain prices are quote-only.
 - One shared insurance pool; fixed 1:1 demo ARPS issuance. No ARPS distributions,
   withdrawal/redemption, ARPS trading, per-policy vaults or per-policy LP NFTs.

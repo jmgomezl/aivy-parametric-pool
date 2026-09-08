@@ -630,6 +630,8 @@ small { font-size:12px; color:var(--fg-2); }
 .map-zoom button { width:38px; height:38px; font-size:20px; }.map-zoom button:hover { background:var(--bg-3); }
 .map-bottom { display:flex; gap:14px; align-items:center; justify-content:space-between; }
 .map-legend { display:flex; align-items:center; gap:7px; color:var(--fg-2); font-size:11px; flex-wrap:wrap; }
+.map-legend-item { display:inline-flex; align-items:center; gap:7px; white-space:nowrap; }
+.map-legend-item .legend-cover { margin-left:0; }
 .legend-quake { width:5px; height:5px; border-radius:50%; background:var(--pending); }
 .legend-cover { width:9px; height:9px; border:1px solid var(--ok); border-radius:50%; margin-left:10px; }
 .suggested-places { display:flex; align-items:center; gap:8px; margin-top:24px; flex-wrap:wrap; }.suggested-places>span { font-size:12px; color:var(--fg-2); margin-right:5px; }
@@ -639,6 +641,7 @@ small { font-size:12px; color:var(--fg-2); }
 .explore-heading .icon-btn { margin-left:auto; }
 .explore-disclaimer { font-size:11px; color:var(--fg-2); margin-top:-8px; }
 .quote-action .buy { width:100%; }
+.quote-numbers small+small { font-size:10px; line-height:1.5; }
 .explore-heading { display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; }.explore-heading strong { font-size:14px; font-weight:500; }.explore-heading span { font-size:11px; color:var(--fg-2); }
 .explore-time,.explore-mags { display:flex; align-items:center; gap:12px; }.explore-time label { font:18px var(--mono); }.explore-mags>span { color:var(--fg-2); font-size:12px; }
 .panel { padding:28px; gap:24px; overflow:visible; min-width:0; outline:0; animation:none; }
@@ -1298,4 +1301,39 @@ small { font-size:12px; color:var(--fg-2); }
  .journey-links>*>span {display:none;}
  .suggested-places {gap:8px;}
  .suggested-places .chip {font-size:11px;padding:10px;}
+}
+
+/* Keep current outcomes visible; expand detailed source evidence on demand. */
+.policy-check-results>.oracle-result-strip {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;border:0;padding:16px 0 4px;}
+.policy-check-results>.oracle-result-strip>div {display:flex;flex-direction:column;gap:6px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px 8px;min-width:0;}
+.oracle-result-strip strong {font-size:11px;}
+.oracle-result-strip span {font-size:10px;color:var(--fg-2);overflow-wrap:anywhere;}
+.oracle-result-strip .result-match span {color:var(--ok);}
+.oracle-result-strip .result-pending span {color:var(--pending);}
+.oracle-result-details>summary {display:flex;justify-content:space-between;gap:8px;align-items:center;min-height:44px;}
+.oracle-result-evidence {padding:14px 0;border-top:1px solid var(--line);}
+.oracle-result-evidence>div {display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;}
+.quote-freshness {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.quote-freshness small {margin:0;}
+.lp-preview-controls>.buy {margin-top:18px;}
+@supports(grid-template-rows:subgrid){
+ .lp-scenarios {row-gap:9px;}
+ .lp-scenarios>div {display:grid;grid-template-rows:subgrid;grid-row:span 4;row-gap:9px;align-items:start;}
+}
+.policy-detail-grid {grid-template-rows:max-content 1fr;row-gap:0;}
+.policy-identity,.policy-main {grid-column:1;}
+.policy-detail-grid .policy-visual {grid-column:2;grid-row:1 / span 2;align-self:start;}
+@media(max-width:760px){
+ .policy-detail-grid {gap:24px;}
+ .policy-detail-grid .policy-identity {order:0;}
+ .policy-detail-grid .policy-visual {order:1;}
+ .policy-detail-grid .policy-main {order:2;}
+}
+.swap-workflow .quote-freshness button {width:auto;}
+@media(max-width:600px){
+ .replay-release {min-height:320px;gap:20px;padding:24px 16px;}
+ .replay-money-path {grid-template-columns:minmax(0,1fr) 28px minmax(0,1fr);gap:8px;}
+ .replay-money-path strong {font-size:40px;line-height:1.1;text-align:center;}
+ .replay-money-path strong small {display:block;font-size:11px;margin-top:6px;}
+ .replay-transfer-line {width:100%;margin:0;transform:none;}
 }

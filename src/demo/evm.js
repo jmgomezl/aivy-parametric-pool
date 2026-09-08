@@ -22,7 +22,7 @@ export function createEvmDemo({network,liquidity,demo,store=evmStore(),provider,
   const configFile=path.join(store.directory,'sepolia-demo-funder.json');
   const swaps=createBridgedSwap(),quotes=new Map(),jobs=new Map(),views=new Map();
   let chainChecked=false;
-  function enabled(){if(network!=='testnet')throw evmError(403,'Managed wallets are Sepolia testnet only.');if(!funder&&!fs.existsSync(configFile))throw evmError(503,'Demo wallets are being prepared. You can use your own wallet meanwhile.');}
+  function enabled(){if(network!=='testnet')throw evmError(403,'Managed wallets are Sepolia testnet only.');if(!funder&&!fs.existsSync(configFile))throw evmError(503,'Demo wallets are being prepared. Retry shortly; verified examples remain available.');}
   function sponsor(){enabled();if(!funder){const c=JSON.parse(fs.readFileSync(configFile));if(c.chainId!==CHAIN)throw Error('Invalid sponsor network.');funder=new Wallet(c.privateKey,provider);}if(funder.address.toLowerCase()!==FUNDER)throw Error('Unexpected sponsor identity.');return funder;}
   async function chain(){enabled();if(!chainChecked){if(BigInt(await provider.send('eth_chainId',[]))!==BigInt(CHAIN))throw Error('RPC is not Sepolia.');chainChecked=true;}}
   const lock=(name,fn)=>withIssuanceLock('evm-'+name,fn,{directory:store.directory,timeoutMs:name==='sponsor'?90000:2000});

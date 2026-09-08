@@ -35,9 +35,9 @@ export function PolicyPage({serial}:{serial:string}){
   return <div className="page"><div className="page-inner policy-detail">
     <a className="back-link" href={galleryPath} onClick={onLink}>← {position==='liquidity'?'Funding previews':'Policies'}</a>
     <div className="policy-detail-grid">
-      <div className="policy-main"><div className="eyebrow">Policy #{serial} · Hedera {a.network}{mine(a.network).includes(serial)?' · created here':''}</div><h1>{placeName(p)}</h1>
-        <div className={`state-label state-${state}`} role="status"><span className="status-dot"/>{statusLabel(p)}</div>
-        <div className="policy-payout"><span>{paid?'Payout executed':expired?'Cover ended':'Scheduled payout'}</span><strong className="num">{p.payoutHbar.toLocaleString(undefined,{maximumFractionDigits:2})}</strong><small>{p.asset??'HBAR'} · demo beneficiary</small></div>
+      <header className="policy-identity"><div className="eyebrow">Policy #{serial} · Hedera {a.network}{mine(a.network).includes(serial)?' · created here':''}</div><h1>{placeName(p)}</h1>
+        <div className={`state-label state-${state}`} role="status"><span className="status-dot"/>{statusLabel(p)}</div></header>
+      <div className="policy-main"><div className="policy-payout"><span>{paid?'Payout executed':expired?'Cover ended':'Scheduled payout'}</span><strong className="num">{p.payoutHbar.toLocaleString(undefined,{maximumFractionDigits:2})}</strong><small>{p.asset??'HBAR'} · demo beneficiary</small></div>
         {position==='liquidity'?<LPPreviewControls policy={p} portion={portion} onPortion={setPortion}/>:null}
         {position==='liquidity'?<details className="lp-policy-terms"><summary>Policy terms <span>+</span></summary>{policyTerms}</details>:policyTerms}
         {position==='cover'?<PayoutConversion usd={p.payoutUsd}/>:null}

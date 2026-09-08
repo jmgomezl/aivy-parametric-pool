@@ -1,4 +1,5 @@
 import {useState,useEffect,useRef} from 'react';
+import {onLink} from '../lib/router';
 import {useDemo,startDemo,refreshDemo,receipt} from '../lib/demo';
 const n=(v:number)=>v.toLocaleString(undefined,{maximumFractionDigits:Math.abs(v)>0&&Math.abs(v)<.01?6:2});
 export function DemoAccount(){
@@ -14,6 +15,7 @@ export function DemoAccount(){
    const current=panel.current;
    if(event.key==='Escape'&&current?.open){
     event.preventDefault();
+    event.stopPropagation();
     current.open=false;
     current.querySelector('summary')?.focus();
    }
@@ -29,7 +31,7 @@ export function DemoAccount(){
  {a?<>
  <div className="account-balance"><div><span className="account-label">Available balance</span><h3>{n(a.balance)} <small>aUSDd</small></h3></div><button className="account-icon" aria-label="Refresh balances" title="Refresh balances" onClick={()=>void refreshDemo()}>↻</button></div>
  <div className="account-identity"><span>Service-managed</span><a href={`https://hashscan.io/testnet/account/${a.accountId}`} target="_blank" rel="noreferrer">Verify account ↗</a></div>
- <dl className="account-metrics"><div><dt>Pool shares</dt><dd>{n(a.shares)} <small>ARPS</small></dd></div><div><dt>Referral earnings</dt><dd>{n(a.commissions.reduce((sum,c)=>sum+c.amount,0))} <small>aUSDd</small></dd></div></dl>
+ <dl className="account-metrics"><div><dt><a href="/policies?view=fund" onClick={e=>{close();onLink(e);}}>Pool shares ↗</a></dt><dd>{n(a.shares)} <small>ARPS</small></dd></div><div><dt>Referral earnings</dt><dd>{n(a.commissions.reduce((sum,c)=>sum+c.amount,0))} <small>aUSDd</small></dd></div></dl>
  <section className="account-referrals" aria-label="Broker referrals"><div className="account-referral-heading"><h4>Refer & earn</h4><span>{a.commissions.length} referrals</span></div>
  <div className="account-referral-flow"><span>Share link</span><span aria-hidden="true">→</span><span>Buyer pays</span><span aria-hidden="true">→</span><span><strong>15%</strong> for you</span></div>
  <button className="buy account-copy" onClick={async()=>{try{await navigator.clipboard.writeText(referralLink);setCopyState('copied');}catch{setCopyState('manual');}}}><span aria-live="polite">{copyState==='copied'?'Link copied ✓':'Copy referral link ↗'}</span></button>
