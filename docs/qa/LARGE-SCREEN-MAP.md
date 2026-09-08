@@ -52,3 +52,19 @@ are created for layout testing.
 
 Implementation: [layout](../../ui/src/styles.css),
 [map](../../ui/src/app/AtlasMap.tsx), [heat](../../ui/src/beats/atlas/Heat.tsx).
+
+## Animated map cursor
+
+A small green crosshair rotates gently over the map. It turns gold over a policy
+marker and contracts while dragging. It is a screen-sized pointer detail, not a
+coverage radius. Search, controls and the rest of the site keep their usual cursors.
+
+The decorative overlay cannot receive clicks. Pointer movement updates its
+position at most once per animation frame without React state updates. It clears
+on exit, scrolling, resize, keyboard input and loss of focus. Touch, reduced-motion
+and high-contrast modes retain native behavior.
+
+Verified desktop and Retina appearance, marker hover, drag feedback, map exit,
+live reduced-motion switching, high contrast and touch fallback. Existing map
+interaction checks passed again at five desktop and phone sizes; the production
+build passed. [Cursor implementation](../../ui/src/app/MapCursor.tsx).

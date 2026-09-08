@@ -40,6 +40,8 @@ account payments, shared-pool deposits, oracle checks and bridge/swap controls.*
 introduction, then beside the selected quote and history. Labels stay readable
 and the heat layer adapts to display density. The map fits short, wide windows;
 search stays in place and zoom controls leave the geography clear.
+An animated map crosshair gives subtle hover and drag feedback, with native
+cursors retained for reduced motion and high contrast.
 [Desktop, ultrawide and mobile checks](docs/qa/LARGE-SCREEN-MAP.md).
 
 No referral means 100% of the premium goes to the pool. There is no separate

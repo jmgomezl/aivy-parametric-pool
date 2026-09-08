@@ -3,6 +3,7 @@ import { findPlaces } from '../lib/agent';
 import capitalsData from '../data/capitals.json';
 import { MODEL, PLACES, dayOf, placeName } from '../lib/hazard';
 import { Heat } from '../beats/atlas/Heat';
+import { MapCursor } from './MapCursor';
 import { landPath } from '../beats/atlas/land';
 import { H, HOME, W, base, clampView, kmToPxX, kmToPxY, pan, project, unproject, zoomAt, type View } from '../beats/atlas/projection';
 
@@ -135,6 +136,7 @@ export function AtlasMap({ pin, onPin, map, markers = [], onMarker, onExploringC
         {markers.map(m => { const p=project(m.lon,m.lat,view); if(p.x<0||p.x>W||p.y<0||p.y>H)return null; return <g key={m.id} data-policy-id={m.id} role="button" tabIndex={0} aria-label={`Open ${m.label}, policy ${m.id}`} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();onMarker?.(m.id);}}}><circle cx={p.x} cy={p.y} r={22/mapScale} fill="transparent"/><circle cx={p.x} cy={p.y} r={4/mapScale} fill="#3fcf8e"/></g>; })}
         {pin && selected ? <g pointerEvents="none"><ellipse cx={selected.x} cy={selected.y} rx={kmToPxX(MODEL.triggerRadiusKm,pin.lat,view)} ry={kmToPxY(MODEL.triggerRadiusKm,view)} fill="rgba(63,207,142,.1)" stroke="#3fcf8e" strokeWidth={1.5} vectorEffect="non-scaling-stroke"/><circle cx={selected.x} cy={selected.y} r={4/mapScale} fill="#f2f3f5"/>{selected.x>=0&&selected.x<=W&&selected.y>=0&&selected.y<=H?<text className="map-selected-label" x={selectedX} y={selectedY} textAnchor="middle" fill="#f2f3f5" fontSize={labelSize*1.1} style={{paintOrder:'stroke',stroke:'#0a0b0d',strokeWidth:2.5/mapScale}}>{selectedLabel}</text>:null}</g> : null}
       </svg>
+      <MapCursor mapRef={svgRef}/>
     </div>
     <div className="map-bottom"><div className="map-legend"><span className="map-legend-item"><i className="legend-quake"/>Recorded earthquakes</span><span className="map-legend-item"><i className="legend-cover"/>100 km cover</span></div><div className="map-actions"><div className="map-zoom"><button aria-label="Zoom in" onClick={()=>setView(v=>zoomAt(v,W/2,H/2,1.6))}>+</button><button aria-label="Zoom out" onClick={()=>setView(v=>zoomAt(v,W/2,H/2,1/1.6))}>−</button><button aria-label="Show world map" onClick={()=>setView(HOME)}>◎</button></div>{!pin?<button id="explore-toggle" className={`chip ${exploring ? 'chip-on' : ''}`} aria-expanded={exploring} aria-controls={exploring?"historical-exploration":undefined} onClick={()=>onExploringChange(!exploring)}>{exploring ? 'Back to cover' : 'Explore data'}</button>:null}</div></div>
 
