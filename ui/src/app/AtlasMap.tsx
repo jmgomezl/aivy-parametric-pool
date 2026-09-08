@@ -129,7 +129,7 @@ export function AtlasMap({ pin, onPin, map, markers = [], onMarker, onExploringC
       </svg>
       <div className="map-zoom"><button aria-label="Zoom in" onClick={()=>setView(v=>zoomAt(v,W/2,H/2,1.6))}>+</button><button aria-label="Zoom out" onClick={()=>setView(v=>zoomAt(v,W/2,H/2,1/1.6))}>−</button><button aria-label="Show world map" onClick={()=>setView(HOME)}>◎</button></div>
     </div>
-    <div className="map-bottom"><div className="map-legend"><span className="map-legend-item"><i className="legend-quake"/>Recorded earthquakes</span><span className="map-legend-item"><i className="legend-cover"/>100 km cover</span></div><button id="explore-toggle" className={`chip ${exploring ? 'chip-on' : ''}`} aria-expanded={exploring} aria-controls={exploring?"historical-exploration":undefined} onClick={()=>onExploringChange(!exploring)}>{exploring ? 'Back to cover' : 'Explore data'}</button></div>
+    <div className="map-bottom"><div className="map-legend"><span className="map-legend-item"><i className="legend-quake"/>Recorded earthquakes</span><span className="map-legend-item"><i className="legend-cover"/>100 km cover</span></div>{!pin?<button id="explore-toggle" className={`chip ${exploring ? 'chip-on' : ''}`} aria-expanded={exploring} aria-controls={exploring?"historical-exploration":undefined} onClick={()=>onExploringChange(!exploring)}>{exploring ? 'Back to cover' : 'Explore data'}</button>:null}</div>
 
   </div>;
 }

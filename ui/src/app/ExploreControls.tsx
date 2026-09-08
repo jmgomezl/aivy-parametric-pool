@@ -3,8 +3,9 @@ import { CATALOGUE, FIRST_YEAR, LAST_YEAR } from '../lib/hazard';
 import { History } from './History';
 import type { MapState, Pin } from './AtlasMap';
 
-export function ExploreControls({ pin, days, map, playing, onPlay, onYear, onMagnitude, onClose }: {
+export function ExploreControls({ pin, days, map, playing, onPlay, onYear, onMagnitude, onClose, labelledBy }: {
   pin: Pin | null; days: number; map: MapState; playing: boolean;
+  labelledBy?: string;
   onPlay: () => void; onYear: (year: number) => void;
   onMagnitude: (magnitude: number) => void; onClose: () => void;
 }) {
@@ -22,10 +23,10 @@ export function ExploreControls({ pin, days, map, playing, onPlay, onYear, onMag
       });
     }
   }, []);
-  return <section id="historical-exploration" className="explore-controls" ref={section} tabIndex={-1} aria-label="Historical data exploration" onKeyDown={event => {
+  return <section id="historical-exploration" className="explore-controls" ref={section} tabIndex={-1} aria-labelledby={labelledBy} aria-label={labelledBy?undefined:'Historical data exploration'} onKeyDown={event => {
     if (event.key === 'Escape') { event.stopPropagation(); onClose(); }
   }}>
-    <div className="explore-heading"><strong>Explore the record</strong><button className="icon-btn" onClick={onClose} aria-label="Close historical exploration">×</button></div>
+    {!labelledBy?<div className="explore-heading"><strong>Explore the record</strong><button className="icon-btn" onClick={onClose} aria-label="Close historical exploration">×</button></div>:null}
     <span className="explore-disclaimer">Estimates only · policy terms stay fixed</span>
     <div className="explore-time"><button className="icon-btn" aria-label={playing ? 'Pause earthquake history' : 'Play earthquake history'} onClick={onPlay}>{playing ? 'Ⅱ' : '▶'}</button><label htmlFor={yearId}>{map.year}</label><input id={yearId} type="range" className="slider" aria-label="Record year" min={FIRST_YEAR} max={LAST_YEAR} value={map.year} onChange={event => onYear(Number(event.target.value))}/></div>
     <div className="explore-mags"><span>Recorded magnitude</span>{[6, 6.5, 7].map(m => <button key={m} className={`chip ${m === map.minMag ? 'chip-on' : ''}`} aria-pressed={m === map.minMag} onClick={() => onMagnitude(m)}>M{m}+</button>)}</div>

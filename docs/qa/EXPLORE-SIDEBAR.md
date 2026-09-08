@@ -1,8 +1,10 @@
 # Historical exploration beside the map
 
-“Explore data” now opens in the right-hand column, directly below the selected
-location’s premium/payout estimate. The chart appears before budget controls and
-expanded explanations. With no location selected, the same column offers the
+“Explore data” is a full-width expandable row in the right-hand column, aligned
+with the other quote options directly below the location’s premium/payout estimate.
+Its plus/minus control opens and closes the chart in place, before budget controls
+and expanded explanations. The selected-location view has no duplicate map button
+or chart heading. With no location selected, the map entry opens a column with the
 timeline and a prompt to choose a place. Phones and tablets stack the panel below
 the compact map; opening it brings the location details into view.
 
