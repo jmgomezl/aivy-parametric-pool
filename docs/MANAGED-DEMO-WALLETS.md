@@ -1,6 +1,6 @@
 # Real transactions, no wallet setup
 
-**Swap → Demo · no setup** is the default. Each browser receives its own
+**Swap** always uses the funded demo flow. Each browser receives its own
 service-managed Sepolia wallet. A dedicated test sponsor supplies 0.1 aUSDd,
 0.1 test USDC and initial gas. No extension, fake connection or simulated receipt.
 
@@ -15,7 +15,10 @@ service-managed Sepolia wallet. A dedicated test sponsor supplies 0.1 aUSDd,
 Starter aUSDd is funded from the sponsor’s **previously bridged inventory**.
 It is not evidence that the current visitor’s new bridge has completed. The
 bridge panel separately verifies source, Axelar approval and destination events.
-Personal-wallet mode remains available and keeps signing in the extension.
+All public entry points use this flow, including policy conversion and story
+links. The external-wallet mode and native-ETH form have been removed. Old saved
+wallet-mode preferences cannot change the route; existing transaction journals
+are preserved.
 
 ## Authority and limits
 

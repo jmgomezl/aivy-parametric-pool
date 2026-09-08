@@ -15,7 +15,7 @@ Reusable plugin: https://github.com/jmgomezl/hak-scheduled-settlement
 | 0:00–0:20 | Cover homepage | Fixed earthquake payouts can be committed before an event. |
 | 0:20–0:45 | Search Medellin; Explore data | The historical chart holds payout at $800; premiums vary with the record. Return to cover for current terms. |
 | 0:45–1:15 | Create funded testnet cover; view policy | A real NFT, published terms, premium transfer and scheduled payout. Demo assets have no cash value. Cut network waiting from the recording. |
-| 1:15–1:35 | Swap → Bridge / Swap | Hedera → HAK Axelar plugin → Sepolia → Uniswap. Use **Demo · no setup**: real bridge, approval and swap receipts without an extension. |
+| 1:15–1:35 | Swap → Bridge / Swap | Hedera → HAK Axelar plugin → Sepolia → Uniswap. Use the funded demo: real bridge, approval and swap receipts without an extension. |
 | 1:35–2:00 | Fund the pool → deposit and ARPS balance | One shared pool backs all policies. ARPS arrives atomically. Per-policy cards are economics previews; no separate vault or guaranteed yield. |
 | 2:00–2:40 | How it works | Replay commit → one confirmation → two confirmations → executed transfer. Controlled mainnet recording, not a live earthquake claim. Open the actual receipt. |
 | 2:40–3:00 | Policy → Check for earthquakes | Bounded testnet x402 payments query the published policy terms. No-match and unavailable are different; payment does not mean claim approval. |
@@ -63,8 +63,8 @@ existing evidence, and do not copy the private registry into the repository or V
 
 Open **Swap** in the main navigation. The visual Hedera → Axelar → Uniswap path
 explains the roles; **Bridge** and **Swap** are separate action steps. Bridge aUSDd from the service-managed Hedera demo
-account to a Sepolia wallet, approve an exact amount, then sign and submit the
-Uniswap swap. Wallet gas is paid in Sepolia ETH. Show [real receipts](evidence/cross-chain-testnet.json)
+account to its funded Sepolia demo wallet, then review and confirm the
+Uniswap swap. Exact approvals and testnet gas are handled by the scoped signer. Show [real receipts](evidence/cross-chain-testnet.json)
 and [the HAK Axelar plugin transaction](evidence/hak-axelar-plugin.json). The
 page also presents labeled recorded examples; distinguish those from your own
 current transaction receipts.
@@ -101,7 +101,7 @@ is not a currently earning position. Leave the primary bridge/swap story central
 
 ## Wallet-free judge interaction
 
-Keep **Demo · no setup** selected. The default signer is a separate service-managed
+All public swap actions use a separate service-managed
 Sepolia wallet with starter tokens and sponsored gas. Review and confirm a swap
-or LP action; open its receipt. **Use my wallet** is optional.
+or LP action; open its receipt. No extension or connection prompt is part of this flow.
 [Verified managed swap, NFT #231774 and full exit](evidence/managed-wallet-demo.json).

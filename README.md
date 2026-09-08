@@ -105,7 +105,7 @@ host do not prove independent operators.
 
 **A Hedera-native application can reach Uniswap liquidity without custom Solidity.**
 Cover settles through Hedera. Axelar ITS moves the demo asset to Sepolia; the
-Uniswap Trading API finds its route and prepares a guarded swap for a demo or personal wallet.
+Uniswap Trading API finds its route and prepares a guarded swap for an isolated funded demo wallet.
 The user can keep the same application open throughout.
 
 ![Two steps connect Hedera test tokens to Uniswap, with verifiable examples alongside](docs/media/05-swap.png)
@@ -127,7 +127,7 @@ flowchart LR
 | **Axelar ITS** | Lock canonical aUSDd on Hedera and deliver its linked Sepolia token | Provides the cross-chain transport; Uniswap is not the bridge |
 | **Uniswap Trading API `/quote` + `/swap`** | Route linked aUSDd → test USDC and prepare Universal Router calldata | Gives a Hedera-origin user access to an actual EVM liquidity pool |
 | **Uniswap LP API** | Build V3 position creation, increases, fee collection and withdrawals | Users can also supply the trading liquidity; their wallet owns a genuine position NFT |
-| **Permit2 + isolated demo wallet** | Exact permissions and bounded Sepolia signing; gas sponsored | Judges try real operations without an extension. Optional personal wallets sign in the browser. |
+| **Permit2 + isolated demo wallet** | Exact permissions and bounded Sepolia signing; gas sponsored | Judges try real operations without an extension. The public app requires no wallet connection. |
 
 **Confirmed on-chain:** [demo account bridge](https://sepolia.etherscan.io/tx/0x506bc1df0c3a1948a0b954cf3d1cd6b08c019fb06be9258988bc69ef5c6d4500)
 · [bridged aUSDd → test USDC swap](https://sepolia.etherscan.io/tx/0xdcd06bd9aeb5a0fb33ac54aaf2f3b82f69e18ae554e76a3892fcbacaeb6420a6)
@@ -165,10 +165,10 @@ plugin predates this submission; the guarded integration is project work.
 
 Demo wallets are **service-managed**, one per browser session; keys stay on the
 server. Starter aUSDd comes from the sponsor’s previously bridged inventory,
-separately from the visitor’s new bridge. **Use my wallet** retains extension signing.
+separately from the visitor’s new bridge. Every public bridge, swap and liquidity action uses that funded demo wallet.
 [Custody, limits and recovery](docs/MANAGED-DEMO-WALLETS.md).
 
-Under **Use my wallet**, a separate native **Sepolia ETH → test USDC** swap is available.
+The earlier native **Sepolia ETH → test USDC** operator test remains [recorded evidence](docs/evidence/testnet-swap.json); its external-wallet form has been removed from the public app.
 Base/Unichain mainnet USDC→ETH remains a **quote preview**, without spending authority.
 
 **Testnet boundaries:** aUSDd and test USDC have no cash value. The V3 pool uses
@@ -194,7 +194,7 @@ appear together. Select **Collect fees** or **Remove** to return tokens to your 
 ```mermaid
 flowchart LR
   W["Your Sepolia wallet<br/>aUSDd + test USDC"] --> A["Uniswap LP API<br/>Quorum validates calldata"]
-  A -->|"Scoped demo signer<br/>or your wallet"| N["V3 position NFT<br/>Full-range liquidity"]
+  A -->|"Scoped demo signer"| N["V3 position NFT<br/>Full-range liquidity"]
   N -->|"Collect fees / withdraw"| W
 ```
 
@@ -294,7 +294,7 @@ flowchart LR
 | Public request | Testnet-only issuance, bounded JSON and fields; no caller-selected beneficiary or raw transaction. |
 | Spending admission | Default **3 attempts/IP/hour · 100 attempts/24h · $20k modeled cover/24h**; survives restart. |
 | Interrupted issuance | Idempotent request IDs, retained reservations, fail-closed locks and reconciliation. |
-| Oracle / x402 / Uniswap | Exact terms/transfer verification; explicitly bounded payments; mainnet quote-only authority; bounded Sepolia preparation and isolated demo signing; optional personal-wallet signing. |
+| Oracle / x402 / Uniswap | Exact terms/transfer verification; explicitly bounded payments; mainnet quote-only authority; bounded Sepolia preparation and isolated demo signing. |
 | Runtime | Private key/config files, loopback services behind TLS, patched minimal dependencies. |
 
 **Evidence:** 41 offline tests passed locally and on the VPS in the September 6
@@ -313,7 +313,7 @@ confirmed an oversized request caused no ledger write. [Current runtime limits](
 | Policy-bound oracle authority | Verifies configured HCS topic, issuer signature, canonical terms hash, time window, network, asset, beneficiary and exact scheduled amount. Rejects extra transfer legs, allowances and unsupported fields. Caller input cannot lower the published trigger; queries are bounded, missing data is not a positive vote, duplicate identities do not become a quorum. | [Policy binding](src/policy/binding.js), [oracle implementation](src/oracle/), [security review](docs/AGENT-SECURITY.md) |
 | Ledger-enforced signature gate | The pool requires **agent AND 2-of-3 oracle keys**. Oracle keys alone cannot spend. Signature evidence and observed execution are displayed separately. | [1 HBAR executed control](https://hashscan.io/mainnet/schedule/0.0.10843723), [5 HBAR blocked control](https://hashscan.io/mainnet/schedule/0.0.10843725) |
 | Bounded x402 payment authority | Client checks explicitly authorized resource, network, recipient, asset, fee payer and maximum amount before signing; paid redirects and automatic new payments after uncertain responses are refused. Facilitator validates exact payment bodies, rejects extra debits/approvals and excessive fees, and requires a consensus receipt. | [Payment policy](src/x402/payment-policy.js), [facilitator](src/x402/facilitator.js), [payment tests](tests/payments.test.js) |
-| Uniswap least privilege | Mainnet is quote-only. Sepolia execution pins the router, chain, token path, recipient, amount, minimum output and allowed commands. API key stays server-side. The isolated demo signer executes only validated Sepolia operations; optional personal wallets sign in the browser. | [Conversion tests](tests/cross-asset.test.js), [live quote evidence](docs/evidence/uniswap-quotes.json) |
+| Uniswap least privilege | Mainnet is quote-only. Sepolia execution pins the router, chain, token path, recipient, amount, minimum output and allowed commands. API key stays server-side. The isolated demo signer executes only validated Sepolia operations. | [Conversion tests](tests/cross-asset.test.js), [live quote evidence](docs/evidence/uniswap-quotes.json) |
 | Runtime and secret isolation | Project listeners bind to loopback behind TLS nginx; environment/registry files use 0600 and artifact directory 0700. Project-specific Node 22 runtime and patched protobuf, WebSocket and gRPC dependencies. Minimal runtime installation omits unrelated automatic peers. | [Operational review and install instructions](docs/AGENT-SECURITY.md#operational-review), [lockfile](package-lock.json) |
 | Visible verification | Open a policy → **Agent guardrails & proof** for current limits/usage and recorded authorization controls. Read-only endpoint exposes configuration without keys or IP identifiers. | [Live guardrails](https://quorum.aivylabs.xyz/api/guardrails), [UI implementation](ui/src/app/AgentGuardrails.tsx) |
 

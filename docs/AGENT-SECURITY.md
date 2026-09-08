@@ -137,11 +137,11 @@ every page refresh; spending checks still use fresh SDK balances.
 
 [Full business/API boundaries](INTERACTIVE-BUSINESS-FLOWS.md).
 
-## Wallet-approved Sepolia swaps (2026-09-07)
+## Native Sepolia swap adapter · historical operator verification
 
-Mainnet conversion remains quote-only. `/api/testnet-swap` prepares a separate Ethereum Sepolia swap using Uniswap Trading API `/quote` and `/swap`. No server private key signs EVM transactions. Chain 11155111, Universal Router 2.0, native ETH input, Circle test USDC output, exact amount, recipient and 0.5% output protection are validated. Only WRAP_ETH + single-pool V3_SWAP_EXACT_IN commands are accepted; allowance, arbitrary transfer and alternate router commands fail closed.
+Mainnet conversion remains quote-only. `/api/testnet-swap` prepares a separate Ethereum Sepolia swap using Uniswap Trading API `/quote` and `/swap`. This unsigned adapter has no signing key; the separate managed demo signer is described below. Chain 11155111, Universal Router 2.0, native ETH input, Circle test USDC output, exact amount, recipient and 0.5% output protection are validated. Only WRAP_ETH + single-pool V3_SWAP_EXACT_IN commands are accepted; allowance, arbitrary transfer and alternate router commands fail closed.
 
-Wallet checks include chain/account binding, gas simulation, input balance, gas cost cap, quote freshness and explicit transaction approval. Pending submission state survives reload; unknown submissions block another quote until an exact matching transaction receipt is found. Wallet rejection clears the pending attempt. Replaced/cancelled transactions without a matching receipt require manual reconciliation; they are not automatically retried.
+The original external-wallet UI performed account, gas and receipt checks. That UI is now removed from the public app; its recorded receipts and unsigned operator adapter remain. Existing browser journals are preserved and are not automatically retried. Current public actions use the managed signer below.
 
 Read API requests are bounded to 20 per minute and three concurrent calls, with upstream timeouts. API credentials remain on the server. Tests cover altered router, sender, chain, value, commands, recipient, minimum output and deadlines. The native ETH swap is separate from the Axelar bridge described below. Live calldata validation and funded-wallet settlement passed; see `docs/evidence/testnet-swap.json`.
 
@@ -165,23 +165,23 @@ Delivery is not inferred from an Axelar status label: the server matches the
 successful Hedera event and Sepolia ITS receipt to the token ID, source address,
 recipient and amount. For delayed relaying, it exposes an optional unsigned
 execution only after verifying the exact payload and on-chain gateway approval.
-The EVM wallet pays for that permissionless completion; ITS commands execute once.
+The session’s managed Sepolia wallet performs that permissionless completion with sponsored gas; ITS commands execute once.
 
 For bridged-token swaps, `/quote` terms are checked before display. The server
 retains the quote for two minutes and validates the Permit2 domain, exact amount,
 router, signature deadline and signer. `/swap` calldata must contain only the
 matching permit and single-hop V3 exact-input swap (or just that swap if a permit
 is unnecessary). Changed chains, recipients, commands, paths and minimum output
-are rejected. Token approval is exact, never unlimited. The wallet simulates,
-checks gas and signs; the API stores no EVM private key.
+are rejected. Token approval is exact, never unlimited. The unsigned adapter checks the payload; the separate session-scoped signer
+estimates gas and executes it with server-held demo keys.
 
-Browser journals block repeat submissions after ambiguous wallet responses.
-A transaction hash must match the prepared sender, target, calldata and value
-before confirmation clears it. Existing allowance is checked when refreshing a
+Managed operation journals block repeat submissions after ambiguous responses.
+The signer reconciles the original signed bytes, hash and receipt before
+confirmation clears it. Existing allowance is checked when refreshing a
 quote, avoiding unnecessary approval transactions.
 
 **Trust boundaries:** managed Hedera account custody, Axelar gateway/ITS,
-wallet/RPC availability and sponsored pool liquidity remain dependencies. These
+RPC availability and sponsored pool liquidity remain dependencies. These
 controls are bounded testnet safeguards, not an independent security audit.
 [Executed receipts and operational limits](CROSS-CHAIN-VERIFICATION.md).
 
@@ -259,18 +259,19 @@ See the [final user/judge review](qa/FINAL-UX-REVIEW.md) for browser checks.
 `/api/liquidity/*` reads the existing V3 market and returns unsigned transactions.
 It never uses a Hedera account, ARPS supply key, insurance reserve or server EVM
 signer. The default managed-demo orchestrator calls this same validated adapter
-with an isolated session wallet; personal-wallet mode returns unsigned calls.
+with an isolated session wallet. The external-wallet UI is removed; the unsigned
+adapter remains available for operator verification.
 See [managed signing boundary](MANAGED-DEMO-WALLETS.md).
 
 | Boundary | Enforced behavior |
 | --- | --- |
 | Chain and market | Sepolia 11155111; pinned V3 pool, NonfungiblePositionManager, aUSDd/test USDC and 3000 fee tier. API routes are disabled outside the testnet deployment. |
-| Position ownership | NFT owner and token pair verified on-chain before preparation; ownership checked again before returning the request and in the wallet before submission. Only full-range positions are managed. |
+| Position ownership | NFT owner and token pair verified on-chain before preparation; ownership checked again before returning the request; the managed signer rebuilds and validates it before submission. Only full-range positions are managed. |
 | API output | Canonical ABI decoding and re-encoding. Only mint, increase, collect, or an exact decrease+collect sequence. No extra calls, alternative recipients, native value, permits, burning or arbitrary approvals. |
 | Amounts and exit | Add 0.01–1 aUSDd, with at most 1 matching test USDC. Dependent amount checked against the live pool ratio. Removal liquidity must equal the requested percentage of the owned NFT. Both output minima enforce 0.5% protection, subject to integer rounding. |
 | Allowances | Read actual ERC-20 allowances and build exact token approvals to the position manager. This intentionally uses a narrower local approval builder instead of accepting generic LP API approval/permit payloads. |
-| Signing and gas | Wallet signs and broadcasts. Frontend verifies account/network, target, zero native value and exact approval bytes. Maximum 1M gas and 0.002 Sepolia ETH fee budget per operation. Review expires after 90 seconds; transaction deadline is bounded. |
-| Recovery | Save operation, calldata and explicit nonce before the wallet request. Browser Web Locks serialize LP submissions across tabs where supported. Unknown submission blocks another operation. Hash reconciliation checks sender, recipient, calldata, value, nonce and successful receipt; mint recovery also verifies the new NFT Transfer event. |
+| Signing and gas | Session-scoped server signer verifies network, target, zero native value and exact approvals. Maximum 1M gas and 0.002 Sepolia ETH fee budget per transaction; per-wallet and sponsor budgets also apply. Quotes and transaction deadlines expire. |
+| Recovery | Save signed bytes, nonce and hash before broadcast. Per-wallet file locks serialize all tabs and requests. Unknown submissions reconcile the original hash; no replacement mint is sent. Mint recovery verifies the NFT Transfer event. |
 | Reads and API budget | On-chain reads use a common block per snapshot; pool response cached for 15 seconds with block/time shown. Wallet NFT discovery paginates ten at a time. Global request and concurrency limits, RPC/HTTP timeouts, server-only API key, no API redirects. |
 
 The seed NFT art is read from the pinned manager's `tokenURI`, bounded in size,
