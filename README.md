@@ -54,6 +54,12 @@ are secondary and are not expected returns. **A deposit cannot select a policy.*
 [Business flows and custody](docs/INTERACTIVE-BUSINESS-FLOWS.md) ·
 [Verified deposit, purchase and commission receipts](docs/evidence/business-flows.json).
 
+**Commercial direction · proposed:** operate verifiable cover for insurers and
+brokers, with partner subscriptions and per-policy service fees. Start with one
+region and one distribution partner, subject to risk-model and jurisdiction-specific
+review. Pricing, partnerships and profitability still need validation; the demo
+collects no separate platform fee. [Business hypothesis and pilot milestones](docs/SUBMISSION.md#business-model-proposed).
+
 ## The problem and the improvement
 
 Parametric cover replaces damage assessment with a measurable trigger. A remaining

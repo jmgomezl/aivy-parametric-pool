@@ -25,6 +25,37 @@ is one disclosure away. No extension or faucet setup is needed in the public app
 | 2:40–3:00 | Policy → Check for earthquakes | Bounded Blocky402 testnet x402 payments query the published policy terms. No-match and unavailable are different; payment does not mean claim approval. |
 | 3:00–3:15 | Final story step / repository | Oracle keys alone cannot spend. Explain the reusable plugin and new hackathon work. |
 
+## Business model (proposed)
+
+**Quorum's commercial hypothesis is policy and settlement infrastructure for
+insurance partners.** The first customer hypothesis is small businesses needing
+emergency cash after an earthquake, reached through a broker or cooperative in
+one region. This is a pilot direction, not established demand.
+
+| Role | Proposed responsibility |
+| --- | --- |
+| Broker / cooperative | Reach customers, explain protection and support renewals |
+| Licensed insurance / risk partner | Price and back the risk, within the chosen jurisdiction's framework |
+| Quorum | Operate issuance, verification and verifiable settlement |
+
+**Revenue to test:** partner subscriptions plus per-policy service fees.
+Customer premiums pay for insurance risk and distribution; they are not all
+Quorum revenue. No platform fee is collected today. No commercial traction,
+signed partnership, regulatory approval or validated investor return is claimed.
+
+**Next evidence:** one distribution partner and an insurance/risk partner; risk
+calibration and legal review; then a scoped pilot measuring willingness to pay,
+acquisition and servicing costs, renewal behavior and payout reliability.
+[Worked unit economics and remaining accounting work](ECONOMIC-MODEL.md).
+
+Optional **10–15-second video close**, keeping the full video under four minutes:
+
+> “Long term, Quorum would serve insurers and brokers, earning service fees for
+> operating verifiable cover. Our next milestone is a focused partner pilot.”
+
+Keep this after the working demo. In the app, it sits inside **Fund the pool →
+How this business works**, labeled **Beyond the demo · proposed**.
+
 ## Evidence and scope
 
 - Cover creation is real testnet issuance, paid from the visitor’s funded demo account.

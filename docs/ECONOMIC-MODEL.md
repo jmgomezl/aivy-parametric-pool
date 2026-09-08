@@ -157,6 +157,21 @@ Actual per-policy funding would be a separate product: a segregated policy or
 cohort balance, a funding deadline, receipt ownership, premium entitlements and
 claim/expiry settlement. A card and percentage slider cannot create that isolation.
 
+## Commercial hypothesis
+
+The proposed company model is to operate cover infrastructure for insurance
+partners: brokers distribute, insurers or approved risk partners back the risk,
+and Quorum runs policy and settlement operations. Partner subscriptions and
+per-policy service fees are revenue hypotheses, not implemented charges.
+They must fit inside the margin after claims, distribution, costs and capital
+compensation; premium volume is not Quorum revenue.
+
+Validate a narrow customer segment and jurisdiction with a distribution partner,
+an insurance/risk partner, calibrated pricing and legal review before a commercial
+pilot. Measure willingness to pay, acquisition costs, servicing costs and renewals.
+The demo's funded transactions establish technical functionality, not demand or
+profitability. [Submission wording and pilot milestones](SUBMISSION.md#business-model-proposed).
+
 ## Verify
 
 [Live deposit page](https://quorum.aivylabs.xyz/policies?view=fund) ·

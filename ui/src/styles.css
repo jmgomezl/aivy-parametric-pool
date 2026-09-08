@@ -1381,3 +1381,13 @@ small { font-size:12px; color:var(--fg-2); }
  .replay-money-path strong small {display:block;font-size:11px;margin-top:6px;}
  .replay-transfer-line {width:100%;margin:0;transform:none;}
 }
+
+/* Commercial direction stays inside the existing business disclosure. */
+.business-next {border-top:1px solid var(--line);margin-top:24px;padding-top:24px;}
+.business-next .eyebrow {font-size:10px;color:var(--fg-2);}
+.business-next-roles {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0;}
+.business-next-roles>div {display:grid;align-content:start;gap:6px;min-width:0;border-left:1px solid var(--line-strong);padding-left:12px;}
+.business-next-roles strong {font-size:14px;font-weight:500;color:var(--fg-0);}
+.business-next-roles span,.business-next>small {font-size:11px;color:var(--fg-2);line-height:1.6;}
+.business-next>small {display:block;}
+@media(max-width:400px){.business-next-roles {gap:8px;}.business-next-roles>div {padding-left:8px;}.business-next-roles strong {font-size:12px;}}
