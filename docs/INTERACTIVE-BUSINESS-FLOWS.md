@@ -17,8 +17,9 @@ Clearing browser storage loses access. No production wallet custody is claimed.
 
 The funding gallery has a real **Deposit into shared pool** action. Individual
 policy cards show economics only: they do not create isolated policy vaults or
-LP NFTs. Term, 30-day and annual scenarios assume constant-rate renewals without
-compounding; a first-term claim consumes capital and stops further income.
+LP NFTs. The preview shows one complete policy term and two payout outcomes.
+An annual premium comparison is disclosed as arithmetic only; it is not an APY.
+[Economic model, worked numbers and accounting review](ECONOMIC-MODEL.md).
 Withdrawals, NAV-priced shares and automatic premium distributions remain
 unimplemented and are labeled before a deposit. There is no guaranteed yield.
 
@@ -41,8 +42,8 @@ unimplemented and are labeled before a deposit. There is no guaranteed yield.
 ## Verification
 
 `npm test` includes capabilities, persisted account quotas, replay/mismatched
-request protection, pending-action blocking, broker validation and multi-period
-scenarios. `npm --prefix ui run build` checks the browser implementation.
+request protection, pending-action blocking, broker validation, asset-specific capacity and full-term policy
+economics. `npm --prefix ui run build` checks the browser implementation.
 
 ## Verified September 7, 2026
 
@@ -75,8 +76,8 @@ defined beside the money-flow diagram. Deposit restrictions explain that users
 cannot withdraw or collect investment income in this demo; acronym-only NAV
 wording was replaced with an explanation of the share-pricing limitation.
 
-The annual first-claim bar now represents first-term income only, matching the
-scenario amount. Previously it incorrectly drew full-year income. Explicitly
+The current preview uses one complete policy term. Earlier annual first-claim
+bar corrections are superseded by this simpler presentation. Explicitly
 refused deposit requests (400/401/429) unlock editing; uncertain submissions
 retain their identifier for reconciliation. Desktop/320px checks verified the
 funding-estimate-to-deposit handoff, visible definitions and no horizontal overflow.

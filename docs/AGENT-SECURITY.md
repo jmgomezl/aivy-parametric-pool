@@ -405,3 +405,13 @@ custody. A stolen browser capability controls that session’s demo actions;
 clearing storage loses access. No cash value and no arbitrary withdrawal API.
 [Exact limits and operations](MANAGED-DEMO-WALLETS.md) ·
 [Isolation, replay, corruption, RPC and restart tests](../tests/evm-demo.test.js).
+
+## Funding accounting review · September 8
+
+Capacity now groups obligations by their actual asset before any new issuance.
+Legacy HBAR tinybars cannot be counted as aUSDd base units. New reservations
+persist the asset identity; missing identities, inconsistent decimals and unsafe
+amounts pause capacity calculation. Historical token symbols resolve against the
+permanent registry, not a newly configured settlement token.
+[Exposure implementation](../src/pool/exposure.js) · [economic tests](../tests/economics.test.js) ·
+[worked model and remaining investor-accounting boundaries](ECONOMIC-MODEL.md).

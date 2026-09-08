@@ -1,6 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
+import { exposureFor } from './pool/exposure.js';
+import { load } from './registry.js';
+import { USDC } from './asset.js';
 const file = network => path.join(process.cwd(), '.artifacts', `book-${network}.json`);
 const read = network => {
   try {
@@ -21,11 +24,10 @@ export const request = (network, requestId) => {
   const book = read(network);
   return book.policies.find(p => p.requestId === requestId) ?? book.reservations.find(p => p.requestId === requestId);
 };
-export function committedTinybar(network, now = Date.now()) {
+export const legacyTokens = network => ({aUSDd: load(network).demoTokenId, USDC: USDC[network]});
+export function committedUnits(network, asset, now = Date.now()) {
   const book = read(network);
-  return [...book.policies, ...book.reservations]
-    .filter(p => !p.settled && new Date(p.lapsesAt).getTime() > now)
-    .reduce((sum,p) => sum + (p.payoutUnits ?? Math.round((p.payoutHbar ?? 0) * 1e8)),0);
+  return exposureFor([...book.policies, ...book.reservations], asset, {now, legacyTokens: legacyTokens(network)});
 }
 export function reserve(network, reservation) {
   const book = read(network);

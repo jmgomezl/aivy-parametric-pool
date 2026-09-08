@@ -15,7 +15,7 @@ import { underwrite } from '../pricing/underwrite.js';
 import { hbarUsd } from '../pricing/fx.js';
 import { settlementAsset, toUnits, fromUnits } from '../asset.js';
 import { canUnderwrite } from '../pool/solvency.js';
-import { committedTinybar, record, reserve, request, updateReservation } from '../book.js';
+import { committedUnits, record, reserve, request, updateReservation } from '../book.js';
 import { publishTerms, triggerSpec } from './terms.js';
 import { mintPolicy, deliverAndFreeze } from './collection.js';
 import { purchasePolicy } from './purchase.js';
@@ -83,7 +83,7 @@ async function issueLocked(deps, { lat, lon, place, budgetUsd = 4, days = 30, br
   const denied = await deps.beforeWrite?.(quote);
   if (denied) return {ok:false,...denied};
   await deps.reconcile?.();
-  const committed = committedTinybar(network);
+  const committed = committedUnits(network, quote.asset);
   const guard = await check(client, poolId, committed, quote.settled.payoutUnits, network);
   if (!guard.ok) return { ok: false, reason: 'exceeds_capital', message: guard.reason, guard };
 
@@ -91,7 +91,7 @@ async function issueLocked(deps, { lat, lon, place, budgetUsd = 4, days = 30, br
   if (budgetDenied) return {ok:false,...budgetDenied};
 
   const lapsesAt = new Date(Date.now() + days * 86400_000).toISOString();
-  reserve(network, {requestId, payoutUnits:quote.settled.payoutUnits, lapsesAt,place:place??null,lat,lon,status:'creating'});
+  reserve(network, {requestId, payoutUnits:quote.settled.payoutUnits, settlementAsset:quote.asset, lapsesAt,place:place??null,lat,lon,status:'creating'});
   buyer = buyer ?? await deps.createBuyer(quote);
   const terms = {
     version: 1, network, poolId: poolId.toString(), beneficiaryId: buyer.id.toString(),
@@ -139,6 +139,7 @@ async function issueLocked(deps, { lat, lon, place, budgetUsd = 4, days = 30, br
     premiumUnits: quote.settled.premiumUnits, payoutUnits: quote.settled.payoutUnits,
     premiumHbar: quote.settled.premium, payoutHbar: quote.settled.payout,
     asset: quote.asset.symbol,
+    settlementAsset: quote.asset,
     buyerId: buyer.id.toString(), brokerId: brokerId ? brokerId.toString() : null,
     termsPointer: published.pointer, saleTxId: sale.txId,
     receipts: { mint: minted.txId, delivery: delivery?.transferTxId, freeze: delivery?.freezeTxId },

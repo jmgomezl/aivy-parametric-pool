@@ -7,16 +7,16 @@
 // removes the demo-scale fiction — $4 of premium is 4 tokens, $804 of cover is
 // 804 tokens, and the numbers on screen are the numbers on the ledger.
 //
-// Circle issues native USDC on both networks, so the default is the real thing
-// rather than a token we minted and called a dollar.
+// USDC can be selected explicitly. The public demo uses its registered unbacked
+// aUSDd token, not USDC or a redeemable dollar balance.
 export const USDC = {
   mainnet: '0.0.456858',
   testnet: '0.0.429274',
 };
 
 // Real USDC is the honest asset, but Circle's testnet faucet gives 20 USDC every
-// two hours, and a pool that backs a single $804 policy would need about $4,000 —
-// two weeks of asking. So the public demo settles in a unit we mint ourselves,
+// two hours, while one 804-unit policy needs at least 804 units of available
+// same-asset capital. So the public demo settles in a unit we mint ourselves,
 // and the code stays asset-agnostic so pointing it at real USDC is one variable.
 //
 // The demo unit is named so nobody can mistake it for a dollar they can redeem.

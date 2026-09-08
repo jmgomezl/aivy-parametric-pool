@@ -4,15 +4,12 @@ export function lpModel(policy, portion = 10) {
   const payout = policy.payoutHbar, premium = policy.premiumHbar;
   if (!(days > 0 && days <= 366 && payout > 0 && premium >= 0) || ![days,payout,premium,portion].every(Number.isFinite)) return null;
   const share = Math.min(100, Math.max(0, portion)) / 100;
-  const poolFraction = policy.brokerId ? .85 : 1;
-  const contribution = payout * share, income = premium * poolFraction * share;
-  return {days,share,poolFraction,contribution,income,annualRate:premium*poolFraction/payout*365/days*100,noClaimTotal:contribution+income,claimTotal:income};
-}
-
-/** Comparison only: flat-rate renewals, no compounding; first-term claim stops funding. */
-export function lpScenario(policy,portion,horizon){
- const m=lpModel(policy,portion);if(!m)return null;
- const days=horizon==='year'?365:horizon==='month'?30:m.days;
- const income=m.income*days/m.days,earlyIncome=Math.min(income,m.income);
- return {...m,horizonDays:days,income,noClaimTotal:m.contribution+income,claimTotal:earlyIncome,returnPct:m.contribution?income/m.contribution*100:0,lossPct:m.contribution?(earlyIncome-m.contribution)/m.contribution*100:0};
+  // Mirror the actual sale's integer rounding when base units are recorded.
+  const commission = policy.brokerId ? (Number.isSafeInteger(policy.premiumUnits) && policy.premiumUnits > 0
+    ? premium * Math.round(policy.premiumUnits * .15) / policy.premiumUnits : premium * .15) : 0;
+  const poolPremium = premium - commission, poolFraction = premium > 0 ? poolPremium / premium : 1;
+  const contribution = payout * share, income = poolPremium * share, termRate = poolPremium / payout * 100;
+  return {days,share,poolFraction,poolPremium,commission,contribution,income,termRate,
+    annualRate:termRate*365/days,noClaimTotal:contribution+income,claimTotal:income,
+    returnPct:contribution?termRate:0,lossPct:contribution?(income-contribution)/contribution*100:0};
 }

@@ -35,7 +35,7 @@ is one disclosure away. No extension or faucet setup is needed in the public app
   The query covers Mexico City in January 2025. It found no qualifying event and did not sign any policy.
 - Current x402 requests use the hosted **Blocky402 testnet facilitator**. [Implementation](BLOCKY402.md). Older self-hosted receipts remain historical; no mainnet Blocky payment is claimed.
 - Per-policy funding, per-policy LP NFTs and insurance-premium distribution are a proposed model. Working insurance-pool primitives issue fungible ARPS shares; the public UI accepts actual shared-pool deposits. Separate Uniswap positions have real NFTs, swap-fee collection and withdrawals.
-- Annual premium rate is gross, before claims and costs. It is not guaranteed yield. The slider shows capital at risk.
+- [Funding economics](ECONOMIC-MODEL.md): deposits fund the shared pool; policy cards show full-term examples only. Premium/capital ratios are before claims and costs, not expected returns. The slider shows capital at risk.
 - Automatic ledger execution is implemented; earthquake checks are manually requested from the policy page.
 
 ## Submission checklist

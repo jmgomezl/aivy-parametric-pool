@@ -27,7 +27,8 @@ import { load } from './registry.js';
 import { createFundedAccount } from './accounts.js';
 import { quotePolicy, issuePolicy, isIssuing } from './policy/issue.js';
 import { readPolicies, mirrorGet } from './ledger.js';
-import { policies, reservations, settle, request } from './book.js';
+import { policies, reservations, settle, request, legacyTokens } from './book.js';
+import { summarizeExposure, assetKey } from './pool/exposure.js';
 import { withIssuanceLock } from './issuance-lock.js';
 import { createWriteGuard, LIMITS } from './guards.js';
 import { clientIp, readJsonBody, policyInput, HttpError, withHttpErrors } from './http-safety.js';
@@ -140,7 +141,8 @@ async function main() {
         const rows=await currentPolicies();
         const balance=asset.kind==='hbar'?await mirrorGet(NETWORK,`/accounts/${poolId}?transactions=false`):await mirrorGet(NETWORK,`/accounts/${poolId}/tokens?token.id=${asset.tokenId}`);
         const capital=asset.kind==='hbar'?balance.balance.balance:Number(balance.tokens?.find(t=>t.token_id===asset.tokenId)?.balance??0);
-        const committed=[...rows,...reservations(NETWORK)].filter(p=>p.state!=='paid'&&!p.settled&&Date.parse(p.lapsesAt)>Date.now()).reduce((sum,p)=>sum+(p.payoutUnits??Math.round(p.payoutHbar*1e8)),0);
+        const exposure=summarizeExposure([...rows,...reservations(NETWORK)],{legacyTokens:legacyTokens(NETWORK)});
+        const current=exposure.find(group=>assetKey(group)===assetKey(asset)),committed=current?.committedUnits??0;
         return json(res, 200, {
           network: NETWORK, poolAccountId: reg.poolAccountId, policyTokenId: reg.policyTokenId,
           asset: { symbol: asset.symbol, tokenId: asset.tokenId, isUsdc: Boolean(asset.isUsdc) },
@@ -148,7 +150,8 @@ async function main() {
           headroom: fromUnits(capital - committed, asset),
           capitalHbar: fromUnits(capital, asset), committedHbar: fromUnits(committed, asset),
           headroomHbar: fromUnits(capital - committed, asset),
-          livePolicies: rows.filter(p=>p.state==='active'||p.state==='confirming').length,
+          livePolicies: current?.obligations??0,
+          otherCommitments: exposure.filter(group=>assetKey(group)!==assetKey(asset)).map(group=>({asset:group.symbol,tokenId:group.tokenId,committed:fromUnits(group.committedUnits,group),obligations:group.obligations})),
           budgetToday: writeGuard.budget(),
           hashscan: HASHSCAN('account', reg.poolAccountId),
         });

@@ -1,6 +1,7 @@
-// LP deposit. D1 issues shares 1:1 with HBAR; D5 will price them at NAV.
+// Demo deposit: one settlement-asset unit issues one ARPS. NAV pricing,
+// profit entitlement and redemption are not implemented.
 //
-// The HBAR leg and the share leg are ONE atomic TransferTransaction, so an LP can
+// The settlement-asset leg and share leg are ONE atomic TransferTransaction, so an LP can
 // never pay into the pool without receiving shares in the same consensus event.
 // This is the same multi-party atomic primitive the premium split will use later
 // (buyer -> pool + broker in a single transaction).
@@ -8,7 +9,7 @@ import { TransferTransaction, Hbar, TokenMintTransaction, TokenId } from '@hiero
 import { SHARE_DECIMALS } from './shares.js';
 import { settlementAsset, fromUnits } from '../asset.js';
 
-export const sharesFor = (amount) => Math.round(amount * 10 ** SHARE_DECIMALS); // 1:1 at D1
+export const sharesFor = (amount) => Math.round(amount * 10 ** SHARE_DECIMALS); // fixed demo ratio
 
 export async function deposit(client, { tokenId, treasuryId, poolId, lpId, lpKey, amountUnits, network, checkpoint = () => {} }) {
   const asset = settlementAsset(network);
