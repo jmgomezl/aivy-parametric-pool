@@ -258,7 +258,10 @@ async function main() {
 
       return json(res, 404, { ok: false, message: `No route ${route}` });
     } catch (err) {
-      console.warn('Agent request refused:', err.reason ?? err.name);
+      // A deliberate refusal is one line; anything else needs its message and
+      // stack, or the only trace left of a real failure is the word "Error".
+      if (err instanceof HttpError) console.warn(`Agent refused ${req.method} ${route}:`, err.reason ?? err.message);
+      else console.error(`Agent failed ${req.method} ${route}:`, err?.stack ?? err);
       return json(res, err instanceof HttpError?err.status:err.status??503, { ok:false, reason:err instanceof HttpError?err.reason:'service_unavailable', message:err instanceof HttpError||err.status?err.message:'The service could not complete this request. Check Policies before retrying an interrupted creation.' });
     }
   });
