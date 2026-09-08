@@ -60,8 +60,8 @@ export async function charge({ header, terms, feePayerId, feePayerKey, network, 
   const check = await verifyPayment(payload, terms, {network});
   if (!check.isValid) {
     return {
-      paid: false, status: check.invalidReason === 'payer_verification_unavailable' ? 503 : 402,
-      body: { x402Version: X402_VERSION, error: check.invalidReason, detail: check.detail, accepts: [terms] },
+      paid: false, status: ['payer_verification_unavailable','blocky_unavailable'].includes(check.invalidReason) ? 503 : 402,
+      body: { x402Version: X402_VERSION, error: check.invalidReason, detail: check.detail, paymentSubmitted:false, accepts: [terms] },
     };
   }
 
@@ -81,7 +81,7 @@ export async function charge({ header, terms, feePayerId, feePayerKey, network, 
     };
   }
 
-  try { publishReceipt({ network, transaction: settlement.transaction, amount: terms.amount, asset: terms.asset, resource: terms.resource }); }
+  try { publishReceipt({ network, transaction: settlement.transaction, amount: terms.amount, asset: terms.asset, resource: terms.resource, facilitator:settlement.facilitator }); }
   catch { console.warn('Payment settled; public receipt journal unavailable.'); }
   return { paid: true, settlement };
 }

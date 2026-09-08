@@ -70,6 +70,14 @@ has no production fee-sponsorship abuse budget. Paid service failures need recei
 reconciliation; there is no automatic refund system. No production readiness or
 independent security certification is claimed.
 
+## Hosted Blocky402
+
+Current oracle routes delegate verification and settlement to hosted Blocky402 on
+Hedera testnet, while retaining local payer and transfer validation. The configured
+fee payer is Blocky’s account; Quorum does not add a facilitator signature. Exact
+receipt binding and exclusive attempt files prevent replay or silent fallback.
+[Protocol, code and recovery](BLOCKY402.md). Historical self-hosted evidence is unchanged.
+
 ## Payer authorization before paid work
 
 The facilitator verifies each node-specific transaction body against the debit

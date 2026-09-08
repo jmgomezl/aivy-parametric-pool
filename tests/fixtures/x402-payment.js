@@ -3,8 +3,8 @@ import {requirements} from '../../src/x402/gate.js';
 export const PAYER='0.0.1002',TOKEN='0.0.2000';
 export const payerKey=PrivateKey.generateED25519();
 export const terms=asset=>requirements({amount:'1000000',asset,payTo:'0.0.1003',feePayer:'0.0.1001',network:'hedera:testnet',resource:'https://usgs.example/attest'});
-export async function payment({key=payerKey,asset='HBAR',signed=true,start=Date.now()-1000,nodes=['0.0.3','0.0.4']}={}){
- const tx=new TransferTransaction().setMaxTransactionFee(new Hbar(1)).setTransactionId(TransactionId.withValidStart(AccountId.fromString('0.0.1001'),Timestamp.fromDate(new Date(start)))).setNodeAccountIds(nodes.map(AccountId.fromString));
+export async function payment({key=payerKey,asset='HBAR',signed=true,start=Date.now()-1000,feePayer='0.0.1001',nodes=['0.0.3','0.0.4']}={}){
+ const tx=new TransferTransaction().setMaxTransactionFee(new Hbar(1)).setTransactionId(TransactionId.withValidStart(AccountId.fromString(feePayer),Timestamp.fromDate(new Date(start)))).setNodeAccountIds(nodes.map(AccountId.fromString));
  if(asset==='HBAR')tx.addHbarTransfer(PAYER,Hbar.fromTinybars(-1000000)).addHbarTransfer('0.0.1003',Hbar.fromTinybars(1000000));
  else tx.addTokenTransfer(asset,PAYER,-1000000).addTokenTransfer(asset,'0.0.1003',1000000);
  tx.freeze();if(signed)await tx.sign(key);

@@ -20,6 +20,7 @@ import { SOURCES } from './sources.js';
 import { attestOrUnavailable, validateAttestationSpec } from './attest.js';
 import { readJsonBody, HttpError, requestPath } from '../http-safety.js';
 import { charge, requirements } from '../x402/gate.js';
+import {createBlockyFacilitator,BLOCKY_FEE_PAYER} from '../x402/blocky.js';
 import { settlementAsset } from '../asset.js';
 import { load } from '../registry.js';
 import { verifiedPolicy } from './verify-policy.js';
@@ -37,8 +38,8 @@ if (!source) throw new Error(`Unknown SOURCE "${SOURCE}". Known: ${Object.keys(S
 // which is exactly why it must not be the same account as the pool agent.
 const ORACLE_ID = process.env.ORACLE_ACCOUNT_ID;
 const ORACLE_KEY = process.env.ORACLE_PRIVATE_KEY;
-const FEE_PAYER_ID = process.env.X402_FEE_PAYER_ID ?? ORACLE_ID;
-const FEE_PAYER_KEY = process.env.X402_FEE_PAYER_KEY ?? ORACLE_KEY;
+const facilitator=createBlockyFacilitator({network:NETWORK});
+const FEE_PAYER_ID=BLOCKY_FEE_PAYER;
 
 const asset = settlementAsset(NETWORK);
 const caip2 = `hedera:${NETWORK}`;
@@ -92,6 +93,7 @@ const server = http.createServer(async (req, res) => {
         oracle: source.name, operator: source.operator, account: ORACLE_ID,
         network: caip2,
         price: { amount: String(PRICE), asset: asset.tokenId ?? 'HBAR', symbol: asset.symbol },
+        facilitator:facilitator.info,
         endpoints: { attest: 'POST /attest', attestAndSign: 'POST /attest-and-sign' },
         note: 'Attestations are paid with x402. Ask without payment to receive the terms.',
       });
@@ -114,13 +116,13 @@ const server = http.createServer(async (req, res) => {
       const gate = await charge({
         header: req.headers['x-payment'],
         terms: termsFor(path),
-        feePayerId: FEE_PAYER_ID, feePayerKey: FEE_PAYER_KEY, network: NETWORK,
+        network: NETWORK,
         beforeSettle: async () => {
           attestation = await attestOrUnavailable(SOURCE, spec);
           if (attestation.unavailable) return { status: 503, body: { error: 'source_unavailable', sourceKey: SOURCE, message: attestation.verdict } };
         },
-      });
-      if (!gate.paid) return json(res, gate.status, gate.body);
+      },{verifyPayment:facilitator.verify,settlePayment:facilitator.settle});
+      if (!gate.paid) return json(res, gate.status, {...gate.body,sourceKey:SOURCE});
 
       // An oracle signs only what it just verified for itself.
       let signature = null;

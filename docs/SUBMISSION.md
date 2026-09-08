@@ -22,7 +22,7 @@ is one disclosure away. No extension or faucet setup is needed in the public app
 | 1:15–1:35 | Swap → Bridge / Swap | Hedera → HAK Axelar plugin → Sepolia → Uniswap. Use the funded demo: real bridge, approval and swap receipts without an extension. |
 | 1:35–2:00 | Fund the pool → deposit and ARPS balance | One shared pool backs all policies. ARPS arrives atomically. Per-policy cards are economics previews; no separate vault or guaranteed yield. |
 | 2:00–2:40 | How it works | Replay commit → one confirmation → two confirmations → executed transfer. Controlled mainnet recording, not a live earthquake claim. Open the actual receipt. |
-| 2:40–3:00 | Policy → Check for earthquakes | Bounded testnet x402 payments query the published policy terms. No-match and unavailable are different; payment does not mean claim approval. |
+| 2:40–3:00 | Policy → Check for earthquakes | Bounded Blocky402 testnet x402 payments query the published policy terms. No-match and unavailable are different; payment does not mean claim approval. |
 | 3:00–3:15 | Final story step / repository | Oracle keys alone cannot spend. Explain the reusable plugin and new hackathon work. |
 
 ## Evidence and scope
@@ -32,7 +32,7 @@ is one disclosure away. No extension or faucet setup is needed in the public app
 - x402 evidence: [public request/result](evidence/x402-testnet.json), [settled payment](https://hashscan.io/testnet/transaction/0.0.7231440-1788672698-044530315).
   Payment: 1,000 base units = 0.001 aUSDd; USGS service returned HTTP 200 after settlement.
   The query covers Mexico City in January 2025. It found no qualifying event and did not sign any policy.
-- x402 uses the deployed self-hosted testnet facilitator. No Blocky mainnet payment is claimed.
+- Current x402 requests use the hosted **Blocky402 testnet facilitator**. [Implementation](BLOCKY402.md). Older self-hosted receipts remain historical; no mainnet Blocky payment is claimed.
 - Per-policy funding, per-policy LP NFTs and insurance-premium distribution are a proposed model. Working insurance-pool primitives issue fungible ARPS shares; the public UI accepts actual shared-pool deposits. Separate Uniswap positions have real NFTs, swap-fee collection and withdrawals.
 - Annual premium rate is gross, before claims and costs. It is not guaranteed yield. The slider shows capital at risk.
 - Automatic ledger execution is implemented; earthquake checks are manually requested from the policy page.
@@ -57,7 +57,7 @@ not certify registration or organizer acceptance.
 | --- | --- |
 | **Uniswap Stack Contribution · Continuity** | Working Trading API swaps and V3 position operations, with code and receipts linked in the README. [FEEDBACK.md](../FEEDBACK.md) is prepared; **submit the [developer feedback form](https://developers.uniswap.org/hackathon-feedback)** with the [public FEEDBACK.md link](https://github.com/jmgomezl/aivy-parametric-pool/blob/main/FEEDBACK.md). Form submission has not been verified. |
 | **Hedera Continuity** | Plausible fit for the disclosed prior project and substantive new scheduling, paid-oracle and cross-chain work. Confirm Continuity registration and explain the new work using the repository history. |
-| **Hedera AI & Agentic Payments** | **Current gap:** the rules require Blocky402 settlement. This application uses a self-hosted testnet facilitator. Real x402 receipts alone do not meet that facilitator requirement. |
+| **Hedera AI & Agentic Payments** | The oracle flow now uses hosted Blocky402 on Hedera testnet. Show a new paid request and its receipt in the video; confirm the dashboard offers this prize for your selected track. |
 
 The Hedera tokenization prize requires Asset Tokenization Studio; the Harness
 prize requires a qualifying Harness contribution. Neither is established by the
@@ -79,7 +79,7 @@ if an upstream catalogue, mirror or bridge is slow during recording.
 ## Reproduce the x402 evidence
 
 `node scripts/demo-x402.js --execute` uses the dedicated testnet payer credentials
-in the gitignored local registry. It spends testnet tokens and facilitator fees,
+in the gitignored local registry. It spends 0.001 test aUSDd; Blocky sponsors network fees,
 performs one historical `/attest` query and writes public result JSON under
 `.artifacts`. It never calls `/attest-and-sign`. Do not rerun merely to inspect
 existing evidence, and do not copy the private registry into the repository or VPS.

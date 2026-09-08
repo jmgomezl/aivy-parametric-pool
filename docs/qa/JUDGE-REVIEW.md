@@ -1,5 +1,9 @@
 # QA and judge review · September 8, 2026
 
+**Follow-up:** [hosted Blocky402](../BLOCKY402.md) replaces the self-hosted payment
+path described in this historical review. Current prize guidance is in the
+[submission guide](../SUBMISSION.md).
+
 **Ready to record the core demonstration.** The reviewed fixes are deployed.
 Three fresh x402 oracle payments and a managed Uniswap swap confirmed on testnet.
 No unresolved application blocker remains in the checked recording paths; prize

@@ -31,7 +31,7 @@ inspect existing testnet cover NFTs. [Screenshot and recording notes](docs/media
 | Buyer | **Your demo account → Start**, then choose a place and **Pay premium & create cover** | 1,000 starter aUSDd; actual premium debit, NFT receipt and scheduled payout. |
 | Cover funder | **Fund the pool → Deposit into shared pool** | Tokens enter the shared insurance pool; ARPS shares arrive atomically. Balance and receipt update. |
 | Swap liquidity provider | **Swap → Provide swap liquidity** | Create a real Uniswap V3 NFT, add tokens, collect swap fees and withdraw the position. |
-| Policyholder | **Policy → Check for earthquakes** | Three policy-bound oracle requests, up to 0.003 test aUSDd via x402; qualifying signatures can release the scheduled payout. |
+| Policyholder | **Policy → Check for earthquakes** | Three policy-bound oracle requests, up to 0.003 test aUSDd via **Blocky402 x402**; qualifying signatures can release the scheduled payout. |
 | Broker | **Refer & earn → Copy referral link** | Buyer pays the same premium; 15% goes to the broker and 85% to the pool. Commission history is visible. |
 
 [Verified business flows](docs/qa/PLATFORM-QA.md) · [Current QA and judge review](docs/qa/JUDGE-REVIEW.md) · [UX review](docs/qa/READINESS-REVIEW.md).
@@ -267,7 +267,7 @@ transfers, with links to HashScan.*
 | Open a policy → **Agent guardrails & proof** | Runtime limits plus separate mainnet controls: [1 HBAR transferred](https://hashscan.io/mainnet/schedule/0.0.10843723), [5 HBAR blocked](https://hashscan.io/mainnet/schedule/0.0.10843725) without the agent signature. |
 | Open **Swap → Bridge / Swap** | Real Hedera → Axelar → Sepolia → Uniswap test-token flow. [Receipts](docs/evidence/cross-chain-testnet.json). Mainnet prices are a separate preview. |
 | Open **Swap → Provide swap liquidity** | Actual pool, seed NFT art, wallet positions, exact approvals, add/collect/withdraw. [Verified lifecycle](docs/evidence/uniswap-liquidity.json). Separate from ARPS. |
-| Open **Onchain / Verify** | Testnet NFT, transfers and paid oracle evidence. [x402 payment receipt](docs/evidence/x402-testnet.json); self-hosted facilitator. |
+| Open **Onchain / Verify** | Testnet NFT, transfers and paid oracle evidence. [Blocky402 integration](docs/BLOCKY402.md); hosted testnet facilitator. |
 | Open **Funding estimate** | Proposed per-policy contribution, premium share and capital-at-risk outcomes. No deposit or LP NFT is issued; actual LP primitives use shared-pool fungible shares. |
 
 ## Security by architecture
@@ -307,6 +307,10 @@ flowchart LR
 | Oracle / x402 / Uniswap | Exact terms/transfer verification; explicitly bounded payments; mainnet quote-only authority; bounded Sepolia preparation and isolated demo signing. |
 | Runtime | Private key/config files, loopback services behind TLS, patched minimal dependencies. |
 
+**Hosted x402:** [Blocky402 payment flow, code and guardrails](docs/BLOCKY402.md).
+The three oracle services use its Hedera testnet verify/settle API; no local
+facilitator fallback or mainnet funds are needed.
+
 **Latest hardening:** [crash recovery, x402 ordering and interleaved terms](docs/qa/SECURITY-FINAL.md).
 The September 6 baseline had 41 offline tests; the current review covers the expanded suite. A [live refusal check](docs/evidence/agent-guardrails.json)
 confirmed an oversized request caused no ledger write. [Current runtime limits](https://quorum.aivylabs.xyz/api/guardrails).
@@ -322,7 +326,7 @@ confirmed an oversized request caused no ledger write. [Current runtime limits](
 | Capacity and replay protection | Exclusive issuance lock, fresh pool balance and durable reservation before ledger writes. Reusing a request ID does not mint again. Interrupted writes retain reservations and receipt checkpoints. A permanent kernel lock serializes recovery across processes; dead-owner markers are reclaimed inside it, while malformed markers refuse work. | [Issuance](src/policy/issue.js), [book](src/book.js), [lock](src/issuance-lock.js), [safety tests](tests/safety.test.js) |
 | Policy-bound oracle authority | Verifies configured HCS topic, issuer signature, canonical terms hash, time window, network, asset, beneficiary and exact scheduled amount. Reassembles matching HCS chunks on both sides of their pointer, including interleaved messages. Rejects extra transfer legs, allowances and unsupported fields. Caller input cannot lower the published trigger; queries are bounded, missing data is not a positive vote, duplicate identities do not become a quorum. | [Policy binding](src/policy/binding.js), [oracle implementation](src/oracle/), [security review](docs/AGENT-SECURITY.md) |
 | Ledger-enforced signature gate | The pool requires **agent AND 2-of-3 oracle keys**. Oracle keys alone cannot spend. Signature evidence and observed execution are displayed separately. | [1 HBAR executed control](https://hashscan.io/mainnet/schedule/0.0.10843723), [5 HBAR blocked control](https://hashscan.io/mainnet/schedule/0.0.10843725) |
-| Bounded x402 payment authority | Client checks explicitly authorized resource, network, recipient, asset, fee payer and maximum amount before signing; paid redirects and automatic new payments after uncertain responses are refused. The service validates exact payment bodies before querying a catalogue, charges only if it can answer, and serves/signs only after a consensus receipt. Extra debits/approvals and excessive fees are refused. | [Payment policy](src/x402/payment-policy.js), [facilitator](src/x402/facilitator.js), [payment tests](tests/payments.test.js) |
+| Bounded x402 payment authority | Client checks explicitly authorized resource, network, recipient, asset, fee payer and maximum amount before signing; paid redirects and automatic new payments after uncertain responses are refused. The service checks exact payment bodies and payer signatures before querying, charges through Blocky402 only if it can answer, and serves/signs after its matching consensus receipt. A persistent attempt journal prevents replay across processes and restarts. Extra debits/approvals and excessive fees are refused. | [Payment policy](src/x402/payment-policy.js), [facilitator](src/x402/facilitator.js), [payment tests](tests/payments.test.js) |
 | Uniswap least privilege | Mainnet is quote-only. Sepolia execution pins the router, chain, token path, recipient, amount, minimum output and allowed commands. API key stays server-side. The isolated demo signer executes only validated Sepolia operations. | [Conversion tests](tests/cross-asset.test.js), [live quote evidence](docs/evidence/uniswap-quotes.json) |
 | Runtime and secret isolation | Project listeners bind to loopback behind TLS nginx; environment/registry files use 0600 and artifact directory 0700. Project-specific Node 22 runtime and patched protobuf, WebSocket and gRPC dependencies. Minimal runtime installation omits unrelated automatic peers. | [Operational review and install instructions](docs/AGENT-SECURITY.md#operational-review), [lockfile](package-lock.json) |
 | Visible verification | Open a policy → **Agent guardrails & proof** for current limits/usage and recorded authorization controls. Read-only endpoint exposes configuration without keys or IP identifiers. | [Live guardrails](https://quorum.aivylabs.xyz/api/guardrails), [UI implementation](ui/src/app/AgentGuardrails.tsx) |
@@ -352,7 +356,7 @@ shared authoritative book and lock. External spending can invalidate capacity.
 Real customer value requires independent key administration, managed/HSM signing
 with transaction policies, authenticated customer/funding actions, perimeter
 limits and alerting, recovery/backups, and transactional storage before scaling
-across hosts. The x402 facilitator has no production fee-sponsorship abuse budget
+across hosts. The hosted x402 facilitator controls fee sponsorship; the app does not claim a production abuse budget
 or automatic refund system. **No independent security audit or production
 readiness is claimed.** See the [full threat boundaries](docs/AGENT-SECURITY.md)
 for the architecture rationale and remaining work.
@@ -582,8 +586,8 @@ What is **new**, built during this event:
 3. **An issuance capacity guard** reserving aggregate exposure against available capital in the shared book. External spending can invalidate this off-ledger reservation.
 4. **Atomic premium settlement with an open broker channel** — buyer, pool and an
    arbitrary per-sale broker settled in one multi-party transaction.
-5. **x402-gated oracle services** — the oracle agents are the paid service, not
-   just consumers of one.
+5. **Blocky402-paid oracle services** — the oracle agents sell policy-bound
+   evidence through hosted testnet x402; the Quorum agent consumes the services.
 6. **Guarded Hedera → Axelar → Uniswap integration** — validates plugin-built
    transfers before signing, corrects native Hedera ITS gas units, journals the
    transaction before broadcast and matches source/destination events. This

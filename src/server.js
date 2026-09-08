@@ -20,6 +20,7 @@ import {demoService} from './demo/service.js';
 import {capability} from './demo/store.js';
 import { searchPlaces } from './places.js';
 import { paymentActivity } from './activity.js';
+import {BLOCKY_INFO} from './x402/blocky.js';
 import { AccountId, TokenId, TransferTransaction } from '@hiero-ledger/sdk';
 import { client, operator, assertOperatorKey, NETWORK, HASHSCAN } from './config.js';
 import { load } from './registry.js';
@@ -126,12 +127,12 @@ async function main() {
         catch(error) { return json(res,error.status??503,{ok:false,reason:'search_unavailable',message:error.status===400?error.message:'Worldwide search is unavailable. Try again or enter coordinates.'}); }
       }
 
-      if (route === '/api/guardrails' && req.method === 'GET') return json(res,200,{network:NETWORK,execution:'deterministic',publicWrites:NETWORK==='testnet',limits:LIMITS,budget:writeGuard.budget(),checkedAt:new Date().toISOString(),custody:'Shared demo host; separate keys are not independent operators.',authorization:'Agent AND 2 of 3 oracle keys',signing:'Fixed scheduled transfer; oracle verifies recorded terms and transfer bytes.'});
+      if (route === '/api/guardrails' && req.method === 'GET') return json(res,200,{network:NETWORK,execution:'deterministic',x402:NETWORK==='testnet'?BLOCKY_INFO:null,publicWrites:NETWORK==='testnet',limits:LIMITS,budget:writeGuard.budget(),checkedAt:new Date().toISOString(),custody:'Shared demo host; separate keys are not independent operators.',authorization:'Agent AND 2 of 3 oracle keys',signing:'Fixed scheduled transfer; oracle verifies recorded terms and transfer bytes.'});
 
       if (route === '/api/activity' && req.method === 'GET') return json(res, 200, { network: NETWORK, payments: paymentActivity(NETWORK), checkedAt: new Date().toISOString() });
 
       if (route === '/api/health') {
-        return json(res, 200, { ok: true, network: NETWORK, writesAllowed: NETWORK === 'testnet' });
+        return json(res, 200, { ok: true, network: NETWORK, writesAllowed: NETWORK === 'testnet', x402:NETWORK==='testnet'?BLOCKY_INFO:null });
       }
 
       if (route === '/api/pool') {

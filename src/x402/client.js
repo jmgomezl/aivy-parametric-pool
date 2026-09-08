@@ -72,7 +72,7 @@ export async function fetchPaid(url, { payerId, payerKey, network, policy, init 
   const { header, transactionId } = await buildPayment({ requirements, payerId, payerKey, network, policy });
   await checkpoint({transactionId,amount:requirements.amount,asset:requirements.asset,resource:url});
   try {
-    const response = await fetch(url, {...init,redirect:'error',signal:AbortSignal.timeout(30_000),headers:{...(init.headers??{}),'X-PAYMENT':header}});
+    const response = await fetch(url, {...init,redirect:'error',signal:AbortSignal.timeout(60_000),headers:{...(init.headers??{}),'X-PAYMENT':header}});
     const receipt=await response.clone().json().catch(()=>null);
     return {response,paid:receipt?.payment?.success===true,requirements,paymentSubmitted:true,uncertain:receipt?.payment?.success!==true};
   } catch {

@@ -3,10 +3,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 const file = (network, directory) => path.join(directory, `activity-${network}.jsonl`);
 const networks = new Set(['testnet', 'mainnet']);
-export function recordPayment({ network, transaction, amount, asset, resource }, directory = path.join(process.cwd(), '.artifacts')) {
+export function recordPayment({ network, transaction, amount, asset, resource, facilitator }, directory = path.join(process.cwd(), '.artifacts')) {
   if (!networks.has(network) || !/^\d+\.\d+\.\d+@\d+\.\d+$/.test(transaction) || !/^\d+$/.test(String(amount))) throw new Error('Invalid payment receipt');
   const url = new URL(resource);
   const event = { kind: 'x402-payment', network, transaction, amount: String(amount), asset: String(asset), resource: `${url.origin}${url.pathname}`, at: new Date().toISOString() };
+  if(facilitator?.name==='Blocky402'&&facilitator.url==='https://api.testnet.blocky402.com')event.facilitator={name:'Blocky402',url:facilitator.url,feePayer:facilitator.feePayer};
   fs.mkdirSync(directory, { recursive: true });
   fs.appendFileSync(file(network, directory), JSON.stringify(event) + '\n', { mode: 0o600 });
 }

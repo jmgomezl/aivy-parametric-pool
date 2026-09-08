@@ -1,5 +1,6 @@
 import {fetchPaid} from '../x402/client.js';
 import {SOURCES} from '../oracle/sources.js';
+import {BLOCKY_FEE_PAYER,BLOCKY_INFO} from '../x402/blocky.js';
 const order=['usgs','emsc','geofon'];
 const error=(message,status=400)=>{throw Object.assign(Error(message),{status});};
 export function latestPolicyCheck(store,serial){
@@ -23,10 +24,14 @@ export async function checkPolicy({demo,network,reg,agent,sessionId,policy,input
  const signer=demo.signer(sessionId);
  for(let i=0;i<order.length;i++){
   const sourceKey=order[i],resource=`https://${sourceKey}.aivylabs.xyz/attest-and-sign`;
-  const row={sourceKey,source:SOURCES[sourceKey].name,status:'checking'};checks.push(row);patch({checks});
+  const row={sourceKey,source:SOURCES[sourceKey].name,status:'checking',facilitator:BLOCKY_INFO};checks.push(row);patch({checks});
   try{
-   const result=await pay(resource,{payerId:signer.id,payerKey:signer.key,network,policy:{resource,payTo:reg.oracleAccountIds[i],feePayer:agent.id.toString(),asset:reg.demoTokenId,maxAmount:'1000'},init:{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({scheduleId:policy.scheduleId,termsPointer:policy.termsPointer})},checkpoint:payment=>{Object.assign(row,{paymentTxId:payment.transactionId,status:'payment-submitted'});patch({checks});}});
+   const result=await pay(resource,{payerId:signer.id,payerKey:signer.key,network,policy:{resource,payTo:reg.oracleAccountIds[i],feePayer:BLOCKY_FEE_PAYER,asset:reg.demoTokenId,maxAmount:'1000'},init:{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({scheduleId:policy.scheduleId,termsPointer:policy.termsPointer})},checkpoint:payment=>{Object.assign(row,{paymentTxId:payment.transactionId,status:'payment-submitted'});patch({checks});}});
    const body=await result.response.json();
+   if(!result.paid&&body.paymentSubmitted===false&&body.sourceKey===sourceKey&&[400,402,503].includes(result.response.status)){
+    Object.assign(row,{status:'unavailable',paid:false,paymentTxId:undefined,verdict:'Payment verification unavailable or refused. Nothing was paid; this source casts no vote.'});
+    patch({checks});continue;
+   }
    // A source that cannot answer declines before settling, so the signed payment
    // was never submitted. That is a source casting no vote, not a receipt to
    // reconcile: only 'source_unavailable' is returned ahead of the charge.
@@ -35,7 +40,7 @@ export async function checkPolicy({demo,network,reg,agent,sessionId,policy,input
     patch({checks});continue;
    }
    if(!result.response.ok||!result.paid||body.sourceKey!==sourceKey||typeof body.triggered!=='boolean')throw Error('Oracle response could not be verified.');
-   if(body.payment?.transaction!==row.paymentTxId)throw Error('Payment receipt does not match the submitted transaction.');
+   if(body.payment?.transaction!==row.paymentTxId||body.payment?.facilitator?.name!=='Blocky402'||body.payment?.facilitator?.url!==BLOCKY_INFO.url)throw Error('Payment receipt does not match the submitted transaction.');
    Object.assign(row,{status:body.unavailable?'unavailable':body.triggered?'qualifying-event':'no-match',paid:true,verdict:String(body.verdict??'').slice(0,300),queriedAt:body.queriedAt,query:body.query,signatureTxId:!body.unavailable&&body.triggered&&body.signature?.signed?body.signature.transactionId:undefined,alreadySettled:Boolean(body.signature?.alreadySettled),matches:(body.matches??[]).slice(0,3)});
   }catch{Object.assign(row,{status:row.paymentTxId?'needs-review':'unavailable',verdict:row.paymentTxId?'Payment submitted; check its receipt. No payment is repeated.':'Source unavailable or policy verification refused. No payment was submitted.'});}
   patch({checks});

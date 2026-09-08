@@ -1,8 +1,8 @@
 import { proto } from '@hiero-ledger/proto';
 // An x402 facilitator for Hedera, on the network we can actually run on.
 //
-// The deployed demo uses its own testnet facilitator. It does not satisfy the
-// separate Blocky402 requirement of Hedera's Agentic Payments prize.
+// Local verification is reused by the hosted Blocky402 adapter. The local
+// settle helper remains for isolated tests; live oracle routes use blocky.js.
 //
 // The facilitator's job is narrow and it never holds funds:
 //

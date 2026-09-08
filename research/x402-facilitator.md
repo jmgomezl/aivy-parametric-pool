@@ -1,4 +1,8 @@
-# x402 facilitator on Hedera — probe results (2026-09-04)
+# x402 facilitator on Hedera — historical probe (2026-09-04)
+
+**Corrected September 8:** the earlier probe missed `api.testnet.blocky402.com`.
+Hosted Hedera testnet support is verified and integrated. See [Blocky402](../docs/BLOCKY402.md).
+The original findings below are retained as a historical record, not current guidance.
 
 Probed live because the Hedera "AI & Agentic Payments" track ($6,000) requires
 hosting a **live** x402-gated service, and that is the single largest prize on

@@ -12,7 +12,9 @@ independent oracle custody.
 | `geofon.aivylabs.xyz` | GEOFON oracle on 8813 |
 
 `GET /` on an oracle is free. `POST /attest` and `/attest-and-sign` use the
-self-hosted testnet x402 facilitator. Checks are request-driven; no background
+hosted Blocky402 testnet facilitator. Its URL and fee payer are pinned in
+`src/x402/blocky.js`; no facilitator key or API key is required. Preserve
+`.artifacts/blocky-payments-testnet/` with the other journals. Checks are request-driven; no background
 earthquake monitor is deployed. Hedera executes once the required signatures exist.
 
 ## Files and custody

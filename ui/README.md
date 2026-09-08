@@ -68,9 +68,9 @@ The app distinguishes offchain quotes, manual oracle checks, and unminted LP pre
 New policies retain NFT mint, delivery, and freeze transaction IDs; older policies
 link to the NFT itself. Oracle signatures are schedule approvals, not token allowances.
 
-The deployed self-hosted x402 facilitator settles on testnet. Blocky's public
-`/supported` endpoint advertised only `hedera:mainnet` on September 6, 2026;
-it is not the deployed payment path. No mainnet x402 payment is claimed.
+The deployed oracle payment flow uses hosted **Blocky402 on Hedera testnet**.
+The action and new receipts name Blocky402; historical receipts keep their original
+metadata. No mainnet Blocky payment is claimed. [Flow and guards](../docs/BLOCKY402.md).
 `/api/activity` reads a bounded, network-specific receipt journal written only
 following successful payment consensus. Historical payments are not inferred.
 

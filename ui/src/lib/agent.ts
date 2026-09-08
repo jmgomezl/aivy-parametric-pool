@@ -97,7 +97,7 @@ export const payoutLabel = (p: Policy) => p.asset && p.asset !== 'HBAR' ? `${p.p
 export type RequestStatus = {ok:true;status:'creating'|'needs_review'|'complete';policy?:Policy;message?:string;place?:string} | Refusal;
 export const requestStatus=(id:string)=>call<RequestStatus>(`/api/requests/${encodeURIComponent(id)}`,undefined,10000);
 
-export interface PaymentReceipt { kind: 'x402-payment'; network: Network; transaction: string; amount: string; asset: string; resource: string; at: string }
+export interface PaymentReceipt { kind: 'x402-payment'; network: Network; transaction: string; amount: string; asset: string; resource: string; at: string; facilitator?: { name: string; url: string; feePayer: string } }
 export const activity = () => call<{ network: Network; payments: PaymentReceipt[]; checkedAt: string }>('/api/activity', undefined, 10000);
 
 export async function findPlaces(query: string, signal: AbortSignal): Promise<{name:string;lat:number;lon:number}[]> {
