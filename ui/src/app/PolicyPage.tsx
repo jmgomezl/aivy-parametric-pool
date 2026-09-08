@@ -51,7 +51,7 @@ export function PolicyPage({serial}:{serial:string}){
         <div className="ledger-freshness" role="status">{a.policiesError??(ledger?.available?`Ledger checked ${new Date(ledger.checkedAt).toLocaleTimeString()}`:'Ledger status unavailable')} <button className="text-button" onClick={()=>void refresh()}>Refresh ↻</button></div>
         {!paid&&!expired?<div className="monitor-note"><strong>{p.monitoring?.mode==='automatic'?'Oracle checks enabled':'Event checks: manual demo'}</strong><span>{p.monitoring?.message??'The payout waits on the ledger. Oracle services must be asked to verify an event.'}</span></div>:null}
         </details>
-        {!paid&&!expired?<PolicyChecks serial={serial} enabled={Boolean(ledger?.available&&a.online)}/>:null}
+        {!paid&&!expired?<PolicyChecks serial={serial} enabled={Boolean(ledger?.available&&a.online)} legacy={!p.trigger}/>:null}
       </div>
     </div>
     <details className="proof-details"><summary>View on Hedera <span>↗</span></summary><dl className="facts"><div><dt>Demo beneficiary</dt><dd><Id kind="account" id={p.buyerId} network={a.network}/></dd></div><div><dt>Scheduled payout</dt><dd><Id kind="schedule" id={p.scheduleId} network={a.network}/></dd></div><div><dt>Premium transfer</dt><dd><Id kind="transaction" id={p.saleTxId} network={a.network}/></dd></div><div><dt>Recorded terms</dt><dd><Id kind="topic" id={p.termsPointer} href={hsPointer(p.termsPointer,a.network)} network={a.network}/></dd></div></dl></details>
