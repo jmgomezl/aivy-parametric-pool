@@ -30,6 +30,7 @@
     "@hiero-ledger/sdk": "^2.87.0",
     "dotenv": "^16.4.5",
     "ethers": "6.17.0",
+    "fs-ext": "2.1.1",
     "hak-axelar-plugin": "1.0.1",
     "hak-scheduled-settlement": "github:jmgomezl/hak-scheduled-settlement",
     "hak-uniswap-plugin": "github:jmgomezl/hak-uniswap-plugin"

@@ -8,7 +8,7 @@ Live: https://quorum.aivylabs.xyz/
 App: https://github.com/jmgomezl/aivy-parametric-pool
 Reusable plugin: https://github.com/jmgomezl/hak-scheduled-settlement
 
-Latest [readiness and UX review](qa/READINESS-REVIEW.md). Keep the recording focused
+Latest [security fixes and submission review](qa/SECURITY-FINAL.md); [UX review](qa/READINESS-REVIEW.md). Keep the recording focused
 on one complete cover journey and the Hedera → Uniswap path; technical evidence
 is one disclosure away. No extension or faucet setup is needed in the public app.
 
@@ -45,10 +45,26 @@ new scheduled-settlement plugin, key restriction, pricing, reservation guard,
 premium split and paid oracle services. Include [AI assistance](AI-ASSISTANCE.md).
 
 Official rules: https://ethglobal.com/events/ethonline2026/info/details
-Checked September 6, 2026: video must be 2–4 minutes, at least 720p, with human
+Rechecked September 8, 2026: video must be 2–4 minutes, at least 720p, with human
 narration (no AI voiceover); deadline September 13 at 12:00 EDT / 11:00 Bogotá.
 Select up to three partner prizes and explain the actual integration for each.
-Partner-specific eligibility still needs to be confirmed against the chosen prizes.
+Confirm your selected track in the event dashboard. The technical fit below does
+not certify registration or organizer acceptance.
+
+### Partner prize fit
+
+| Prize | Current fit / remaining action |
+| --- | --- |
+| **Uniswap Stack Contribution · Continuity** | Working Trading API swaps and V3 position operations, with code and receipts linked in the README. [FEEDBACK.md](../FEEDBACK.md) is prepared; **submit the [developer feedback form](https://developers.uniswap.org/hackathon-feedback)** with its public GitHub link. Form submission has not been verified. |
+| **Hedera Continuity** | Plausible fit for the disclosed prior project and substantive new scheduling, paid-oracle and cross-chain work. Confirm Continuity registration and explain the new work using the repository history. |
+| **Hedera AI & Agentic Payments** | **Current gap:** the rules require Blocky402 settlement. This application uses a self-hosted testnet facilitator. Real x402 receipts alone do not meet that facilitator requirement. |
+
+The Hedera tokenization prize requires Asset Tokenization Studio; the Harness
+prize requires a qualifying Harness contribution. Neither is established by the
+current HTS NFTs or HAK plugin alone. Do not claim those integrations.
+
+Sources checked September 8, 2026: [Uniswap prize rules](https://ethglobal.com/events/ethonline2026/prizes/uniswap-foundation)
+and [Hedera prize rules](https://ethglobal.com/events/ethonline2026/prizes/hedera).
 
 Before recording, check `/api/health`, `/api/pool`, `/api/activity`, and policy
 receipts. Use the existing demo policies if a new issuance is interrupted; do not

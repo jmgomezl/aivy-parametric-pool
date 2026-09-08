@@ -41,7 +41,7 @@ const decodeHeader = (raw) => {
  * Returns `{ paid: false, status: 402, body }` to answer with, or
  * `{ paid: true, settlement }` once the payment is on-chain.
  */
-export async function charge({ header, terms, feePayerId, feePayerKey, network }) {
+export async function charge({ header, terms, feePayerId, feePayerKey, network, beforeSettle }, { settlePayment = settle, publishReceipt = recordPayment } = {}) {
   if (!header) {
     return {
       paid: false, status: 402,
@@ -53,6 +53,9 @@ export async function charge({ header, terms, feePayerId, feePayerKey, network }
   if (!payload) {
     return { paid: false, status: 400, body: { error: 'malformed_payment_header' } };
   }
+  if (payload.x402Version !== X402_VERSION || payload.scheme !== terms.scheme || payload.network !== terms.network) {
+    return { paid: false, status: 402, body: { x402Version: X402_VERSION, error: 'payment_context_mismatch', accepts: [terms] } };
+  }
 
   const check = verify(payload, terms);
   if (!check.isValid) {
@@ -62,9 +65,15 @@ export async function charge({ header, terms, feePayerId, feePayerKey, network }
     };
   }
 
+  // Expensive resource work starts only after the exact transfer is validated.
+  // A resource may decline here without submitting payment. Its result remains
+  // private until settlement succeeds.
+  const refusal = await beforeSettle?.();
+  if (refusal) return { ...refusal, paid: false };
+
   // Settle before serving. Verifying only proves the transaction would pay;
   // until it reaches consensus, nothing has actually been paid.
-  const settlement = await settle(payload, terms, { feePayerId, feePayerKey, network });
+  const settlement = await settlePayment(payload, terms, { feePayerId, feePayerKey, network });
   if (!settlement.success) {
     return {
       paid: false, status: 402,
@@ -72,7 +81,7 @@ export async function charge({ header, terms, feePayerId, feePayerKey, network }
     };
   }
 
-  try { recordPayment({ network, transaction: settlement.transaction, amount: terms.amount, asset: terms.asset, resource: terms.resource }); }
+  try { publishReceipt({ network, transaction: settlement.transaction, amount: terms.amount, asset: terms.asset, resource: terms.resource }); }
   catch { console.warn('Payment settled; public receipt journal unavailable.'); }
   return { paid: true, settlement };
 }

@@ -15,6 +15,9 @@ For the work represented in this task, Codex assistance includes:
   and illustrative premium-income calculations.
 - `src/activity.js`, `src/x402/gate.js`, `scripts/demo-x402.js`: public payment
   evidence and a bounded testnet verification run.
+- `src/issuance-lock.js`, `src/oracle/verify-policy.js`, `src/oracle/service.js`,
+  `src/x402/gate.js`, and regression tests: September 8 fixes for process-crash
+  recovery, payment/query ordering, and interleaved HCS chunks.
 - Earlier audit work in this task assisted issuance locking/recovery, policy-bound
   oracle verification, payment validation, tests and reproduction documentation.
 - READMEs, `AUDIT-IMPLEMENTATION.md`, and `docs/`: explanation, audit and recording guidance.

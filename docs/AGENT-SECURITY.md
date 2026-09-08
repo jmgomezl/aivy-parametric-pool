@@ -30,14 +30,14 @@ flowchart TD
 | Budget control happens outside any model | `src/guards.js`: limits validated at startup; attempt/IP/hour, attempt/24h and modeled cover/24h limits are consumed before the first ledger action. Interrupted attempts remain charged. |
 | Restart does not reset limits | Private atomic JSON journal under `.artifacts/write-budget-testnet.json`. First migration seeds known policies/reservations. Missing historical IP attribution cannot be reconstructed; the global budget is restored. Invalid journal pauses writes. |
 | Quotas cannot be bypassed with a forged IP prefix | Loopback proxy is explicitly trusted; only the final proxy-appended address is used. External peers' forwarding headers are ignored. Nginx appends the actual client address. |
-| Pool capacity is not double-promised | `src/issuance-lock.js`, `src/policy/issue.js`, `src/book.js`: cross-process lock, fresh SDK balance check and persistent reservation before account creation. An abandoned lock fails closed. |
+| Pool capacity is not double-promised | `src/issuance-lock.js`, `src/policy/issue.js`, `src/book.js`: kernel `flock`, fresh SDK balance check and persistent reservation before account creation. Dead-owner recovery is serialized by the same kernel lock; corrupt ownership metadata refuses work. |
 | Retries do not mint a second policy | Existing request ID returns its original completed policy or a needs-review response. Partial progress is persisted; uncertain reservations are not silently released. |
-| The schedule is bound to policy terms | `src/policy/binding.js` hashes canonical terms; oracle verifier checks the configured HCS topic, issuer signature, time window, exact asset, amount and beneficiary, rejects extra legs/allowances/unknown fields. |
+| The schedule is bound to policy terms | `src/policy/binding.js` hashes canonical terms; oracle verifier checks the configured HCS topic, issuer signature, time window, exact asset, amount and beneficiary, rejects extra legs/allowances/unknown fields. Chunk identity and number reconstruct terms across interleaved messages in either direction. |
 | Oracle input cannot lower the insured trigger | `/attest-and-sign` derives its spec from published terms, not caller-provided conditions. Catalogue queries are bounded; missing data is not a positive vote. |
 | One catalogue is not a quorum | Distinct signing identities are counted. The helper quorum also deduplicates catalogue names. The live services use USGS, EMSC and GEOFON. |
 | Network authorization is separate from app checks | The pool key is `agent AND threshold(2, oracle keys)`. Recorded mainnet control and blocked schedules are linked from “Agent guardrails & proof”. Those prove the key restriction, not independent operators. |
 | An HTTP 402 cannot freely spend a caller's money | `src/x402/payment-policy.js`: an explicit resource, network, recipient, token, fee payer and maximum amount must match before signing. Paid redirects are refused. An uncertain response never causes an automatic new payment. |
-| The facilitator signs only the required payment | `src/x402/facilitator.js` decodes every node body and rejects extra debits, unrelated assets, allowances and excessive fee caps. Consensus receipt, not precheck, determines success. |
+| The facilitator signs only the required payment | `src/x402/facilitator.js` decodes every node body and rejects extra debits, unrelated assets, allowances and excessive fee caps. Header/body validation precedes catalogue I/O. An unavailable source declines before settlement. Consensus receipt, not precheck, determines success. |
 | Mainnet Uniswap quotes do not have spending authority | Server selects only the quote tool; USDC→ETH on Base/Unichain is allowlisted and bounded. No EVM key is required, no approval or broadcast occurs. API key stays server-side. |
 | Judges can inspect deployed configuration | `GET /api/guardrails` exposes network, execution mode, limits and current usage, without IP identifiers or secrets. UI labels this as runtime configuration, not a security certification. |
 
@@ -66,6 +66,52 @@ The facilitator still relies on ledger signature verification and receipts, and
 has no production fee-sponsorship abuse budget. Paid service failures need receipt
 reconciliation; there is no automatic refund system. No production readiness or
 independent security certification is claimed.
+
+## Kernel locking and recovery
+
+```mermaid
+flowchart LR
+  Request[Writer] --> Kernel[Exclusive OS lock]
+  Kernel --> Owner{Owner marker}
+  Owner -->|Absent or provably dead| Work[Reserve / journal / perform one operation]
+  Owner -->|Live or unreadable| Refuse[Wait or refuse]
+  Work --> Close[Close descriptor: release OS lock]
+  Crash[Process dies] --> Close
+```
+
+The `.lock.guard` inode is permanent. Every writer acquires it with nonblocking
+`flock` and holds it until work and marker cleanup finish. Competing calls wait
+without occupying a blocked native worker thread. A crash releases the kernel
+lock; only its next holder may remove a valid `.lock` marker whose PID returns
+`ESRCH`. Permission errors and other uncertain states are never treated as death.
+The guard file is not a lease and is not deleted or replaced during recovery.
+
+This is a single-host, local-filesystem protocol. All writers must share the same
+artifact directory and locking implementation. Do not use it as a distributed/NFS
+lock. Never remove a guard file, rename the artifact directory, or mix older
+PID-only writers with the new implementation while operations can run.
+
+**Upgrade:** drain and stop all Quorum underwriting/signing writers, keep `.artifacts`
+and private environment files in place, install/build native dependencies under
+Node 22 on the target host, then start the new implementation. Keep the authoritative
+journals; do not copy local artifacts to the VPS. Test on Linux before reopening.
+An older live PID or a malformed marker requires operator inspection.
+
+Lock recovery does not retry ledger work, release exposure, change nonces or reset
+budgets. An interrupted request continues to use its durable reservation and saved
+transaction identity. Inspect its original ledger receipts before any correction.
+
+HCS chunk lookup searches up to five 100-message pages on each side of the pointer,
+with a shared 10-second fetch deadline. It joins only matching original transaction
+identities and integer chunk numbers; missing, conflicting, foreign or repeated
+pages refuse signing. The bound is explicit: unusually dense/interleaved histories
+may need operator review; the service never fills missing bytes by guesswork.
+
+[Process-crash and contention tests](../tests/issuance-lock.test.js) ·
+[Payment ordering](../tests/oracle-payment-order.test.js) ·
+[Interleaved terms](../tests/policy-chunks.test.js) ·
+[flock semantics](https://man7.org/linux/man-pages/man2/flock.2.html) ·
+[Native binding](https://github.com/baudehlo/node-fs-ext).
 
 ## Reproduce checks
 
@@ -98,12 +144,15 @@ The network-signature behavior is described in
 
 ### Deployed runtime
 
-Use Node 22 or newer. The VPS uses a project-specific Node 22.23.2 installation
+Use Node 22 (`nvm use` reads the repository pin). The VPS uses a project-specific Node 22.23.2 installation
 under `/opt/quorum-runtime`; its archive was checked against Node.js's official
 HTTPS SHA-256 manifest. Only Quorum's four PM2 processes select this interpreter.
 Other applications and the system Node installation remain untouched.
 
 The lockfile pins patched protobuf 7/8, WebSocket 8 and gRPC 1.x versions.
+`fs-ext@2.1.1` supplies native `flock`: installation needs Python 3, make and a
+C++ toolchain. Build dependencies with the same Node major version used by PM2;
+never copy the macOS native binary to Linux.
 The production dependency tree is installed with `--omit=dev --omit=peer` after
 explicitly declaring the modern Agent Kit needed by the settlement plugin. The
 older unused automatically installed Agent Kit peer is omitted. Audit the actual
@@ -228,6 +277,12 @@ pending request when that completed action appears in the account journal.
 
 ### Paid source failures
 
+The gate validates a payment header and exact transfer before any catalogue read.
+A source that cannot answer returns `503 source_unavailable` before settlement:
+no charge and no vote. A successful query stays private until payment reaches
+consensus, then the service can return its result or sign. A contradictory response
+claiming both payment and pre-charge refusal retains its payment ID for review.
+
 Catalogue reads use one 18-second budget and at most three attempts, including
 body parsing. FDSN HTTP 204 is an empty record; malformed or empty HTTP 200
 responses are unavailable, never a negative vote. A confirmed x402 receipt
@@ -302,8 +357,8 @@ are rejected. Reviewed minimum output and matching-token caps survive rebuilding
 Exact approvals and each signed transaction are journaled before broadcast.
 Unknown submissions reconcile the original bytes/hash; they cannot mint again.
 
-Wallet and sponsor file locks serialize nonces across processes. Corrupt journals
-or abandoned locks fail closed for operator review. A daily sponsor budget,
+Wallet and sponsor kernel locks serialize nonces and crash recovery across processes.
+Corrupt journals or malformed owner markers fail closed for operator review. A daily sponsor budget,
 per-transaction fee cap, per-wallet allowance and retained sponsor reserve bound
 exposure; part of the wallet allowance is reserved for LP removal. Public
 responses expose addresses and receipts, never keys or signed raw bytes.

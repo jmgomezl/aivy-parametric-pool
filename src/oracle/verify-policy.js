@@ -41,22 +41,35 @@ export async function readTermsMessage(network,topicId,first,fetcher=fetch){
   const identity=c=>{const t=c.initial_transaction_id;return t?`${t.account_id}/${t.transaction_valid_start}/${t.nonce??0}/${t.scheduled??false}`:'';};
   const expected=identity(chunk);if(!expected)throw new Error('Missing chunk identity');
   const parts=new Map([[1,first.message]]);
-  // Chunks of one submission can reach consensus out of order, so a sibling may
-  // sit *before* the pointer. Scanning only forward would leave those terms
-  // permanently unreadable even though every byte is on the ledger.
-  const from=Math.max(1,first.sequence_number-(chunk.total-1));
-  let path=`/topics/${topicId}/messages?sequencenumber=gte:${from}&order=asc&limit=100`;
-  for(let page=0;page<5&&parts.size<chunk.total&&path;page++){
-    const result=await mirrorGet(network,path,fetcher);
-    for(const message of result.messages??[]){const c=message.chunk_info;
-      if(message.sequence_number===first.sequence_number)continue;
-      if(!c||identity(c)!==expected)continue;
-      if(c.total!==chunk.total||c.number<1||c.number>chunk.total||parts.has(c.number))throw new Error('Inconsistent policy message chunks');
-      parts.set(c.number,message.message);
+  // Sequence distance is unrelated to chunk count: other submissions can sit
+  // between siblings. Search both sides of the pointer, nearest first, with a
+  // bounded 500 messages per direction. Identity/number, never adjacency, joins them.
+  if(!Number.isSafeInteger(first.sequence_number)||first.sequence_number<1)throw new Error('Invalid policy message sequence');
+  let paths=[`/topics/${topicId}/messages?sequencenumber=gt:${first.sequence_number}&order=asc&limit=100`,
+    `/topics/${topicId}/messages?sequencenumber=lt:${first.sequence_number}&order=desc&limit=100`];
+  const deadline=AbortSignal.timeout(10000);
+  const boundedFetch=(url,options)=>fetcher(url,{...options,signal:AbortSignal.any([options.signal,deadline])});
+  const visited=new Set();
+  for(let page=0;page<5&&parts.size<chunk.total&&paths.length;page++){
+    const results=await Promise.all(paths.map(route=>{
+      if(visited.has(route))throw new Error('Repeated message pagination');
+      visited.add(route);return mirrorGet(network,route,boundedFetch);
+    }));
+    paths=[];
+    for(const result of results){
+      if(!Array.isArray(result.messages)||result.messages.length>100)throw new Error('Invalid policy message page');
+      for(const message of result.messages){const c=message.chunk_info;
+        if(message.sequence_number===first.sequence_number)continue;
+        if(!c||identity(c)!==expected)continue;
+        if(c.total!==chunk.total||!Number.isInteger(c.number)||c.number<1||c.number>chunk.total||parts.has(c.number))throw new Error('Inconsistent policy message chunks');
+        parts.set(c.number,message.message);
+      }
+      const next=result.links?.next;
+      if(next){
+        if(typeof next!=='string'||!next.startsWith(`/api/v1/topics/${topicId}/messages?`))throw new Error('Invalid message pagination');
+        paths.push(next.replace(/^\/api\/v1/,''));
+      }
     }
-    const next=result.links?.next;
-    if(next&&!next.startsWith(`/api/v1/topics/${topicId}/messages?`))throw new Error('Invalid message pagination');
-    path=next?.replace(/^\/api\/v1/,'');
   }
   if(parts.size!==chunk.total)throw new Error('Policy message is incomplete; retry after mirror indexing');
   const bytes=Buffer.concat(Array.from({length:chunk.total},(_,i)=>Buffer.from(parts.get(i+1),'base64')));

@@ -25,3 +25,11 @@ test('a source that declines before settling is not paid and does not need revie
   assert.ok(r.checks.every(c=>c.status==='unavailable'&&!c.paid&&!c.paymentTxId));
  }finally{f.done();}
 });
+
+test('a contradictory paid/unavailable response retains the original payment for review',async()=>{
+ const f=fixture();try{
+  const pay=async(url,o)=>{await o.checkpoint({transactionId:'0.0.1@123.000000001'});return {paid:true,response:{ok:false,status:503,json:async()=>({error:'source_unavailable',sourceKey:new URL(url).hostname.split('.')[0]})}};};
+  const r=await checkPolicy({...f.config,pay});
+  assert.equal(r.needsReview,true);assert.ok(r.checks.every(c=>c.status==='needs-review'&&c.paymentTxId));
+ }finally{f.done();}
+});

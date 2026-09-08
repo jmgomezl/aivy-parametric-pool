@@ -34,7 +34,7 @@ account payments, shared-pool deposits, oracle checks and bridge/swap controls.*
 | Policyholder | **Policy → Check for earthquakes** | Three policy-bound oracle requests, up to 0.003 test aUSDd via x402; qualifying signatures can release the scheduled payout. |
 | Broker | **Refer & earn → Copy referral link** | Buyer pays the same premium; 15% goes to the broker and 85% to the pool. Commission history is visible. |
 
-[Verified business flows](docs/qa/PLATFORM-QA.md) · [Current readiness review](docs/qa/READINESS-REVIEW.md).
+[Verified business flows](docs/qa/PLATFORM-QA.md) · [Current security and submission review](docs/qa/SECURITY-FINAL.md) · [UX review](docs/qa/READINESS-REVIEW.md).
 
 No referral means 100% of the premium goes to the pool. There is no separate
 platform fee. Shared insurance-pool shares use demo 1:1 issuance, not NAV pricing;
@@ -102,6 +102,8 @@ underwriting rule. Oracle software checks conditions. Separate keys on our demo
 host do not prove independent operators.
 
 ## Why Uniswap
+
+[Developer feedback](FEEDBACK.md) · [Prize requirements and remaining submission steps](docs/SUBMISSION.md#partner-prize-fit)
 
 **A Hedera-native application can reach Uniswap liquidity without custom Solidity.**
 Cover settles through Hedera. Axelar ITS moves the demo asset to Sepolia; the
@@ -293,12 +295,12 @@ flowchart LR
 | --- | --- |
 | Public request | Testnet-only issuance, bounded JSON and fields; no caller-selected beneficiary or raw transaction. |
 | Spending admission | Default **3 attempts/IP/hour · 100 attempts/24h · $20k modeled cover/24h**; survives restart. |
-| Interrupted issuance | Idempotent request IDs, retained reservations, fail-closed locks and reconciliation. |
+| Interrupted issuance | Idempotent request IDs, retained reservations, kernel locking and reconciliation. |
 | Oracle / x402 / Uniswap | Exact terms/transfer verification; explicitly bounded payments; mainnet quote-only authority; bounded Sepolia preparation and isolated demo signing. |
 | Runtime | Private key/config files, loopback services behind TLS, patched minimal dependencies. |
 
-**Evidence:** 41 offline tests passed locally and on the VPS in the September 6
-review; UI build passed. A [live refusal check](docs/evidence/agent-guardrails.json)
+**Latest hardening:** [crash recovery, x402 ordering and interleaved terms](docs/qa/SECURITY-FINAL.md).
+The September 6 baseline had 41 offline tests; the current review covers the expanded suite. A [live refusal check](docs/evidence/agent-guardrails.json)
 confirmed an oversized request caused no ledger write. [Current runtime limits](https://quorum.aivylabs.xyz/api/guardrails).
 
 <details>
@@ -309,10 +311,10 @@ confirmed an oversized request caused no ledger write. [Current runtime limits](
 | Restricted public authority | Public issuance is testnet-only. Exact input fields, typed coordinates, $1–$50 modeled budget, 7–62 day duration and an 8 KB JSON object limit. A visitor cannot supply a beneficiary, key or arbitrary transaction to issuance. | [HTTP validation](src/http-safety.js), [API routes](src/server.js) |
 | Durable spending admission | Default limits: **3 attempts/IP/hour, 100 attempts/rolling 24h, $20,000 modeled cover/rolling 24h**. Consumed before ledger actions; failed or uncertain admitted attempts remain charged. Configuration is validated. Atomic private journal survives restarts; invalid journal pauses writes. | [Budget guard](src/guards.js), [deployed refusal evidence](docs/evidence/agent-guardrails.json) |
 | Trustworthy request identity | Forwarding headers are trusted only from a configured loopback proxy, using the final proxy-appended address. Budget records use HMAC-derived IP identifiers; public errors omit internal exception details. | [HTTP safety](src/http-safety.js), [guardrail tests](tests/guardrails.test.js) |
-| Capacity and replay protection | Exclusive issuance lock, fresh pool balance and durable reservation before ledger writes. Reusing a request ID does not mint again. Interrupted writes retain reservations and public receipt checkpoints for reconciliation; abandoned locks fail closed. | [Issuance](src/policy/issue.js), [book](src/book.js), [lock](src/issuance-lock.js), [safety tests](tests/safety.test.js) |
-| Policy-bound oracle authority | Verifies configured HCS topic, issuer signature, canonical terms hash, time window, network, asset, beneficiary and exact scheduled amount. Rejects extra transfer legs, allowances and unsupported fields. Caller input cannot lower the published trigger; queries are bounded, missing data is not a positive vote, duplicate identities do not become a quorum. | [Policy binding](src/policy/binding.js), [oracle implementation](src/oracle/), [security review](docs/AGENT-SECURITY.md) |
+| Capacity and replay protection | Exclusive issuance lock, fresh pool balance and durable reservation before ledger writes. Reusing a request ID does not mint again. Interrupted writes retain reservations and receipt checkpoints. A permanent kernel lock serializes recovery across processes; dead-owner markers are reclaimed inside it, while malformed markers refuse work. | [Issuance](src/policy/issue.js), [book](src/book.js), [lock](src/issuance-lock.js), [safety tests](tests/safety.test.js) |
+| Policy-bound oracle authority | Verifies configured HCS topic, issuer signature, canonical terms hash, time window, network, asset, beneficiary and exact scheduled amount. Reassembles matching HCS chunks on both sides of their pointer, including interleaved messages. Rejects extra transfer legs, allowances and unsupported fields. Caller input cannot lower the published trigger; queries are bounded, missing data is not a positive vote, duplicate identities do not become a quorum. | [Policy binding](src/policy/binding.js), [oracle implementation](src/oracle/), [security review](docs/AGENT-SECURITY.md) |
 | Ledger-enforced signature gate | The pool requires **agent AND 2-of-3 oracle keys**. Oracle keys alone cannot spend. Signature evidence and observed execution are displayed separately. | [1 HBAR executed control](https://hashscan.io/mainnet/schedule/0.0.10843723), [5 HBAR blocked control](https://hashscan.io/mainnet/schedule/0.0.10843725) |
-| Bounded x402 payment authority | Client checks explicitly authorized resource, network, recipient, asset, fee payer and maximum amount before signing; paid redirects and automatic new payments after uncertain responses are refused. Facilitator validates exact payment bodies, rejects extra debits/approvals and excessive fees, and requires a consensus receipt. | [Payment policy](src/x402/payment-policy.js), [facilitator](src/x402/facilitator.js), [payment tests](tests/payments.test.js) |
+| Bounded x402 payment authority | Client checks explicitly authorized resource, network, recipient, asset, fee payer and maximum amount before signing; paid redirects and automatic new payments after uncertain responses are refused. The service validates exact payment bodies before querying a catalogue, charges only if it can answer, and serves/signs only after a consensus receipt. Extra debits/approvals and excessive fees are refused. | [Payment policy](src/x402/payment-policy.js), [facilitator](src/x402/facilitator.js), [payment tests](tests/payments.test.js) |
 | Uniswap least privilege | Mainnet is quote-only. Sepolia execution pins the router, chain, token path, recipient, amount, minimum output and allowed commands. API key stays server-side. The isolated demo signer executes only validated Sepolia operations. | [Conversion tests](tests/cross-asset.test.js), [live quote evidence](docs/evidence/uniswap-quotes.json) |
 | Runtime and secret isolation | Project listeners bind to loopback behind TLS nginx; environment/registry files use 0600 and artifact directory 0700. Project-specific Node 22 runtime and patched protobuf, WebSocket and gRPC dependencies. Minimal runtime installation omits unrelated automatic peers. | [Operational review and install instructions](docs/AGENT-SECURITY.md#operational-review), [lockfile](package-lock.json) |
 | Visible verification | Open a policy → **Agent guardrails & proof** for current limits/usage and recorded authorization controls. Read-only endpoint exposes configuration without keys or IP identifiers. | [Live guardrails](https://quorum.aivylabs.xyz/api/guardrails), [UI implementation](ui/src/app/AgentGuardrails.tsx) |
@@ -482,12 +484,17 @@ The browser saves a random request identifier before creation. Policies checks
 interrupted requests remain visible for review. Replaying an identifier never
 creates another policy. Issuance checkpoints retain public ledger identifiers.
 
-A failed issuance retains its capital reservation. A crashed process can leave
-`.artifacts/issuance-<network>.lock`; subsequent issuance fails closed. An operator
-must verify that the writer has stopped, inspect the reservation and its HCS,
-NFT, premium and schedule receipts, and reconcile the book before removing the
-lock or releasing capacity. Never blindly delete a reservation: the ledger write
-may have succeeded even when its response was lost. Back up the book first.
+A failed issuance retains its capital reservation. All writers hold an OS `flock`
+on a permanent `.artifacts/issuance-<scope>.lock.guard` file for the entire operation.
+The OS releases that lock on process death. The next holder can safely remove a
+valid `.lock` owner marker only when its process is provably gone. Live owners,
+malformed markers and uncertain ownership refuse work. **Never delete a `.guard`
+file while writers can run.**
+
+Recovering a lock does not replay a transaction or release its reserved capital.
+An operator must inspect HCS, NFT, premium, schedule or EVM receipt checkpoints
+and reconcile the original request. Never blindly delete reservations or signed
+transaction journals. See the [upgrade and recovery procedure](docs/AGENT-SECURITY.md#kernel-locking-and-recovery).
 
 ## Verification
 

@@ -1,54 +1,54 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { promisify } from 'node:util';
+import fsExt from 'fs-ext';
 
-/** Is that process still running? EPERM means alive but not ours, so wait. */
-const alive = (pid) => { try { process.kill(pid, 0); return true; } catch (error) { return error.code === 'EPERM'; } };
-
-// One reclaim at a time. Two callers in this process must not each decide the
-// same lock is abandoned and then unlink one another's replacement.
-let reclaiming = Promise.resolve();
+const flock = promisify(fsExt.flock);
+const wait = () => new Promise(resolve => setTimeout(resolve, 100));
+const busy = () => Object.assign(new Error('Another issuance is in progress or requires recovery. Try again later.'), { reason: 'issuance_busy' });
+// Only ESRCH proves absence. Permission errors and unexpected failures fail closed.
+const alive = pid => { try { process.kill(pid, 0); return true; } catch (error) { return error.code !== 'ESRCH'; } };
 
 /**
- * Drop a lock whose owner is provably gone — killed mid-issuance by a restart,
- * a crash, or the memory ceiling. Without this the next issuance waits out the
- * timeout and every one after it fails until someone deletes the file by hand.
- *
- * A lock we cannot read is left alone: an unreadable lock is a state that needs
- * a person, not a guess. A pid we cannot prove dead counts as alive, so this
- * fails closed in every case it is unsure about.
+ * All writers on this host hold the same kernel lock for the entire operation.
+ * The .guard inode is permanent: deleting it could create two independent locks.
+ * Closing its descriptor (including process death) releases flock automatically.
+ * The older .lock file remains an owner/recovery marker, not the exclusion primitive.
  */
-async function reclaimIfAbandoned(lock) {
-  const attempt = reclaiming.then(async () => {
-    let raw, owner;
-    try { raw = await fs.readFile(lock, 'utf8'); } catch { return false; }
-    try { owner = JSON.parse(raw); } catch { return false; }
-    if (!Number.isInteger(owner?.pid) || owner.pid <= 0 || alive(owner.pid)) return false;
-    try {
-      // Re-read first: never unlink a lock that was taken since we judged it.
-      if (await fs.readFile(lock, 'utf8') !== raw) return false;
-      await fs.unlink(lock);
-    } catch { return false; }
-    return true;
-  });
-  reclaiming = attempt.then(() => {}, () => {});
-  return attempt;
-}
-
-/** Serialize the entire capital-check / reservation / issuance operation across processes. */
 export async function withIssuanceLock(network, work, { directory = path.join(process.cwd(), '.artifacts'), timeoutMs = 30000 } = {}) {
   if (!/^[a-z0-9-]+$/i.test(network)) throw new Error('Invalid network');
+  if (!Number.isFinite(timeoutMs) || timeoutMs < 0) throw new Error('Invalid lock timeout');
   await fs.mkdir(directory, { recursive: true });
   const lock = path.join(directory, `issuance-${network}.lock`), started = Date.now();
-  let handle;
-  while (!handle) {
-    try { handle = await fs.open(lock, 'wx', 0o600); }
-    catch (error) {
-      if (error.code !== 'EEXIST') throw error;
-      if (await reclaimIfAbandoned(lock)) continue;
-      if (Date.now() - started >= timeoutMs) throw Object.assign(new Error('Another issuance is in progress or requires recovery. Try again later.'), { reason: 'issuance_busy' });
-      await new Promise(resolve => setTimeout(resolve, 100));
+  const guard = await fs.open(`${lock}.guard`, 'a+', 0o600);
+  let owner;
+  try {
+    for (;;) {
+      try { await flock(guard.fd, 'exnb'); break; }
+      catch (error) {
+        if (!['EAGAIN', 'EWOULDBLOCK', 'EACCES'].includes(error.code)) throw error;
+        if (Date.now() - started >= timeoutMs) throw busy();
+        await wait();
+      }
     }
+    // Only the kernel-lock holder may inspect/remove the marker. A second
+    // recovering process cannot remove this holder's replacement marker.
+    while (!owner) {
+      try { owner = await fs.open(lock, 'wx', 0o600); }
+      catch (error) {
+        if (error.code !== 'EEXIST') throw error;
+        let previous;
+        try { previous = JSON.parse(await fs.readFile(lock, 'utf8')); } catch { throw busy(); }
+        if (!Number.isSafeInteger(previous?.pid) || previous.pid <= 0) throw busy();
+        if (!alive(previous.pid)) { await fs.unlink(lock); continue; }
+        if (Date.now() - started >= timeoutMs) throw busy();
+        await wait();
+      }
+    }
+    await owner.writeFile(JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString() }));
+    return await work();
+  } finally {
+    try { if (owner) { await owner.close(); await fs.unlink(lock); } }
+    finally { await guard.close(); }
   }
-  try { await handle.writeFile(JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString() })); return await work(); }
-  finally { await handle.close(); await fs.unlink(lock); }
 }

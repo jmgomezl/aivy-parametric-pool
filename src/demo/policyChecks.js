@@ -30,7 +30,7 @@ export async function checkPolicy({demo,network,reg,agent,sessionId,policy,input
    // A source that cannot answer declines before settling, so the signed payment
    // was never submitted. That is a source casting no vote, not a receipt to
    // reconcile: only 'source_unavailable' is returned ahead of the charge.
-   if(result.response.status===503&&body.error==='source_unavailable'&&body.sourceKey===sourceKey){
+   if(!result.paid&&result.response.status===503&&body.error==='source_unavailable'&&body.sourceKey===sourceKey){
     Object.assign(row,{status:'unavailable',paid:false,paymentTxId:undefined,verdict:'The catalogue could not answer, so it was not paid and casts no vote.'});
     patch({checks});continue;
    }
