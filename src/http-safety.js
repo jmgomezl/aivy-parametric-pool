@@ -1,5 +1,20 @@
 import { isIP } from 'node:net';
 export class HttpError extends Error { constructor(status,message){super(message);this.status=status;this.reason='invalid_input';} }
+// Keep failure handling outside the route callback's lexical scope. A rejected
+// request must still receive a response, including failures before URL parsing.
+export function withHttpErrors(handler,{respond,logger=console}) {
+ return async(req,res)=>{
+  try{return await handler(req,res);}
+  catch(err){
+   let route='(invalid URL)';try{route=requestPath(req);}catch{}
+   const deliberate=err instanceof HttpError;
+   const status=Number.isInteger(err?.status)&&err.status>=400&&err.status<=599?err.status:503;
+   if(deliberate)logger.warn(`Agent refused ${req.method} ${route}:`,err.reason??err.message);
+   else logger.error(`Agent failed ${req.method} ${route}:`,err?.stack??err);
+   return respond(res,status,{ok:false,reason:deliberate?err.reason:'service_unavailable',message:deliberate||err?.status?err.message:'The service could not complete this request. Check Policies before retrying an interrupted creation.'});
+  }
+ };
+}
 // Nginx appends the actual peer at the RIGHT edge. Never trust a caller's first
 // X-Forwarded-For value. Headers are trusted only from our loopback proxy.
 export function clientIp(req,trustProxy=process.env.TRUST_PROXY==='1') {

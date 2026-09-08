@@ -29,7 +29,7 @@ import { readPolicies, mirrorGet } from './ledger.js';
 import { policies, reservations, settle, request } from './book.js';
 import { withIssuanceLock } from './issuance-lock.js';
 import { createWriteGuard, LIMITS } from './guards.js';
-import { clientIp, readJsonBody, policyInput, HttpError } from './http-safety.js';
+import { clientIp, readJsonBody, policyInput, HttpError, withHttpErrors } from './http-safety.js';
 import { associate } from './pool/shares.js';
 import { settlementAsset, fromUnits } from './asset.js';
 import { quoteCrossAsset, STABLES } from './settlement/crossAsset.js';
@@ -73,9 +73,8 @@ async function main() {
   const demo=demoService({client:c,agent,network:NETWORK,reg});
   const evmDemo=createEvmDemo({network:NETWORK,liquidity,demo});
 
-  const server = http.createServer(async (req, res) => {
+  const server = http.createServer(withHttpErrors(async (req, res) => {
     if (req.method === 'OPTIONS') return json(res, 204, {});
-    try {
       const url = new URL(req.url, 'http://localhost');
       const route = url.pathname.replace(/\/$/, '');
       if (route.startsWith('/api/demo/evm')) {
@@ -257,14 +256,7 @@ async function main() {
       }
 
       return json(res, 404, { ok: false, message: `No route ${route}` });
-    } catch (err) {
-      // A deliberate refusal is one line; anything else needs its message and
-      // stack, or the only trace left of a real failure is the word "Error".
-      if (err instanceof HttpError) console.warn(`Agent refused ${req.method} ${route}:`, err.reason ?? err.message);
-      else console.error(`Agent failed ${req.method} ${route}:`, err?.stack ?? err);
-      return json(res, err instanceof HttpError?err.status:err.status??503, { ok:false, reason:err instanceof HttpError?err.reason:'service_unavailable', message:err instanceof HttpError||err.status?err.message:'The service could not complete this request. Check Policies before retrying an interrupted creation.' });
-    }
-  });
+  },{respond:json}));
 
   server.requestTimeout=30_000;
   server.headersTimeout=10_000;
