@@ -15,10 +15,10 @@ Transactions are real; test tokens have no cash value.
 **Judge shortcuts:** [Hedera](#why-hedera) · [Uniswap](#why-uniswap) ·
 [Novelty](#what-is-new) · [Security](#security-by-architecture) · [Evidence](#verify-in-one-minute)
 
-![Choosing a place, pricing it from the earthquake record, and committing the payout on Hedera](docs/media/quorum-flow.gif)
+![Current app: explore the world map, price Tokyo cover, drag through premium history and inspect existing geographic cover NFTs](docs/media/quorum-flow.gif)
 
-*Earlier recorded walkthrough of the cover mechanism. The current app also has
-account payments, shared-pool deposits, oracle checks and bridge/swap controls.*
+*Current UI · September 8, 2026. Choose a place → explore its premium history →
+inspect existing testnet cover NFTs. [Screenshot and recording notes](docs/media/README.md).*
 
 > Public cover is a **funded testnet demo**. `aUSDd` has no cash value; dollars are
 > model outputs. Request event checks from a policy page. Mainnet settlement is a
@@ -188,7 +188,7 @@ mainnet bridge, automatic swap, or return bridge UI.
 
 ### Two pools, two purposes
 
-![Live Uniswap market balances and its genuine on-chain position NFT, with optional liquidity controls](docs/media/06-liquidity.png)
+![Uniswap's active seed position and demo liquidity controls, showing a previously withdrawn position and its confirmed receipt](docs/media/06-liquidity.png)
 
 | | Fund cover | Provide swap liquidity |
 | --- | --- | --- |
@@ -386,7 +386,7 @@ Mainnet signing, arbitrary transfers and ARPS withdrawals are outside this signe
 <table>
 <tr>
 <td width="50%"><img src="docs/media/01-atlas.png" alt="The atlas: every recorded shallow M6+ earthquake since 1970"></td>
-<td width="50%"><img src="docs/media/03-story.png" alt="How it works: a six-scene walk through one recorded mainnet settlement"></td>
+<td width="50%"><img src="docs/media/quorum-story.gif" alt="Current six-scene mainnet replay: choose, commit, confirm, release, verify and protect"></td>
 </tr>
 <tr>
 <td><b>The atlas.</b> Nothing here is drawn. The fault lines emerge from plotting
@@ -462,11 +462,11 @@ intended interface and `TRUST_PROXY=1` only behind a trusted reverse proxy.
 
 ## Pricing and capacity
 
-![The quote panel: Armenia, Quindío priced at four dollars for eight hundred and four dollars of cover](docs/media/02-quote.png)
+![Current Armenia quote: a four-dollar modeled premium, conditional payout, testnet amount and pricing controls beside the map](docs/media/02-quote.png)
 
-*Armenia, Quindío: $4 buys $804 of 30-day cover. The premium is not a constant —
-it comes from the USGS catalogue for that exact point, and the source query is one
-click away under "Coverage & pricing details".*
+*Armenia, Quindío: the panel pairs the modeled premium with its conditional
+30-day payout and testnet token amount. Pricing comes from the USGS catalogue
+for that point; inspect the source under "Coverage & pricing details".*
 
 A first-order Poisson model estimates shallow M6+ frequency over a 300 km
 reference region, scales to the fixed 100 km trigger circle, and adds uncertainty
