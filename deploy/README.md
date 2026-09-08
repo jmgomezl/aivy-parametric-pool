@@ -1,110 +1,101 @@
 # Deploying Quorum
 
-Three services, one per catalogue, each with its own Hedera account and its own
-key. They run as separate processes for isolation. This demo still operates all three;
-separate processes do not establish independent oracle operators.
+Node **22+**, nginx and PM2 host one agent and three catalogue services. The
+processes have different keys but share a VPS and administrator; this is not
+independent oracle custody.
 
-Live at:
+| Host | Service / loopback port |
+| --- | --- |
+| `quorum.aivylabs.xyz` | UI and `/api` → agent on 8814 |
+| `usgs.aivylabs.xyz` | USGS oracle on 8811 |
+| `emsc.aivylabs.xyz` | EMSC oracle on 8812 |
+| `geofon.aivylabs.xyz` | GEOFON oracle on 8813 |
 
-| | |
-|---|---|
-| https://quorum.aivylabs.xyz | the app, and the underwriting agent under `/api` |
-| https://usgs.aivylabs.xyz | USGS ComCat · United States Geological Survey |
-| https://emsc.aivylabs.xyz | EMSC · European-Mediterranean Seismological Centre |
-| https://geofon.aivylabs.xyz | GEOFON · GFZ Potsdam |
+`GET /` on an oracle is free. `POST /attest` and `/attest-and-sign` use the
+self-hosted testnet x402 facilitator. Checks are request-driven; no background
+earthquake monitor is deployed. Hedera executes once the required signatures exist.
 
-`GET /` is free and says what the oracle is and what it charges.
-`POST /attest` and `POST /attest-and-sign` are paid, over x402.
+## Files and custody
 
-## What is on the server
+| Location | Contents |
+| --- | --- |
+| `/opt/aivy-oracles` | Committed source, dependencies, `REVISION` |
+| `.env` (0600) | Agent, individual oracle, demo-wallet and Sepolia sponsor configuration |
+| `.artifacts/` (0700; private files 0600) | Public registry, authoritative policy book, budgets, request journals and private managed wallets |
+| `/var/www/quorum` | Built UI and `REVISION` |
+| nginx sites | TLS and loopback reverse proxies |
 
-```
-/opt/aivy-oracles/          src/, package.json, .env (0600), ecosystem.config.cjs
-/opt/aivy-oracles/.artifacts/registry-testnet.json   ids only, no key material
-/var/www/quorum/            the built UI
-/etc/nginx/sites-available/ quorum, usgs, emsc, geofon .aivylabs
-pm2                         aivy-oracle-{usgs,emsc,geofon}, quorum-agent, saved
-```
+The public registry contains IDs and public keys, never signing keys. Services
+load their own keys from private configuration. Testnet managed-wallet keys and
+recovery journals stay on this host. Mainnet recording keys are not deployed.
+Never copy private `.env` or `.artifacts` files into Git, the web root or logs.
 
-The agent and the oracles share one checkout, so the 775 MB of node_modules is
-installed once.
+## Build a candidate
 
-**Only testnet keys are on the server.** The mainnet key stays on the laptop, in
-a gitignored file, and nothing in this deployment can reach it. The registry
-copied up is filtered: anything whose name ends in `Key` or `Keys` is stripped,
-so `oraclePrivateKeys` and `x402PayerKey` never leave the laptop either.
+Use the committed lockfiles and the same Node major as the running services.
+`fs-ext` builds a native kernel-lock binding; Linux needs its normal C/C++ build
+toolchain and Python. Do not reuse a macOS `node_modules` directory on the VPS.
 
-## The UI
-
-```bash
-cd ui && VITE_AGENT_URL=https://quorum.aivylabs.xyz npm run build
-# then copy dist/ to /var/www/quorum
-```
-
-nginx serves it and proxies `/api/` to the agent on 8814, so the app and its
-agent share an origin and the browser needs no CORS.
-
-## Deploy
-
-```bash
-tar czf /tmp/oracles.tgz src package.json package-lock.json
-scp /tmp/oracles.tgz root@$VPS:/tmp/
-ssh root@$VPS 'cd /opt/aivy-oracles && tar xzf /tmp/oracles.tgz && npm install --omit=dev'
-ssh root@$VPS 'cd /opt/aivy-oracles && set -a && . ./.env && set +a && pm2 restart ecosystem.config.cjs --update-env && pm2 save'
+```sh
+npm ci
+npm test
+cd ui
+npm ci
+npm run build
 ```
 
-The config file must be named `ecosystem.config.cjs`. pm2 treats a bare
-`ecosystem.cjs` as a script to run rather than a config to read, and starts one
-process called "ecosystem" instead of three oracles.
+Install and test in an isolated release directory first. `npm ci` includes peer
+dependencies: the lockfile aliases the Uniswap plugin's legacy `hedera-agent-kit`
+peer name to the app's current `@hashgraph/hedera-agent-kit@4.1.0`. This avoids
+installing an unused legacy kit/PDF tree. Quorum calls that plugin's quote tool
+directly; the alias does not claim that every legacy plugin interface is migrated.
 
-## The box
+## Upgrade an existing deployment
 
-1.9 GB of RAM running about fourteen other services, so check before deploying:
+1. Check `/api/health`, `/api/pool` and `/api/guardrails`, disk and memory. Resolve
+   pending ledger requests and wallet funding before deployment; do not clear them.
+2. Back up committed source, the dependency target, UI and `REVISION`. Keep private
+   operational backups access-restricted and outside the public release archive.
+3. Drain and stop `quorum-agent`, then drain and stop `aivy-oracle-usgs`,
+   `aivy-oracle-emsc` and `aivy-oracle-geofon`. Every writer must use one authoritative
+   book and the same lock implementation.
+4. Replace committed source and switch to the tested Linux dependencies. Preserve
+   `.env`, `.artifacts`, budgets and all journals **in place**. Never unlink a
+   `.lock.guard` file or replace its inode; do not run old and new writers together.
+5. Copy `ui/dist` to `/var/www/quorum`, assets before `index.html`. Record the commit
+   SHA as `REVISION` in both roots. Keep earlier hashed assets for open browsers.
+6. Restart the three oracle processes, then `quorum-agent`, and `pm2 save`. Existing
+   services use `ecosystem.config.cjs` and `quorum.config.cjs`; retain their configured
+   Node interpreter and private environment.
+7. Verify health, pool, policies, assets, SPA deep links and a bounded testnet action.
+   Reconcile its original request ID if interrupted. Roll back source/dependencies/UI
+   if necessary; never restore an older ledger journal over newer transactions.
 
-```bash
-ssh root@$VPS 'df -h /; free -h'
-```
+A failed health check leaves the release incomplete. The current public UI proxies
+`/api` on the same origin. Local Vite proxies to 8791; that local tunnel reaches
+VPS 8814, not the unrelated VPS service on 8791.
 
-Each oracle sits around 50 MB and `max_memory_restart` is 180 MB.
+## First install and TLS
 
-## TLS
+The `nginx-{usgs,emsc,geofon}.conf` files are initial HTTP templates. Check syntax
+with `nginx -t` before enabling them; let certbot add HTTPS after DNS resolves.
+`nginx-quorum.conf` serves the SPA and proxies the agent.
 
-```bash
+```sh
 certbot --nginx -d usgs.aivylabs.xyz -d emsc.aivylabs.xyz -d geofon.aivylabs.xyz --redirect
 ```
 
-One certificate covers all three. DNS is at Porkbun — when adding records there,
-leave **"Do not delete existing records"** checked. Unchecking it replaces every
-record on aivylabs.xyz, which would take down a dozen unrelated services.
+The current host IP is `167.172.152.172`; reserved IP `104.248.108.201` reaches the
+same VPS. Preserve unrelated DNS records and services when provisioning.
 
 ## Signing request binding
 
-`POST /attest-and-sign` takes `scheduleId` and `termsPointer` (`hcs://topic/sequence`).
-Caller-supplied trigger specifications are ignored for signing. Deploy the public
-pool registry containing `poolAccountId` and `termsTopicId` in
-`.artifacts/registry-<network>.json`; never copy private demo keys into that registry.
-The service loads its own signing key from its environment. Policies must use
-version 1 terms and the bound memo hash; older recordings require manual review.
-A policy-binding rejection returns 422 before charging for an attestation.
+`/attest-and-sign` requires `scheduleId` and an `hcs://topic/sequence` terms pointer.
+It loads the configured public registry and derives conditions from authenticated
+HCS terms. It checks the schedule's exact asset, amount, beneficiary, policy hash
+and issuer signature. Caller-provided trigger specifications cannot authorize a
+signature. A binding rejection returns 422 before payment. Older mainnet recordings
+are evidence, not requests to replay through the current policy API.
 
-The services are request-driven. No background earthquake monitor is included.
-Automatic execution occurs only after the required signatures reach Hedera.
-The HTTP listeners default to localhost for the nginx proxy.
-
-## Quorum website
-
-`quorum.aivylabs.xyz` uses `/var/www/quorum` and a dedicated
-`quorum-agent` PM2 process in `/opt/aivy-oracles` on `127.0.0.1:8814`. Port 8791 belongs to a separate
-checkout service on this VPS. Use `quorum.config.cjs` and `nginx-quorum.conf`.
-Build the UI locally, then deploy the committed source plus `ui/dist`; record
-its Git SHA in `REVISION` on the server. Keep `.env`, `.artifacts`, and dependencies
-out of Git. The server needs only the testnet operator environment, a public
-`registry-testnet.json` with private keys removed, and the current policy book.
-Never replace an existing VPS policy book during a routine code deployment.
-
-The website A record points to `167.172.152.172`; `104.248.108.201` is the
-reserved IP reaching the same VPS. TLS is installed with certbot.
-Verify `/api/health`, `/api/pool`, `/api/policies`, SPA deep links, and hashed
-assets after deployment. Preserve the previous source and UI as a rollback.
-The local and VPS issuer must not write concurrently against separate copies
-of the same pool's book; use the VPS as the single issuer after migration.
+[Security and locking protocol](../docs/AGENT-SECURITY.md) ·
+[Managed demo wallet operations](../docs/MANAGED-DEMO-WALLETS.md)

@@ -1,0 +1,282 @@
+{
+  "checkedAt": "2026-09-08T17:52:20.627Z",
+  "scope": "Read-only independent ledger checks of existing recorded transactions, not new executions",
+  "rows": [
+    {
+      "kind": "premium",
+      "network": "Hedera testnet",
+      "transaction": "0.0.7231440-1788846827-206985108",
+      "status": "SUCCESS",
+      "consensus": "1788846832.439301104",
+      "tokenTransfers": [
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10373722",
+          "amount": 4000000,
+          "is_approval": false
+        },
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10417156",
+          "amount": -4000000,
+          "is_approval": false
+        }
+      ],
+      "nftTransfers": []
+    },
+    {
+      "kind": "NFT mint",
+      "network": "Hedera testnet",
+      "transaction": "0.0.7231440-1788846825-643055868",
+      "status": "SUCCESS",
+      "consensus": "1788846830.489882813",
+      "tokenTransfers": [],
+      "nftTransfers": [
+        {
+          "is_approval": false,
+          "receiver_account_id": "0.0.7231440",
+          "sender_account_id": null,
+          "serial_number": 32,
+          "token_id": "0.0.10373726"
+        }
+      ]
+    },
+    {
+      "kind": "NFT delivery",
+      "network": "Hedera testnet",
+      "transaction": "0.0.7231440-1788846826-744649713",
+      "status": "SUCCESS",
+      "consensus": "1788846834.510276104",
+      "tokenTransfers": [],
+      "nftTransfers": [
+        {
+          "is_approval": false,
+          "receiver_account_id": "0.0.10417156",
+          "sender_account_id": "0.0.7231440",
+          "serial_number": 32,
+          "token_id": "0.0.10373726"
+        }
+      ]
+    },
+    {
+      "kind": "x402 usgs",
+      "network": "Hedera testnet",
+      "transaction": "0.0.7231440-1788846861-791805749",
+      "status": "SUCCESS",
+      "consensus": "1788846868.761935104",
+      "tokenTransfers": [
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10386832",
+          "amount": 1000,
+          "is_approval": false
+        },
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10408125",
+          "amount": -1000,
+          "is_approval": false
+        }
+      ],
+      "nftTransfers": []
+    },
+    {
+      "kind": "x402 emsc",
+      "network": "Hedera testnet",
+      "transaction": "0.0.7231440-1788846867-951482855",
+      "status": "SUCCESS",
+      "consensus": "1788846873.210111789",
+      "tokenTransfers": [
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10386833",
+          "amount": 1000,
+          "is_approval": false
+        },
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10408125",
+          "amount": -1000,
+          "is_approval": false
+        }
+      ],
+      "nftTransfers": []
+    },
+    {
+      "kind": "x402 geofon",
+      "network": "Hedera testnet",
+      "transaction": "0.0.7231440-1788846869-331173463",
+      "status": "SUCCESS",
+      "consensus": "1788846877.529886106",
+      "tokenTransfers": [
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10386835",
+          "amount": 1000,
+          "is_approval": false
+        },
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10408125",
+          "amount": -1000,
+          "is_approval": false
+        }
+      ],
+      "nftTransfers": []
+    },
+    {
+      "kind": "Mainnet scheduled payout",
+      "network": "Hedera mainnet",
+      "consensus": "1788563478.715401105",
+      "status": "SUCCESS",
+      "scheduled": true,
+      "transfers": [
+        {
+          "account": "0.0.10843704",
+          "amount": -400000000,
+          "is_approval": false
+        },
+        {
+          "account": "0.0.10843717",
+          "amount": 400000000,
+          "is_approval": false
+        }
+      ],
+      "poolKey": "agent AND 2-of-3 oracle keys; current protobuf matches recording"
+    },
+    {
+      "kind": "HAK Axelar source",
+      "network": "Hedera testnet",
+      "transaction": "0.0.10408106@1788799512.671223617",
+      "status": "SUCCESS"
+    },
+    {
+      "kind": "swap",
+      "hash": "0xc73c556612ac939492f66dd3e94b18477514265af790269b4303a947cf586855",
+      "network": "Ethereum Sepolia",
+      "status": "confirmed",
+      "block": 11658243,
+      "transfers": [
+        {
+          "token": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+          "from": "0x520388428673bc16fad5aa5e49fdb1d30727ceb3",
+          "to": "0x5cdbc8e8c0607c862850a286eff2c8e810d40a6c",
+          "units": "9749"
+        },
+        {
+          "token": "0x5685b5660a86028d8a50c9e4fc33ff081b3cd9e9",
+          "from": "0x5cdbc8e8c0607c862850a286eff2c8e810d40a6c",
+          "to": "0x520388428673bc16fad5aa5e49fdb1d30727ceb3",
+          "units": "10000"
+        }
+      ],
+      "events": []
+    },
+    {
+      "kind": "create",
+      "hash": "0xafa88d9bf9f4d7596d10ec57e6cbc12d22624b3fcdd72be15004e92772253c5b",
+      "network": "Ethereum Sepolia",
+      "status": "confirmed",
+      "block": 11658247,
+      "transfers": [
+        {
+          "token": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+          "from": "0x5cdbc8e8c0607c862850a286eff2c8e810d40a6c",
+          "to": "0x520388428673bc16fad5aa5e49fdb1d30727ceb3",
+          "units": "9777"
+        },
+        {
+          "token": "0x5685b5660a86028d8a50c9e4fc33ff081b3cd9e9",
+          "from": "0x5cdbc8e8c0607c862850a286eff2c8e810d40a6c",
+          "to": "0x520388428673bc16fad5aa5e49fdb1d30727ceb3",
+          "units": "9999"
+        }
+      ],
+      "events": [
+        {
+          "name": "Transfer",
+          "tokenId": "231774"
+        },
+        {
+          "name": "IncreaseLiquidity",
+          "tokenId": "231774"
+        }
+      ]
+    },
+    {
+      "kind": "remove",
+      "hash": "0xb3463367417974cd0cdfc660e98e08b6d5cb0a04df133ad1fe2f0612e453b699",
+      "network": "Ethereum Sepolia",
+      "status": "confirmed",
+      "block": 11658255,
+      "transfers": [
+        {
+          "token": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+          "from": "0x520388428673bc16fad5aa5e49fdb1d30727ceb3",
+          "to": "0x5cdbc8e8c0607c862850a286eff2c8e810d40a6c",
+          "units": "9776"
+        },
+        {
+          "token": "0x5685b5660a86028d8a50c9e4fc33ff081b3cd9e9",
+          "from": "0x520388428673bc16fad5aa5e49fdb1d30727ceb3",
+          "to": "0x5cdbc8e8c0607c862850a286eff2c8e810d40a6c",
+          "units": "9998"
+        }
+      ],
+      "events": [
+        {
+          "name": "DecreaseLiquidity",
+          "tokenId": "231774"
+        },
+        {
+          "name": "Collect",
+          "tokenId": "231774"
+        }
+      ]
+    },
+    {
+      "kind": "latest swap",
+      "hash": "0x02e061bc5ee0159f0c7e1c9dae037b9c5bc876312ef0e8c1d8e4dbcea8668772",
+      "network": "Ethereum Sepolia",
+      "status": "confirmed",
+      "block": 11659242,
+      "transfers": [
+        {
+          "token": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+          "from": "0x520388428673bc16fad5aa5e49fdb1d30727ceb3",
+          "to": "0xf017332e6099d25889bad4b2bb98078f56487f4d",
+          "units": "9745"
+        },
+        {
+          "token": "0x5685b5660a86028d8a50c9e4fc33ff081b3cd9e9",
+          "from": "0xf017332e6099d25889bad4b2bb98078f56487f4d",
+          "to": "0x520388428673bc16fad5aa5e49fdb1d30727ceb3",
+          "units": "10000"
+        }
+      ],
+      "events": []
+    },
+    {
+      "kind": "HAK Axelar delivery",
+      "hash": "0x0349e61a3e79e6509b078d95beef4bc3401bb5c3db57a5ee990f4cafb92abbd6",
+      "network": "Ethereum Sepolia",
+      "status": "confirmed",
+      "block": 11655426,
+      "transfers": [
+        {
+          "token": "0x5685b5660a86028d8a50c9e4fc33ff081b3cd9e9",
+          "from": "0x0000000000000000000000000000000000000000",
+          "to": "0x18c5e6987a734638403bbd942e17d959952b8e4e",
+          "units": "10000"
+        }
+      ],
+      "events": []
+    },
+    {
+      "kind": "Uniswap NFT 231774 current state",
+      "owner": "0x5CDBC8e8c0607C862850A286eff2c8E810D40a6C",
+      "liquidity": "0",
+      "meaning": "NFT remains owned, trading liquidity was fully withdrawn"
+    }
+  ]
+}

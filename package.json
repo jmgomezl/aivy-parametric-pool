@@ -44,7 +44,8 @@
     "protobufjs@>=7 <8": "7.6.6",
     "protobufjs@>=8 <8.8.0": "8.8.0",
     "ws@>=8 <8.21.0": "8.21.0",
-    "@grpc/grpc-js": "1.14.4"
+    "@grpc/grpc-js": "1.14.4",
+    "hedera-agent-kit": "npm:@hashgraph/hedera-agent-kit@4.1.0"
   },
   "engines": {
     "node": ">=22"

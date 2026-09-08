@@ -8,7 +8,7 @@ Live: https://quorum.aivylabs.xyz/
 App: https://github.com/jmgomezl/aivy-parametric-pool
 Reusable plugin: https://github.com/jmgomezl/hak-scheduled-settlement
 
-Latest [security fixes and submission review](qa/SECURITY-FINAL.md); [UX review](qa/READINESS-REVIEW.md). Keep the recording focused
+Latest [QA and judge review](qa/JUDGE-REVIEW.md); earlier [security review](qa/SECURITY-FINAL.md) and [UX review](qa/READINESS-REVIEW.md). Keep the recording focused
 on one complete cover journey and the Hedera → Uniswap path; technical evidence
 is one disclosure away. No extension or faucet setup is needed in the public app.
 
@@ -55,7 +55,7 @@ not certify registration or organizer acceptance.
 
 | Prize | Current fit / remaining action |
 | --- | --- |
-| **Uniswap Stack Contribution · Continuity** | Working Trading API swaps and V3 position operations, with code and receipts linked in the README. [FEEDBACK.md](../FEEDBACK.md) is prepared; **submit the [developer feedback form](https://developers.uniswap.org/hackathon-feedback)** with its public GitHub link. Form submission has not been verified. |
+| **Uniswap Stack Contribution · Continuity** | Working Trading API swaps and V3 position operations, with code and receipts linked in the README. [FEEDBACK.md](../FEEDBACK.md) is prepared; **submit the [developer feedback form](https://developers.uniswap.org/hackathon-feedback)** with the [public FEEDBACK.md link](https://github.com/jmgomezl/aivy-parametric-pool/blob/main/FEEDBACK.md). Form submission has not been verified. |
 | **Hedera Continuity** | Plausible fit for the disclosed prior project and substantive new scheduling, paid-oracle and cross-chain work. Confirm Continuity registration and explain the new work using the repository history. |
 | **Hedera AI & Agentic Payments** | **Current gap:** the rules require Blocky402 settlement. This application uses a self-hosted testnet facilitator. Real x402 receipts alone do not meet that facilitator requirement. |
 

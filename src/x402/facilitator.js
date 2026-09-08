@@ -1,11 +1,8 @@
 import { proto } from '@hiero-ledger/proto';
 // An x402 facilitator for Hedera, on the network we can actually run on.
 //
-// The public facilitator at api.blocky402.com advertises hedera:mainnet only and
-// settles in USDC, so using it would mean buying mainnet USDC to pay fractions
-// of a cent. We run our own on testnet instead — and hosting the facilitator as
-// well as the gated service is the stronger position anyway, since neither side
-// then depends on somebody else's opaque endpoint.
+// The deployed demo uses its own testnet facilitator. It does not satisfy the
+// separate Blocky402 requirement of Hedera's Agentic Payments prize.
 //
 // The facilitator's job is narrow and it never holds funds:
 //
@@ -14,8 +11,9 @@ import { proto } from '@hiero-ledger/proto';
 //   settle  — add the fee-payer signature and submit it
 //
 // Built to the reference scheme (x402-foundation/x402, mechanisms/hedera).
-import { Client, Hbar, PrivateKey, AccountId, Transaction, TransferTransaction } from '@hiero-ledger/sdk';
+import { Client, Hbar, PrivateKey, PublicKey, AccountId, Transaction, TransferTransaction } from '@hiero-ledger/sdk';
 import { parseKey } from '../config.js';
+import { mirrorGet } from '../ledger.js';
 
 const isHbar = (asset) => !asset || String(asset).toUpperCase() === 'HBAR';
 const sameAccount = (a, b) => AccountId.fromString(String(a)).toString() === AccountId.fromString(String(b)).toString();
@@ -90,6 +88,57 @@ export function verify(paymentPayload, requirements) {
   return { isValid: true, credited: credited.toString(), asset: requirements.asset ?? 'HBAR' };
 }
 
+let payerChecks = 0;
+/** Verify the actual debit-account signer and funds before resource work or fee sponsorship. */
+export async function verifyAuthorization(paymentPayload, requirements, {network, fetcher = fetch, now = Date.now()} = {}) {
+  const check = verify(paymentPayload, requirements);
+  if (!check.isValid) return check;
+  if (!['testnet','mainnet'].includes(network) || requirements.network !== `hedera:${network}`) return fail('network_mismatch');
+  let tx, payer;
+  try {
+    tx = decodePayment(paymentPayload);
+    const signatures = tx.getSignatures().getFlatSignatureList();
+    if (!signatures.length || signatures.some(s => !s.size)) return fail('missing_payer_signature');
+    const payers = new Set(), ids = new Set();
+    for (const entry of tx.signableNodeBodyBytesList) {
+      const body = proto.TransactionBody.decode(entry.signableTransactionBodyBytes);
+      const start = Number(body.transactionID.transactionValidStart.seconds)*1000 + Number(body.transactionID.transactionValidStart.nanos)/1e6;
+      const duration = Number(body.transactionValidDuration?.seconds);
+      if (!Number.isFinite(start) || !Number.isInteger(duration) || duration <= 0 || duration > 180 || start > now+10000 || start+duration*1000 <= now) return fail('payment_expired');
+      ids.add(entry.transactionId.toString());
+      const transfer = body.cryptoTransfer;
+      const legs = isHbar(requirements.asset) ? transfer.transfers.accountAmounts : transfer.tokenTransfers[0].transfers;
+      const debit = legs.find(l => BigInt(l.amount.toString()) < 0n).accountID;
+      payers.add(`${debit.shardNum??0}.${debit.realmNum??0}.${debit.accountNum}`);
+    }
+    if (payers.size !== 1 || ids.size !== 1) return fail('inconsistent_payment');
+    payer = [...payers][0];
+  } catch { return fail('malformed_payment'); }
+  if (payerChecks >= 8) return fail('payer_verification_unavailable');
+  payerChecks++;
+  try {
+    const deadline = AbortSignal.timeout(8000);
+    const boundedFetch = (url, options) => fetcher(url, {...options, redirect:'error', signal:AbortSignal.any([options.signal,deadline])});
+    const account = await mirrorGet(network, `/accounts/${payer}?transactions=false`, boundedFetch);
+    if (account.account !== payer || account.deleted) return fail('invalid_payer');
+    const type = account.key?._type, hex = account.key?.key;
+    if (!['ED25519','ECDSA_SECP256K1'].includes(type) || typeof hex !== 'string') return fail('unsupported_payer_key');
+    const key = type === 'ED25519' ? PublicKey.fromStringED25519(hex) : PublicKey.fromBytesECDSA(Buffer.from(hex,'hex'));
+    if (!key.verifyTransaction(tx)) return fail('invalid_payer_signature');
+    let balance;
+    if (isHbar(requirements.asset)) balance = account.balance?.balance;
+    else {
+      const result = await mirrorGet(network, `/accounts/${payer}/tokens?token.id=${requirements.asset}`, boundedFetch);
+      const token = result.tokens?.find(t => t.token_id === requirements.asset);
+      if (!token || token.freeze_status === 'FROZEN' || token.kyc_status === 'REVOKED') return fail('payer_token_unavailable');
+      balance = token.balance;
+    }
+    if (balance == null || BigInt(balance) < BigInt(requirements.amount ?? requirements.maxAmountRequired)) return fail('insufficient_payer_balance');
+    return {...check, payer};
+  } catch { return fail('payer_verification_unavailable'); }
+  finally { payerChecks--; }
+}
+
 /**
  * Add the fee-payer signature and submit.
  *
@@ -98,7 +147,7 @@ export function verify(paymentPayload, requirements) {
  * unassociated token or an empty balance.
  */
 export async function settle(paymentPayload, requirements, { feePayerId, feePayerKey, network = 'testnet' }) {
-  const check = verify(paymentPayload, requirements);
+  const check = await verifyAuthorization(paymentPayload, requirements, {network});
   if (!check.isValid) return { success: false, errorReason: check.invalidReason };
   const client = (network === 'mainnet' ? Client.forMainnet() : Client.forTestnet())
     .setOperator(feePayerId, typeof feePayerKey === 'string' ? parseKey(feePayerKey) : feePayerKey);

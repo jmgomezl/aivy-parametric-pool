@@ -5,7 +5,7 @@
 // settle it on-chain, then serve. The resource is never served before settlement
 // resolves, so a client cannot get the answer and skip the payment.
 import { recordPayment } from '../activity.js';
-import { verify, settle } from './facilitator.js';
+import { verifyAuthorization, settle } from './facilitator.js';
 
 export const X402_VERSION = 2;
 
@@ -41,7 +41,7 @@ const decodeHeader = (raw) => {
  * Returns `{ paid: false, status: 402, body }` to answer with, or
  * `{ paid: true, settlement }` once the payment is on-chain.
  */
-export async function charge({ header, terms, feePayerId, feePayerKey, network, beforeSettle }, { settlePayment = settle, publishReceipt = recordPayment } = {}) {
+export async function charge({ header, terms, feePayerId, feePayerKey, network, beforeSettle }, { verifyPayment = verifyAuthorization, settlePayment = settle, publishReceipt = recordPayment } = {}) {
   if (!header) {
     return {
       paid: false, status: 402,
@@ -57,10 +57,10 @@ export async function charge({ header, terms, feePayerId, feePayerKey, network, 
     return { paid: false, status: 402, body: { x402Version: X402_VERSION, error: 'payment_context_mismatch', accepts: [terms] } };
   }
 
-  const check = verify(payload, terms);
+  const check = await verifyPayment(payload, terms, {network});
   if (!check.isValid) {
     return {
-      paid: false, status: 402,
+      paid: false, status: check.invalidReason === 'payer_verification_unavailable' ? 503 : 402,
       body: { x402Version: X402_VERSION, error: check.invalidReason, detail: check.detail, accepts: [terms] },
     };
   }

@@ -1,6 +1,6 @@
 # Aivy Quorum UI
 
-A compact earthquake-cover demo: **Cover · Policies · How it works**.
+A compact earthquake-cover demo: **Cover · Policies · Swap · How it works**.
 
 ```sh
 npm ci
@@ -18,15 +18,17 @@ fallback to `index.html` and an API reverse proxy, or `VITE_AGENT_URL` at build.
 | `/` | Search or pin a place; optional historical exploration |
 | `/?at=4.53,-75.68` | Share a selected location |
 | `/policies` | Recent, browser-created and global policy views; request recovery |
+| `/policies?view=fund` | Shared-pool deposits, ARPS balance and share of issued tokens |
 | `/policy/:serial` | Shared verified status, oracle confirmations and receipts |
+| `/swap` · `/swap?step=swap` | Managed testnet bridge, Uniswap swap and liquidity positions |
 | `/story#1` … `/story#6` | Controlled mainnet recording; keyboard or button navigation |
 
 The demo creates funded testnet beneficiary accounts. `aUSDd` is unbacked and has
 no cash value. Browser-created labels are not wallet ownership. The story's
 mainnet recording is separate from live testnet state.
 
-Search includes the example locations and national capitals; any other location
-can be selected on the map. Drag to pan; use +/− or Ctrl/Command-wheel to zoom.
+Search uses Photon/OpenStreetMap with bundled fallback suggestions; any location
+can also be selected on the map or entered as coordinates. Drag to pan; use +/− or Ctrl/Command-wheel to zoom.
 The selected circle is the fixed 100 km trigger area. Historical magnitude/year
 controls are estimates only and never alter purchasable M6+ terms.
 
@@ -98,14 +100,18 @@ USD model values do not give the testnet demo token a cash value.
 
 ## Funding and judge journey
 
-The home page links to **Fund a policy** (`/policies?view=fund`) and **Watch a
+The home page links to **Fund the pool** (`/policies?view=fund`) and **Watch a
 payout** (`/story#1`). Funding cards open `/policy/:serial?position=lp`. The slider
 allocates hypothetical capital and premium income pro rata. Annual premium rate
 is pool premium / policy payout × 365 / term days, without compounding. The
 current purchase path sends 100% to the pool without a broker and 85% with one.
 This is gross premium income, not a net APR: claims, costs and idle capital reduce
 returns. The adverse scenario uses all contributed capital for the payout.
-No per-policy deposit, LP NFT, redemption or income distribution is implemented.
+The shared-pool deposit transfers real aUSDd and issues ARPS atomically. The UI
+shows ARPS balance and percentage of issued shares, which is not an earnings
+rate. Per-policy deposits, insurance LP NFTs, ARPS redemption and insurance-income
+distribution remain unimplemented. The separate Uniswap V3 positions described
+below support real fee collection and exit.
 
 A real x402 testnet query is recorded in `../docs/evidence/x402-testnet.json`;
 the VPS journal exposes the settled payment under `/api/activity`. It is a
@@ -122,18 +128,25 @@ values come from the frozen mainnet record; the recording uses SGC as its third
 key label while current deployed services use GEOFON. Scope details distinguish
 live testnet creation, recorded mainnet execution and proposed policy LPs.
 
-## Uniswap payout conversion
+## Cross-chain swaps and liquidity
 
-Cover quotes and cover policy details expose **Payout in ETH? · Uniswap**.
-Opening it requests a real Uniswap Trading API quote for the modeled USD amount
-as hypothetical USDC, on Base or Unichain mainnet. The frontend shows ETH output,
-quote time/expiry, and a disclosure with quote ID, estimated extra gas, and a
-link to the latest API response and route. Refresh never executes a swap.
-Demo aUSDd cannot be redeemed, and Hedera funds are not bridged.
+`/swap` separates **Bridge** and **Swap**. A service-managed Sepolia wallet receives
+starter test tokens and gas, so the primary flow needs no extension. The guarded
+`hak-axelar-plugin` adapter builds the real Hedera ITS transfer; destination delivery
+is verified before the UI calls it complete. The Uniswap Trading API prepares
+quotes and transactions, then the server validates, simulates, journals and signs
+an explicitly confirmed swap. Exact token approvals and confirmed receipts are
+visible in disclosures. The managed wallet also supports real Uniswap V3 NFT
+positions: mint, add, collect and withdraw.
 
-`GET /api/settle-quote?usd=800&chainId=8453` uses the existing
-`hak-uniswap-plugin` quote tool (including unsigned calldata). Set
-`UNISWAP_API_KEY` server-side only. Successful quotes are cached for 30 seconds;
-requests are coalesced, capped at 60 new quotes/minute and 16 in flight.
-Amounts are bounded, networks/output are allowlisted, and upstream errors are
-sanitized. No wallet keys, approvals, signatures, or broadcasts are required.
+This bridges the visitor's testnet balance, not an automatic policy payout.
+ARPS is a separate Hedera insurance-pool share and is not traded in this pool.
+Sponsored test liquidity does not establish a USD peg. All demo tokens have no
+cash value. [Custody and limits](../docs/MANAGED-DEMO-WALLETS.md) ·
+[Axelar validation](../docs/AGENT-SECURITY.md#hak-axelar-plugin-integration).
+
+The collapsed mainnet price preview uses hypothetical USDC→ETH quotes on Base
+or Unichain. `GET /api/settle-quote?usd=800&chainId=8453` invokes the existing
+`hak-uniswap-plugin` quote tool. This preview does not bridge or execute a swap.
+`UNISWAP_API_KEY` stays server-side; quotes have bounded amounts, allowlisted
+networks, a 30-second cache and concurrency/rate limits.

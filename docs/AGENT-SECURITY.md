@@ -37,7 +37,7 @@ flowchart TD
 | One catalogue is not a quorum | Distinct signing identities are counted. The helper quorum also deduplicates catalogue names. The live services use USGS, EMSC and GEOFON. |
 | Network authorization is separate from app checks | The pool key is `agent AND threshold(2, oracle keys)`. Recorded mainnet control and blocked schedules are linked from “Agent guardrails & proof”. Those prove the key restriction, not independent operators. |
 | An HTTP 402 cannot freely spend a caller's money | `src/x402/payment-policy.js`: an explicit resource, network, recipient, token, fee payer and maximum amount must match before signing. Paid redirects are refused. An uncertain response never causes an automatic new payment. |
-| The facilitator signs only the required payment | `src/x402/facilitator.js` decodes every node body and rejects extra debits, unrelated assets, allowances and excessive fee caps. Header/body validation precedes catalogue I/O. An unavailable source declines before settlement. Consensus receipt, not precheck, determines success. |
+| The facilitator signs only the required payment | `src/x402/facilitator.js` decodes every node body and rejects extra debits, unrelated assets, allowances and excessive fee caps. Header/body, payer signature, validity window and balance checks precede catalogue I/O. An unavailable source declines before settlement. Consensus receipt, not precheck, determines success. |
 | Mainnet Uniswap quotes do not have spending authority | Server selects only the quote tool; USDC→ETH on Base/Unichain is allowlisted and bounded. No EVM key is required, no approval or broadcast occurs. API key stays server-side. |
 | Judges can inspect deployed configuration | `GET /api/guardrails` exposes network, execution mode, limits and current usage, without IP identifiers or secrets. UI labels this as runtime configuration, not a security certification. |
 
@@ -66,6 +66,32 @@ The facilitator still relies on ledger signature verification and receipts, and
 has no production fee-sponsorship abuse budget. Paid service failures need receipt
 reconciliation; there is no automatic refund system. No production readiness or
 independent security certification is claimed.
+
+## Payer authorization before paid work
+
+The facilitator verifies each node-specific transaction body against the debit
+account's current public key, in addition to checking exact transfer legs and fee
+limits. Unsigned, foreign-signed, expired or underfunded requests cannot start a
+catalogue query or reach the fee signer. A second check runs immediately before
+fee sponsorship. Eight concurrent lookups and an eight-second deadline bound
+this preflight; mirror-node outages fail closed.
+
+The public payment path accepts simple ED25519 and ECDSA keys. Key lists and
+contract-account keys are refused rather than partially evaluated. Mirror balances
+and keys are snapshots: concurrent spending or rotation can still change the
+ledger outcome. Consensus remains authoritative. Ambiguous payments retain their
+original transaction ID for review; they are never silently paid again.
+[Regression cases](../tests/payment-authorization.test.js) ·
+[Current review](qa/JUDGE-REVIEW.md).
+
+## Reproducible dependencies
+
+The Uniswap plugin declares a legacy, unscoped Agent Kit peer. The root override
+maps that name to the current scoped 4.1.0 kit, removing an unused old SDK,
+LangChain and PDF dependency tree from clean installs. Both normal `npm ci` and
+lockfile audit are checked; auditing an existing minimal install alone could
+miss the legacy peer tree. This does not certify every dependency or migrate
+all old plugin interfaces. Quorum directly invokes the specific quote tool it uses.
 
 ## Kernel locking and recovery
 

@@ -34,7 +34,7 @@ inspect existing testnet cover NFTs. [Screenshot and recording notes](docs/media
 | Policyholder | **Policy → Check for earthquakes** | Three policy-bound oracle requests, up to 0.003 test aUSDd via x402; qualifying signatures can release the scheduled payout. |
 | Broker | **Refer & earn → Copy referral link** | Buyer pays the same premium; 15% goes to the broker and 85% to the pool. Commission history is visible. |
 
-[Verified business flows](docs/qa/PLATFORM-QA.md) · [Current security and submission review](docs/qa/SECURITY-FINAL.md) · [UX review](docs/qa/READINESS-REVIEW.md).
+[Verified business flows](docs/qa/PLATFORM-QA.md) · [Current QA and judge review](docs/qa/JUDGE-REVIEW.md) · [UX review](docs/qa/READINESS-REVIEW.md).
 
 **Made for a quick visual demo:** on large screens, the world map sits beside the
 introduction, then beside the selected quote and history. Labels stay readable
@@ -528,6 +528,8 @@ isolated checkout with separate demo accounts if reproducing the historical run.
 The UI's frozen mainnet record is not replaced automatically.
 
 </details>
+
+Latest [QA and judge review](docs/qa/JUDGE-REVIEW.md): reproducible installs, payer-signature preflight, responsive flows and verified receipts.
 
 ## Prior work boundary (CONTINUITY track)
 
