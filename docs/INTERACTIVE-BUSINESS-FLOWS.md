@@ -7,6 +7,7 @@
 | Buyer | Start demo account; choose cover; pay premium | Account tokens fund the policy beneficiary's premium payment; beneficiary receives frozen NFT and scheduled payout. |
 | Liquidity provider | Deposit 1–100 aUSDd into shared pool | Atomic token deposit and fungible ARPS delivery. Demo share issuance is 1:1, not NAV pricing. |
 | Broker | Share account's referral link/code | 15% of referred premium reaches broker; 85% reaches pool, atomically. No referral means 100% to pool. |
+| Swap trader / market LP | Swap → Demo · no setup | Isolated funded Sepolia wallet; real swaps, Uniswap position NFT, fee collection and withdrawal. Separate from ARPS. |
 | Policyholder / oracle services | Policy → Check for earthquakes | Up to 0.003 test aUSDd pays three x402 queries; each service verifies the recorded policy before any signature. Payment and claim approval remain separate. |
 
 Start under **Your demo account**. The service sponsors 1,000 unbacked testnet
@@ -89,3 +90,7 @@ Verified at 320px and desktop: no horizontal overflow; referral copy feedback, d
 ### Depositor position
 
 The funding page shows the connected demo account’s ARPS balance, percentage of issued ARPS (balance ÷ live token supply, using token decimals), account verification and latest completed deposit receipt. This is a token holding percentage, not APY, asset ownership or distributed earnings. Missing supply renders an unavailable percentage. Investment income distributions and withdrawals remain unimplemented and are visibly labeled.
+
+The default cross-chain UI now uses [isolated managed Sepolia wallets](MANAGED-DEMO-WALLETS.md).
+A visitor can bridge to that wallet or immediately try a Uniswap swap with
+sponsored starter inventory. Personal-wallet signing remains optional.

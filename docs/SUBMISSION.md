@@ -15,7 +15,7 @@ Reusable plugin: https://github.com/jmgomezl/hak-scheduled-settlement
 | 0:00–0:20 | Cover homepage | Fixed earthquake payouts can be committed before an event. |
 | 0:20–0:45 | Search Medellin; Explore data | The historical chart holds payout at $800; premiums vary with the record. Return to cover for current terms. |
 | 0:45–1:15 | Create funded testnet cover; view policy | A real NFT, published terms, premium transfer and scheduled payout. Demo assets have no cash value. Cut network waiting from the recording. |
-| 1:15–1:35 | Swap → Bridge / Swap | Hedera → HAK Axelar plugin → Sepolia → Uniswap. Show a completed bridge, exact approval and swap receipt. |
+| 1:15–1:35 | Swap → Bridge / Swap | Hedera → HAK Axelar plugin → Sepolia → Uniswap. Use **Demo · no setup**: real bridge, approval and swap receipts without an extension. |
 | 1:35–2:00 | Fund the pool → deposit and ARPS balance | One shared pool backs all policies. ARPS arrives atomically. Per-policy cards are economics previews; no separate vault or guaranteed yield. |
 | 2:00–2:40 | How it works | Replay commit → one confirmation → two confirmations → executed transfer. Controlled mainnet recording, not a live earthquake claim. Open the actual receipt. |
 | 2:40–3:00 | Policy → Check for earthquakes | Bounded testnet x402 payments query the published policy terms. No-match and unavailable are different; payment does not mean claim approval. |
@@ -98,3 +98,10 @@ These are separate positions with separate earnings.”
 Use [NFT 231762’s completed lifecycle](evidence/uniswap-liquidity.json) as a
 recorded example, labeled Sepolia. Its liquidity is now fully withdrawn; it
 is not a currently earning position. Leave the primary bridge/swap story central.
+
+## Wallet-free judge interaction
+
+Keep **Demo · no setup** selected. The default signer is a separate service-managed
+Sepolia wallet with starter tokens and sponsored gas. Review and confirm a swap
+or LP action; open its receipt. **Use my wallet** is optional.
+[Verified managed swap, NFT #231774 and full exit](evidence/managed-wallet-demo.json).

@@ -1180,6 +1180,23 @@ small { font-size:12px; color:var(--fg-2); }
 .swap-alternative>.testnet-swap {border:0;margin:0;}
 .swap-alternative>.testnet-swap>summary {padding-top:0;min-height:44px;}
 .swap-footer {max-width:750px;margin:30px 0 16px;}
+.swap-wallet-mode {display:inline-flex;gap:4px;border:1px solid var(--line-strong);border-radius:24px;padding:4px;margin:0 0 14px;}
+.swap-wallet-mode button {padding:9px 17px;min-height:40px;border-radius:20px;font-size:12px;color:var(--fg-2);}
+.swap-wallet-mode button[aria-pressed=true] {background:var(--bg-3);color:var(--fg-0);}
+.demo-wallet-note {display:flex;gap:10px 14px;align-items:center;flex-wrap:wrap;font-size:11px;color:var(--fg-1);margin:0 0 26px;}
+.demo-wallet-note>.status-dot {color:var(--ok);}
+.demo-wallet-note>a {color:var(--ok);font:10px var(--mono);}
+.demo-wallet-note>small {font-size:10px;color:var(--fg-2);}
+.demo-wallet-note>details {font-size:10px;color:var(--fg-2);}
+.demo-wallet-note summary {cursor:pointer;min-height:32px;display:flex;align-items:center;}
+.demo-wallet-note details[open] {flex-basis:100%;}
+.demo-wallet-note p {max-width:640px;font-size:11px;line-height:1.6;margin:4px 0 8px;}
+.demo-operation {display:grid;gap:10px;border-top:1px solid var(--line-strong);padding-top:15px;margin-top:12px;font-size:12px;color:var(--fg-1);}
+.demo-operation-ok {color:var(--ok);}
+.demo-operation-steps {display:flex;gap:10px 15px;flex-wrap:wrap;}
+.demo-operation-steps a {display:flex;align-items:center;gap:5px;min-height:36px;font-size:10px;color:var(--fg-2);}
+.demo-operation-steps a>span {color:var(--ok);}
+.demo-operation>button {justify-self:start;min-height:44px;}
 
 /* The swap market stays secondary to the bridge/swap journey. */
 .swap-liquidity {--lp:#f09bc7;margin-top:44px;padding-top:30px;border-top:1px solid var(--line-strong);}

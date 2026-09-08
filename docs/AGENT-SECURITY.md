@@ -258,7 +258,9 @@ See the [final user/judge review](qa/FINAL-UX-REVIEW.md) for browser checks.
 **Insurance custody and market liquidity have separate authorities.**
 `/api/liquidity/*` reads the existing V3 market and returns unsigned transactions.
 It never uses a Hedera account, ARPS supply key, insurance reserve or server EVM
-signer. Users supply both test tokens from their own Sepolia wallets.
+signer. The default managed-demo orchestrator calls this same validated adapter
+with an isolated session wallet; personal-wallet mode returns unsigned calls.
+See [managed signing boundary](MANAGED-DEMO-WALLETS.md).
 
 | Boundary | Enforced behavior |
 | --- | --- |
@@ -284,3 +286,29 @@ and insurance-premium distributions remain unimplemented.
 [Implementation](../src/settlement/liquidity.js) · [Negative tests](../tests/liquidity.test.js) ·
 [Real create/increase/collect/partial and full exit receipts](evidence/uniswap-liquidity.json) ·
 [Browser and ledger verification](qa/UNISWAP-LIQUIDITY.md).
+
+## Isolated managed Sepolia signer
+
+Judges can now execute real swaps and LP actions without an extension. This
+adds explicit custodial signing authority, scoped to a separate generated
+Sepolia wallet for each bearer capability. It does not grant authority over
+the sponsor key, other sessions, Hedera reserves or mainnet.
+
+The server pins the sponsor identity, verifies RPC chain ID before signing,
+accepts only named operations and rebuilds validated calldata. Quotes are
+bound to a capability and single request; changed terms or reused quote IDs
+are rejected. Reviewed minimum output and matching-token caps survive rebuilding.
+Exact approvals and each signed transaction are journaled before broadcast.
+Unknown submissions reconcile the original bytes/hash; they cannot mint again.
+
+Wallet and sponsor file locks serialize nonces across processes. Corrupt journals
+or abandoned locks fail closed for operator review. A daily sponsor budget,
+per-transaction fee cap, per-wallet allowance and retained sponsor reserve bound
+exposure; part of the wallet allowance is reserved for LP removal. Public
+responses expose addresses and receipts, never keys or signed raw bytes.
+
+This is demo custody: private files are mode 0600, not HSM-backed production
+custody. A stolen browser capability controls that session’s demo actions;
+clearing storage loses access. No cash value and no arbitrary withdrawal API.
+[Exact limits and operations](MANAGED-DEMO-WALLETS.md) ·
+[Isolation, replay, corruption, RPC and restart tests](../tests/evm-demo.test.js).

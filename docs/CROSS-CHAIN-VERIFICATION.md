@@ -25,8 +25,11 @@ the insurance reserves. The initial 90+90 seed remains a historical deposit;
 the page reads current token balances after swaps.
 Quote and policy pages also link directly to this flow. Verified examples are
 labeled recordings; current receipts appear inside the action that created them.
-Use an injected EVM wallet on Sepolia with test ETH for gas. Confirm the source
-receipt, wait for delivery, quote, approve exactly, then sign and submit the swap.
+The default **Demo · no setup** mode supplies an isolated service-managed Sepolia
+wallet, starter tokens and bounded gas sponsorship. Confirm the source receipt,
+wait for delivery, review and swap. Exact approvals are included in that action.
+**Use my wallet** keeps the optional injected-wallet flow with user-supplied gas.
+[Custody and recovery](MANAGED-DEMO-WALLETS.md).
 Mainnet quote previews never initiate transfers.
 
 ## Operator setup and recovery
@@ -45,15 +48,16 @@ Never delete a pending journal merely to retry.
 For deployment recovery, `BRIDGE_GMP_RECORD` points to the saved verified Axelar
 record; `BRIDGE_STATUS_RECORD` points to an approved seed-transfer status record.
 The historical supplemental-gas utility is not a general automatic retry service.
-Normal users can complete a gateway-approved delayed delivery from their wallet
-in the UI. Pending source failures before a recorded bridge receipt require
+Users can complete a gateway-approved delayed delivery from their selected
+demo or personal wallet in the UI. Pending source failures before a recorded bridge receipt require
 operator review; normal same-request retries reconcile confirmed source events.
 
 ## Practical limits
 
 - Bridge: 0.01–10 aUSDd; linked-token swap: 0.01–1 aUSDd per transaction.
 - Shared demo budgets: 12 actions/account/day, 200 global actions/day.
-- Native swap: 0.00001–0.01 Sepolia ETH. Users supply EVM gas.
+- Native swap (personal-wallet alternative): 0.00001–0.01 Sepolia ETH. Users supply gas.
+- Managed Sepolia wallets: 30 starters/day, 3/IP/day, 20 actions/wallet/day, 150 actions/day; bounded sponsorship.
 - No automatic relay SLA, mainnet execution, return bridge UI, ARPS market or cash redemption.
 - Sponsored liquidity can be exhausted or change price. Quotes and minimum output govern execution.
 

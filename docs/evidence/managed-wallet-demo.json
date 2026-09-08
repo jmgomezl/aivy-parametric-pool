@@ -1,0 +1,239 @@
+{
+  "checkedAt": "2026-09-08T02:32:21.472Z",
+  "chainId": 11155111,
+  "network": "Ethereum Sepolia",
+  "custody": "Service-managed isolated browser wallet; no injected wallet",
+  "wallet": "0x5cdbc8e8c0607c862850a286eff2c8e810d40a6c",
+  "starterSource": "Dedicated test sponsor; aUSDd from previously bridged inventory",
+  "starterSteps": [
+    {
+      "name": "starter-test-USDC",
+      "hash": "0x81c913cdc43e73377986d85e1eef27f877d42820250a6ad4da807358d896d2f5",
+      "status": "confirmed"
+    },
+    {
+      "name": "starter-aUSDd",
+      "hash": "0xe1c15fd8033a7a1aa1b3e1765a3eccfeeb08f852794fe15efcacdd75b4faf342",
+      "status": "confirmed"
+    },
+    {
+      "name": "starter-gas",
+      "hash": "0xce4cc8386a2a0e03b4b9164cff2b9fb6fbfc07d7546b80828b2eb8bcfe223945",
+      "status": "confirmed"
+    }
+  ],
+  "actions": [
+    {
+      "kind": "swap",
+      "status": "complete",
+      "steps": [
+        {
+          "name": "approve-aUSDd",
+          "hash": "0xa341c55b350a0a542884dd58ec78e3fad0840dcca17db8e4276f908b98467d09",
+          "status": "confirmed"
+        },
+        {
+          "name": "swap",
+          "hash": "0xc73c556612ac939492f66dd3e94b18477514265af790269b4303a947cf586855",
+          "status": "confirmed"
+        }
+      ],
+      "result": {
+        "transactionHash": "0xc73c556612ac939492f66dd3e94b18477514265af790269b4303a947cf586855",
+        "tokenId": null
+      }
+    },
+    {
+      "kind": "lp",
+      "action": "create",
+      "status": "complete",
+      "steps": [
+        {
+          "name": "approve-0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+          "hash": "0x93d739bbb94c9af17f476942653a800cfb305ffe8596bede486a0944df349226",
+          "status": "confirmed"
+        },
+        {
+          "name": "approve-0x5685b5660a86028d8a50c9e4fc33ff081b3cd9e9",
+          "hash": "0x1df34e8c931436e7f1fc5270d53adf037e972d8203473d1da73ecac9ce33d072",
+          "status": "confirmed"
+        },
+        {
+          "name": "gas-liquidity",
+          "hash": "0x0182257ea346ec5058d290eb3d7391127de9fd31a97a308f58d8c33f4efd2344",
+          "status": "confirmed"
+        },
+        {
+          "name": "liquidity",
+          "hash": "0xafa88d9bf9f4d7596d10ec57e6cbc12d22624b3fcdd72be15004e92772253c5b",
+          "status": "confirmed"
+        }
+      ],
+      "result": {
+        "transactionHash": "0xafa88d9bf9f4d7596d10ec57e6cbc12d22624b3fcdd72be15004e92772253c5b",
+        "tokenId": "231774"
+      }
+    },
+    {
+      "kind": "lp",
+      "action": "remove",
+      "status": "complete",
+      "steps": [
+        {
+          "name": "gas-liquidity",
+          "hash": "0x6a2173a2193a310a3bbe8ffefbcce8cc849c63a155a7055835cbad77285df3e0",
+          "status": "confirmed"
+        },
+        {
+          "name": "liquidity",
+          "hash": "0xb3463367417974cd0cdfc660e98e08b6d5cb0a04df133ad1fe2f0612e453b699",
+          "status": "confirmed"
+        }
+      ],
+      "result": {
+        "transactionHash": "0xb3463367417974cd0cdfc660e98e08b6d5cb0a04df133ad1fe2f0612e453b699",
+        "tokenId": "231774"
+      }
+    }
+  ],
+  "finalBalances": {
+    "testUSDC": "109748",
+    "aUSDd": "89999"
+  },
+  "finalPositions": [
+    {
+      "tokenId": "231774",
+      "owner": "0x5cdbc8e8c0607c862850a286eff2c8e810d40a6c",
+      "liquidity": "0",
+      "tickLower": -887220,
+      "tickUpper": 887220,
+      "supported": true,
+      "inRange": true,
+      "amount0": "0",
+      "amount1": "0",
+      "claimable0": "0",
+      "claimable1": "0"
+    }
+  ],
+  "transactions": [
+    {
+      "hash": "0x81c913cdc43e73377986d85e1eef27f877d42820250a6ad4da807358d896d2f5",
+      "blockNumber": 11658233,
+      "status": 1,
+      "tokenTransfers": [
+        {
+          "token": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+          "from": "0x18c5e6987a734638403bbd942e17d959952b8e4e",
+          "to": "0x5cdbc8e8c0607c862850a286eff2c8e810d40a6c",
+          "amountUnits": "100000"
+        }
+      ]
+    },
+    {
+      "hash": "0xe1c15fd8033a7a1aa1b3e1765a3eccfeeb08f852794fe15efcacdd75b4faf342",
+      "blockNumber": 11658234,
+      "status": 1,
+      "tokenTransfers": [
+        {
+          "token": "0x5685b5660a86028d8a50c9e4fc33ff081b3cd9e9",
+          "from": "0x18c5e6987a734638403bbd942e17d959952b8e4e",
+          "to": "0x5cdbc8e8c0607c862850a286eff2c8e810d40a6c",
+          "amountUnits": "100000"
+        }
+      ]
+    },
+    {
+      "hash": "0xce4cc8386a2a0e03b4b9164cff2b9fb6fbfc07d7546b80828b2eb8bcfe223945",
+      "blockNumber": 11658235,
+      "status": 1,
+      "tokenTransfers": []
+    },
+    {
+      "hash": "0xa341c55b350a0a542884dd58ec78e3fad0840dcca17db8e4276f908b98467d09",
+      "blockNumber": 11658242,
+      "status": 1,
+      "tokenTransfers": []
+    },
+    {
+      "hash": "0xc73c556612ac939492f66dd3e94b18477514265af790269b4303a947cf586855",
+      "blockNumber": 11658243,
+      "status": 1,
+      "tokenTransfers": [
+        {
+          "token": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+          "from": "0x520388428673bc16fad5aa5e49fdb1d30727ceb3",
+          "to": "0x5cdbc8e8c0607c862850a286eff2c8e810d40a6c",
+          "amountUnits": "9749"
+        },
+        {
+          "token": "0x5685b5660a86028d8a50c9e4fc33ff081b3cd9e9",
+          "from": "0x5cdbc8e8c0607c862850a286eff2c8e810d40a6c",
+          "to": "0x520388428673bc16fad5aa5e49fdb1d30727ceb3",
+          "amountUnits": "10000"
+        }
+      ]
+    },
+    {
+      "hash": "0x93d739bbb94c9af17f476942653a800cfb305ffe8596bede486a0944df349226",
+      "blockNumber": 11658244,
+      "status": 1,
+      "tokenTransfers": []
+    },
+    {
+      "hash": "0x1df34e8c931436e7f1fc5270d53adf037e972d8203473d1da73ecac9ce33d072",
+      "blockNumber": 11658245,
+      "status": 1,
+      "tokenTransfers": []
+    },
+    {
+      "hash": "0x0182257ea346ec5058d290eb3d7391127de9fd31a97a308f58d8c33f4efd2344",
+      "blockNumber": 11658246,
+      "status": 1,
+      "tokenTransfers": []
+    },
+    {
+      "hash": "0xafa88d9bf9f4d7596d10ec57e6cbc12d22624b3fcdd72be15004e92772253c5b",
+      "blockNumber": 11658247,
+      "status": 1,
+      "tokenTransfers": [
+        {
+          "token": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+          "from": "0x5cdbc8e8c0607c862850a286eff2c8e810d40a6c",
+          "to": "0x520388428673bc16fad5aa5e49fdb1d30727ceb3",
+          "amountUnits": "9777"
+        },
+        {
+          "token": "0x5685b5660a86028d8a50c9e4fc33ff081b3cd9e9",
+          "from": "0x5cdbc8e8c0607c862850a286eff2c8e810d40a6c",
+          "to": "0x520388428673bc16fad5aa5e49fdb1d30727ceb3",
+          "amountUnits": "9999"
+        }
+      ]
+    },
+    {
+      "hash": "0x6a2173a2193a310a3bbe8ffefbcce8cc849c63a155a7055835cbad77285df3e0",
+      "blockNumber": 11658254,
+      "status": 1,
+      "tokenTransfers": []
+    },
+    {
+      "hash": "0xb3463367417974cd0cdfc660e98e08b6d5cb0a04df133ad1fe2f0612e453b699",
+      "blockNumber": 11658255,
+      "status": 1,
+      "tokenTransfers": [
+        {
+          "token": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+          "from": "0x520388428673bc16fad5aa5e49fdb1d30727ceb3",
+          "to": "0x5cdbc8e8c0607c862850a286eff2c8e810d40a6c",
+          "amountUnits": "9776"
+        },
+        {
+          "token": "0x5685b5660a86028d8a50c9e4fc33ff081b3cd9e9",
+          "from": "0x520388428673bc16fad5aa5e49fdb1d30727ceb3",
+          "to": "0x5cdbc8e8c0607c862850a286eff2c8e810d40a6c",
+          "amountUnits": "9998"
+        }
+      ]
+    }
+  ]
+}

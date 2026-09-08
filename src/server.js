@@ -1,6 +1,7 @@
 import {checkPolicy,latestPolicyCheck} from './demo/policyChecks.js';
 import {createBridgedSwap} from './settlement/bridgedSwap.js';
 import {createLiquidity} from './settlement/liquidity.js';
+import {createEvmDemo} from './demo/evm.js';
 import {bridgeConfig,bridgeStatus} from './settlement/bridge.js';
 import {createTestnetSwap} from './settlement/testnetSwap.js';
 // The underwriting agent, over HTTP.
@@ -70,12 +71,22 @@ async function main() {
   const bridgedSwaps=createBridgedSwap();
   const liquidity=createLiquidity();
   const demo=demoService({client:c,agent,network:NETWORK,reg});
+  const evmDemo=createEvmDemo({network:NETWORK,liquidity,demo});
 
   const server = http.createServer(async (req, res) => {
     if (req.method === 'OPTIONS') return json(res, 204, {});
     try {
       const url = new URL(req.url, 'http://localhost');
       const route = url.pathname.replace(/\/$/, '');
+      if (route.startsWith('/api/demo/evm')) {
+        const id=capability(req);
+        if (route==='/api/demo/evm'&&req.method==='GET') return json(res,200,await evmDemo.view(id));
+        if (route==='/api/demo/evm/start'&&req.method==='POST') {const body=await readJsonBody(req);if(Object.keys(body).length)throw new HttpError(400,'Unsupported starter options.');return json(res,200,await evmDemo.start(id,clientIp(req)));}
+        if (route==='/api/demo/evm/quote'&&req.method==='POST') return json(res,200,await evmDemo.quote(id,await readJsonBody(req)));
+        if (route==='/api/demo/evm/execute'&&req.method==='POST') return json(res,200,await evmDemo.execute(id,await readJsonBody(req)));
+        if (route==='/api/demo/evm/resume'&&req.method==='POST') return json(res,200,await evmDemo.resume(id,await readJsonBody(req)));
+        if (route==='/api/demo/evm/bridge'&&req.method==='POST') return json(res,200,await evmDemo.bridge(id,await readJsonBody(req),clientIp(req)));
+      }
       if (route.startsWith('/api/liquidity')) {
         if (NETWORK!=='testnet') throw new HttpError(403,'Testnet liquidity only.');
         if (route==='/api/liquidity/market' && req.method==='GET') return json(res,200,await liquidity.market());
@@ -259,5 +270,14 @@ async function main() {
     console.log(`  writes ${NETWORK !== 'testnet' ? 'DISABLED (mainnet)' : 'enabled'}` +
       `  · ${LIMITS.perIpPerHour}/ip/hour · ${LIMITS.policiesPerDay}/day · $${LIMITS.usdPerDay.toLocaleString()}/day`);
   });
+  let draining=false;
+  const shutdown=async()=>{
+    if(draining)return;draining=true;
+    // Stop admission, finish accepted requests, then drain journaled EVM jobs.
+    await new Promise(resolve=>server.close(resolve));
+    await evmDemo.close();liquidity.close();c.close();process.exit(0);
+  };
+  process.once('SIGTERM',()=>void shutdown());
+  process.once('SIGINT',()=>void shutdown());
 }
 main().catch((e) => { console.error(e.message ?? e); process.exit(1); });

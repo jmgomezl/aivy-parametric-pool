@@ -1,5 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
 import proof from '../../../docs/evidence/uniswap-liquidity.json';
+import {DemoLiquidity} from './DemoEvm';
 
 const BASE=import.meta.env.VITE_AGENT_URL??'', CHAIN='0xaa36a7';
 const MANAGER='0x1238536071e1c677a632429e3655c799b22cda52';
@@ -22,10 +23,10 @@ const labels:Record<string,string>={create:'Position created',increase:'Liquidit
 function stored<T>(key:string,fallback:T):T {try{return JSON.parse(localStorage.getItem(key)??'null')??fallback;}catch{return fallback;}}
 async function api<T>(path:string,body?:unknown):Promise<T> {
   const r=await fetch(`${BASE}/api/liquidity/${path}`,{...(body?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(35000)});
-  const value=await r.json();if(!r.ok)throw Error(value.message??'Liquidity service unavailable.');return value;
+  const value=await r.json().catch(()=>{throw Error('Liquidity service unavailable. Try refreshing.');});if(!r.ok)throw Error(value.message??'Liquidity service unavailable.');return value;
 }
 
-export function SwapLiquidity(){
+export function SwapLiquidity({managed=false}:{managed?:boolean}){
   const [market,setMarket]=useState<Market|null>(null),[marketError,setMarketError]=useState(''),[loadingMarket,setLoadingMarket]=useState(false);
   const [open,setOpen]=useState(()=>Boolean(stored(STORE,null))),[account,setAccount]=useState<Account|null>(null),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
   const [selected,setSelected]=useState('new'),[mode,setMode]=useState<'add'|'collect'|'remove'>('add'),[amount,setAmount]=useState('0.01'),[percentage,setPercentage]=useState(100),[draft,setDraft]=useState<Draft|null>(null);
@@ -139,8 +140,9 @@ export function SwapLiquidity(){
     </div>
     <p className="liquidity-boundary">Separate from ARPS and cover reserves · test tokens have no cash value.</p>
     <details className="liquidity-recorded"><summary>Verified liquidity demo <span>+</span></summary><small>Recorded Sepolia lifecycle · NFT #{proof.tokenId} · now fully withdrawn</small><div>{[['Position minted',proof.transactions.create],['Fees collected',proof.transactions.collect],['Position withdrawn',proof.transactions['remove-rest']]].map(([label,hash])=><a key={hash} href={`https://sepolia.etherscan.io/tx/${hash}`} target="_blank" rel="noreferrer">{label} ↗</a>)}</div></details>
-    {pending&&!open?<button className="liquidity-resume chip" onClick={()=>setOpen(true)}>Transaction pending · Check confirmation →</button>:null}
+    {pending&&!open&&!managed?<button className="liquidity-resume chip" onClick={()=>setOpen(true)}>Transaction pending · Check confirmation →</button>:null}
     <div id="liquidity-controls" hidden={!open} className="liquidity-controls">
+      {managed?<DemoLiquidity/>:<>
       <div className="liquidity-account-bar"><h3>Your Uniswap position</h3>{account?<><a href={`https://sepolia.etherscan.io/address/${account.address}`} target="_blank" rel="noreferrer">{short(account.address)} ↗</a><button className="text-button" disabled={busy} onClick={()=>void run(async()=>{await refreshAccount(account.address);setDraft(null);})}>Refresh wallet ↻</button></>:<button className="chip" disabled={busy} onClick={()=>void run(connect)}>{busy?'Connecting…':'Connect Sepolia wallet →'}</button>}</div>
       {account?<div className="liquidity-manage-grid"><div className="liquidity-position">
         <label>Position<select value={selected} disabled={blocked} onChange={e=>{setSelected(e.target.value);setMode('add');invalidate();}}><option value="new">Create a new position NFT</option>{account.positions.map(p=><option key={p.tokenId} value={p.tokenId}>NFT #{p.tokenId}{BigInt(p.liquidity)===0n?' · removed':''}</option>)}</select></label>
@@ -156,6 +158,7 @@ export function SwapLiquidity(){
       {message?<p className="liquidity-message" role="status">{message}</p>:null}
       {userReceipts.length?<details className="liquidity-receipts"><summary>Your liquidity receipts <span>↗</span></summary>{userReceipts.map(r=><a key={r.hash} href={`https://sepolia.etherscan.io/tx/${r.hash}`} target="_blank" rel="noreferrer">{r.success?labels[r.kind]:'Reverted transaction'}{r.tokenId?` · #${r.tokenId}`:''} ↗</a>)}</details>:null}
       <details className="liquidity-explainer"><summary>What earns fees? <span>+</span></summary><p>Swaps pay a 0.3% pool fee. Your position accrues its share while in range. Actual fees depend on trading activity; this is not an APY or insurance premium income.</p><p>Full-range positions can change their token mix as the market moves. Removing liquidity returns the position’s current tokens, not a guaranteed original deposit. “Uncollected” includes fees and any principal previously removed without collection.</p><p>Your wallet signs exact token approvals and each action. Quorum pins Sepolia, this pool, its tokens and the position owner. No ARPS, policy reserves or mainnet funds are used.</p></details>
+      </>}
     </div>
   </section>;
 }
