@@ -531,14 +531,16 @@ The UI's frozen mainnet record is not replaced automatically.
 
 ## Prior work boundary (CONTINUITY track)
 
-Earlier Aivy infrastructure and the Uniswap plugin are reused; the conditional
-settlement plugin and this earthquake application are event work.
+Earlier Aivy infrastructure and the **Uniswap and Axelar HAK plugins** are reused;
+the conditional settlement plugin, earthquake application and guarded cross-chain
+integration are event work.
 
 <details>
 <summary>Full prior-work disclosure and upstream contribution</summary>
 
-**Everything in this repository was written during ETHOnline 2026 (from
-2026-09-04).** The repo has no pre-event commits.
+**This repository's commit history starts on September 4, 2026.** Pre-existing
+projects and packages reused here are disclosed below; they are not claimed as
+new event work.
 
 What existed before the event, and does **not** count as new work:
 
@@ -550,7 +552,13 @@ What existed before the event, and does **not** count as new work:
   Hedera Agent Kit docs.
 - **hak-uniswap-plugin** — Uniswap Trading API plugin with allowance handling and a
   Ledger threshold gate, proven on Sepolia. Reused here for live USDC-to-ETH
-  conversion quotes on Base and Unichain. The mainnet quote UI does not execute swaps. The Sepolia adapters prepare wallet-approved native and bridged-token swaps; Axelar ITS supplies the separate Hedera testnet bridge.
+  conversion quotes on Base and Unichain. The mainnet quote UI does not execute
+  swaps; the Sepolia execution adapters are project-specific integration work.
+- **[hak-axelar-plugin](https://github.com/jmgomezl/hak-axelar-plugin)** — Juanma
+  Gomez's pre-existing cross-chain plugin for Hedera Agent Kit, reused at **1.0.1**.
+  Its **`axelar_send_token`** builder prepares the Hedera ITS transfer to Sepolia.
+  The plugin itself is prior work; Quorum's guarded adapter and verified delivery
+  flow were built during this event. [Integration and receipts](#built-with-our-hak-axelar-plugin).
 - **Aivy Settlement Layer (ETHGlobal Lisbon, July 2026)** — a prior continuity
   build on aivy-studio that also used HTS pools and Scheduled Transactions. The
   overlap is the *substrate*; what is new here is stated below.
@@ -574,6 +582,12 @@ What is **new**, built during this event:
    arbitrary per-sale broker settled in one multi-party transaction.
 5. **x402-gated oracle services** — the oracle agents are the paid service, not
    just consumers of one.
+6. **Guarded Hedera → Axelar → Uniswap integration** — validates plugin-built
+   transfers before signing, corrects native Hedera ITS gas units, journals the
+   transaction before broadcast and matches source/destination events. This
+   connects the existing plugins to Quorum's funded demo wallets and real Sepolia
+   swaps. [Adapter](src/settlement/axelarPlugin.js) ·
+   [Tests](tests/axelar-plugin.test.js) · [Delivery evidence](docs/evidence/hak-axelar-plugin.json).
 
 </details>
 
