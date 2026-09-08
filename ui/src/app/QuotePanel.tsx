@@ -1,6 +1,6 @@
 import {useDemo,startDemo,refreshDemo} from '../lib/demo';
 import { PayoutConversion } from './PayoutConversion';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import * as agent from '../lib/agent';
 import { coverForBudget, placeName, sourceUrl } from '../lib/hazard';
 import { onLink, policyPath } from '../lib/router';
@@ -12,7 +12,7 @@ type Phase = { at: 'loading' } | { at: 'quoted'; q: agent.Quote } | { at: 'decli
 const dollars = (v: number) => `$${v.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
 const reasons: Record<string,string> = { no_record:'Not enough historical data', exceeds_capital:'Not enough pool capacity', rate_limited:'Demo limit reached', daily_policy_cap:'Demo limit reached', daily_cover_cap:'Demo limit reached', below_viability:'Budget below the minimum', mainnet_writes_disabled:'Mainnet is read only' };
 
-export function QuotePanel({ pin, map, budget, days, onBudget, onDays, onClose, onReturnToCover }: { pin: Pin; map: MapState; budget: number; days: number; onBudget:(v:number)=>void; onDays:(v:number)=>void; onClose:()=>void; onReturnToCover:()=>void }) {
+export function QuotePanel({ pin, map, budget, days, onBudget, onDays, onClose, onReturnToCover, exploration }: { pin: Pin; map: MapState; budget: number; days: number; onBudget:(v:number)=>void; onDays:(v:number)=>void; onClose:()=>void; onReturnToCover:()=>void; exploration?:ReactNode }) {
   const a=useAgent(), [phase,setPhase]=useState<Phase>({at:'loading'}), [retry,setRetry]=useState(0);
   const {account, busy:starting, error:accountError}=useDemo();
   const [referral,setReferral]=useState(()=>new URLSearchParams(location.search).get('ref')??'');
@@ -50,20 +50,23 @@ export function QuotePanel({ pin, map, budget, days, onBudget, onDays, onClose, 
   const amount=estimating?(estimate.priced.count?estimate.coverHbar:null):q?.payout;
   const held=phase.at==='held'?phase.result.policy:null;
   return <aside className="panel quote-panel" ref={panel} tabIndex={-1} aria-label="Coverage quote">
-    <div className="panel-top"><span className="eyebrow">{held?'Policy created':'Your cover'}</span><button className="icon-btn" onClick={onClose} disabled={busy} aria-label="Close quote">×</button></div>
+    <div className="panel-top"><span className="eyebrow">{held?'Policy created':map.exploring?'Historical estimate':'Your cover'}</span><button className="icon-btn" onClick={onClose} disabled={busy} aria-label="Close quote">×</button></div>
     <div><h2>{placeName(pin)}</h2><div className="coordinates num">{pin.lat.toFixed(2)}, {pin.lon.toFixed(2)}</div></div>
-    {held ? <div className="created-policy" role="status"><span className="created-check">✓</span><h3>Payout committed.</h3><p>Your demo policy is on Hedera.</p><div className="payout-amount num">{held.payoutHbar.toLocaleString(undefined,{maximumFractionDigits:2})}<small>{held.asset??'HBAR'} · demo beneficiary</small></div><a href={policyPath(held.serial)} onClick={onLink} className="buy">View policy <span>→</span></a><button className="text-button" onClick={onClose}>Choose another place</button></div> : <>
-      <div className="demo-note"><span className="status-dot bg-pending"/><span>Testnet cover<strong>aUSDd · no cash value · fees sponsored</strong></span></div>
+    {held ? <><div className="created-policy" role="status"><span className="created-check">✓</span><h3>Payout committed.</h3><p>Your demo policy is on Hedera.</p><div className="payout-amount num">{held.payoutHbar.toLocaleString(undefined,{maximumFractionDigits:2})}<small>{held.asset??'HBAR'} · demo beneficiary</small></div><a href={policyPath(held.serial)} onClick={onLink} className="buy">View policy <span>→</span></a><button className="text-button" onClick={onClose}>Choose another place</button></div>{exploration}</> : <>
+      {!map.exploring?<div className="demo-note"><span className="status-dot bg-pending"/><span>Testnet cover<strong>aUSDd · no cash value · fees sponsored</strong></span></div>:null}
       {phase.at==='declined'&&!estimating ? <section className="quote-refusal" role="status"><span className="eyebrow">{reasons[phase.r.reason]??'Unable to confirm'}</span><h3>{phase.r.reason==='no_record'?'Try another location.':['exceeds_capital','daily_cover_cap'].includes(phase.r.reason)?'Try a smaller payout.':needsReview?'Check your request in Policies.':'Please try again.'}</h3><p>{phase.r.message}</p>{phase.r.retryAfter?<small>Try again in {Math.ceil(phase.r.retryAfter/60)} minutes.</small>:null}<div className="flex flex-wrap gap-3">{!needsReview?<button className="chip" onClick={()=>setRetry(v=>v+1)}>Refresh quote</button>:null}<a className="chip" href="/policies" onClick={onLink}>View policies</a></div></section> : <section aria-live="polite">
         <div className="quote-numbers"><div><span>Premium · price of cover</span><strong className="num">{dollars(budget)}</strong><small>once</small></div><span className="quote-arrow" aria-hidden="true">→</span><div><span>Payout if conditions are met</span><strong className="num text-ok">{amount==null?'—':dollars(amount)}</strong><small>{days} days</small>{map.exploring?<YearlyChange change={coverChange} year={map.year}/>:null}</div></div>
         {estimating?<div className="estimate-label">{map.exploring?`Exploration · ${map.year} · M${map.minMag}+`:'Offline estimate'}{amount===null?' · insufficient historical data':''}</div>:!q?<p className="loading-line">Getting your quote…</p>:null}
-        <div className="trigger-chips" aria-label="Payout conditions"><span>M{map.exploring?map.minMag:6}+</span><span>Within 100 km</span><span>Depth ≤70 km</span></div>
-        <p className="trigger-note">Two oracle signatures release a qualifying payout.</p>
+        {!map.exploring?<div className="trigger-chips" aria-label="Payout conditions"><span>M6+</span><span>Within 100 km</span><span>Depth ≤70 km</span></div>:null}
+        {!map.exploring?<p className="trigger-note">Two oracle signatures release a qualifying payout.</p>:null}
         {q&&!estimating?<div className="settlement-line"><span>Demo payout</span><strong className="num">{q.settled.payout.toLocaleString(undefined,{maximumFractionDigits:2})} {q.settled.symbol}</strong></div>:null}
         {q&&!estimating?<div className="quote-capacity"><div><span>Your balance</span><strong>{account?`${account.balance.toFixed(2)} aUSDd`:'Start with 1,000 aUSDd'}</strong></div><small className={capacityBlocked||balanceBlocked?'text-pending':''}>{capacityBlocked?'Capacity limit · lower the budget.':balanceBlocked?'Insufficient balance for this premium.':poolFresh?'✓ Capacity available · verified before payment':'Capacity checked before payment'}</small></div>:null}
+      </section>}
+      {exploration}
+      {!(phase.at==='declined'&&!estimating)?<div className="quote-action">
         {busy?<div className="issuing" role="status"><span className="working-dot"/><div><strong>Creating your policy…</strong><p>Waiting for ledger confirmation. Progress is saved in Policies.</p></div></div>:<button className="buy" onClick={map.exploring?onReturnToCover:buy} disabled={!map.exploring&&(!q||!a.writesAllowed||estimating||capacityBlocked||balanceBlocked||starting)}><span>{map.exploring?'Back to current cover':!a.online?'Estimates only':!a.writesAllowed?'Read only':starting?'Creating demo account…':!account?'Get testnet tokens →':'Pay premium & create cover'}</span><span aria-hidden="true">→</span></button>}
 
-      </section>}
+      </div>:null}
       {!busy&&!needsReview?<section className="quote-inputs"><Slider label="Budget" value={budget} min={1} max={50} unit="" format={dollars} onChange={v=>{requestId.current=crypto.randomUUID();onBudget(v);}}/><details><summary>Duration <span className="num">{days} days</span></summary><Slider label="Days of cover" value={days} min={7} max={62} unit="days" onChange={v=>{requestId.current=crypto.randomUUID();onDays(v);}}/></details></section>:null}
       {!busy&&!needsReview&&!estimating?<details className="quote-why"><summary>Referral / broker code {referral?'· applied':''}</summary><label>Referral code <input value={referral} placeholder="Optional broker code" maxLength={12} onChange={e=>{setReferral(e.target.value.toLowerCase());requestId.current=crypto.randomUUID();}}/></label><p>{referral?`Premium ${dollars(budget)} → pool ${dollars(budget*.85)} + broker ${dollars(budget*.15)}. Your price is unchanged.`:'No referral: the entire premium goes to the shared pool. Get your own referral link under Your demo account.'}</p></details>:null}
       {accountError?<p role="status">{accountError}</p>:null}

@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { findPlaces } from '../lib/agent';
-import { History } from './History';
 import capitalsData from '../data/capitals.json';
-import { CATALOGUE, FIRST_YEAR, LAST_YEAR, MODEL, PLACES, dayOf, placeName } from '../lib/hazard';
+import { MODEL, PLACES, dayOf, placeName } from '../lib/hazard';
 import { Heat } from '../beats/atlas/Heat';
 import { landPath } from '../beats/atlas/land';
 import { H, HOME, W, base, clampView, kmToPxX, kmToPxY, pan, project, unproject, zoomAt, type View } from '../beats/atlas/projection';
@@ -14,17 +13,14 @@ const normalize = (v:string) => v.normalize('NFD').replace(/(\p{Script=Latin})\p
 const coordinatePattern = /^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/;
 const cities = [{name:'Medellín, Antioquia, Colombia',lat:6.2443382,lon:-75.573553}, ...PLACES, ...capitalsData.rows.map(([name, country, lon, lat]) => ({ name: `${name}, ${country}`, lat: Number(lat), lon: Number(lon) }))];
 
-export function AtlasMap({ pin, onPin, onState, markers = [], onMarker, days = MODEL.days, exploring, onExploringChange }: {
-  exploring:boolean; onExploringChange:(value:boolean)=>void;
-  pin: Pin | null; onPin: (p: Pin) => void; onState?: (s: MapState) => void;
-  markers?: Marker[]; onMarker?: (id: string) => void; days?: number;
+export function AtlasMap({ pin, onPin, map, markers = [], onMarker, onExploringChange }: {
+  map:MapState; onExploringChange:(value:boolean)=>void;
+  pin: Pin | null; onPin: (p: Pin) => void;
+  markers?: Marker[]; onMarker?: (id: string) => void;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [view, setView] = useState<View>(HOME);
-  const [year, setYear] = useState(LAST_YEAR), [minMag, setMinMag] = useState(6);
-  const [playing, setPlaying] = useState(false);
-  const setExploring=onExploringChange;
-  useEffect(()=>{if(!exploring){setYear(LAST_YEAR);setMinMag(6);setPlaying(false);}},[exploring]);
+  const {now,minMag,exploring}=map;
   const [search, setSearch] = useState(''), [searching, setSearching] = useState(false);
   const resultId=useId();
   const [searchRetry,setSearchRetry]=useState(0);
@@ -39,19 +35,11 @@ export function AtlasMap({ pin, onPin, onState, markers = [], onMarker, days = M
     return()=>{controller.abort();window.clearTimeout(timer);};
   },[search,searching,searchRetry]);
   const drag = useRef<{ x: number; y: number; view: View; moved: boolean } | null>(null);
-  const live = year === LAST_YEAR;
-  const now = useMemo(() => live ? new Date(CATALOGUE.fetchedAt) : new Date(Date.UTC(year, 11, 31)), [year, live]);
-  useEffect(() => { onState?.({ hover: null, year, live, now, minMag, exploring }); }, [year, live, now, minMag, exploring, onState]);
   useEffect(() => {
     if (!pin) { setView(HOME); return; }
     const point = base(pin.lon, pin.lat), k = 5;
     setView(clampView({ k, x: point.x - W / k / 2, y: point.y - H / k / 2 }));
   }, [pin?.lat, pin?.lon]);
-  useEffect(() => {
-    if (!playing) return;
-    const timer = window.setInterval(() => setYear(y => { if (y >= LAST_YEAR) { setPlaying(false); return y; } return y + 1; }), 500);
-    return () => clearInterval(timer);
-  }, [playing]);
   const xy = (e: { clientX: number; clientY: number }) => {
     const svg = svgRef.current!, point = svg.createSVGPoint(); point.x = e.clientX; point.y = e.clientY;
     return point.matrixTransform(svg.getScreenCTM()!.inverse());
@@ -62,7 +50,6 @@ export function AtlasMap({ pin, onPin, onState, markers = [], onMarker, days = M
     e.preventDefault(); const point = xy(e); setView(v => zoomAt(v, point.x, point.y, Math.exp(-e.deltaY * 0.0016)));
   }, []);
   useEffect(() => { const el = svgRef.current!; el.addEventListener('wheel', wheel, { passive: false }); return () => el.removeEventListener('wheel', wheel); }, [wheel]);
-  const closeExplore = () => { setExploring(false); setYear(LAST_YEAR); setMinMag(6); setPlaying(false); };
   const choose = (p: Pin) => { onPin(p); setSearch(''); setSearching(false); };
   const results = useMemo(() => {
     const coordinate=coordinatePattern.exec(search);
@@ -99,8 +86,7 @@ export function AtlasMap({ pin, onPin, onState, markers = [], onMarker, days = M
       </svg>
       <div className="map-zoom"><button aria-label="Zoom in" onClick={()=>setView(v=>zoomAt(v,W/2,H/2,1.6))}>+</button><button aria-label="Zoom out" onClick={()=>setView(v=>zoomAt(v,W/2,H/2,1/1.6))}>−</button><button aria-label="Show world map" onClick={()=>setView(HOME)}>◎</button></div>
     </div>
-    <div className="map-bottom"><div className="map-legend"><span className="legend-quake"/>Recorded earthquakes<span className="legend-cover"/>100 km cover</div><button className={`chip ${exploring ? 'chip-on' : ''}`} aria-expanded={exploring} onClick={()=>exploring?closeExplore():setExploring(true)}>{exploring ? 'Back to cover' : 'Explore data'}</button></div>
+    <div className="map-bottom"><div className="map-legend"><span className="legend-quake"/>Recorded earthquakes<span className="legend-cover"/>100 km cover</div><button id="explore-toggle" className={`chip ${exploring ? 'chip-on' : ''}`} aria-expanded={exploring} aria-controls={exploring?"historical-exploration":undefined} onClick={()=>onExploringChange(!exploring)}>{exploring ? 'Back to cover' : 'Explore data'}</button></div>
 
-    {exploring ? <section className="explore-controls" aria-label="Historical data exploration"><div className="explore-heading"><strong>Explore the record</strong><span>Estimates only · does not change policy terms</span></div><div className="explore-time"><button className="icon-btn" aria-label={playing?'Pause earthquake history':'Play earthquake history'} onClick={()=>{if(!playing&&live)setYear(FIRST_YEAR);setPlaying(!playing);}}>{playing?'Ⅱ':'▶'}</button><label htmlFor="record-year">{year}</label><input id="record-year" type="range" className="slider" min={FIRST_YEAR} max={LAST_YEAR} value={year} onChange={e=>{setPlaying(false);setYear(Number(e.target.value));}}/></div><div className="explore-mags"><span>Recorded magnitude</span>{[6,6.5,7].map(m=><button key={m} className={`chip ${m===minMag?'chip-on':''}`} aria-pressed={m===minMag} onClick={()=>setMinMag(m)}>M{m}+</button>)}</div>{pin ? <History pin={pin} days={days} minMag={minMag} markYear={year} onYear={value=>{setPlaying(false);setYear(value);}} /> : <p className="premium-history-empty">Choose a place on the map to see its premium over time.</p>}<small>USGS snapshot · {CATALOGUE.fetchedAt.slice(0,10)} · brightness shows recorded activity, not a forecast.</small></section> : null}
   </div>;
 }

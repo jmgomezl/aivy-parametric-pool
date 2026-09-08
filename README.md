@@ -392,7 +392,7 @@ visible on arrival; technical evidence stays one disclosure away.
 | Visual | What it teaches |
 | --- | --- |
 | **World map + geographic NFTs** | Where cover applies; worldwide search and Mexico/California/Tokyo demos. |
-| **Interactive premium history** | Premium variation for a fixed **$800 modeled payout**; click/drag/keyboard year selection and red/green annual change. |
+| **Interactive premium history** | Beside the map, below the location estimate: a fixed **$800 modeled payout**, interactive year selection and red/green annual change. [View the layout](docs/media/08-explore-history.png). |
 | **LP contribution + two outcomes** | Premium share and principal at risk, explicitly labeled as a preview. |
 | **Hedera → Axelar → Uniswap** | Native cover, cross-chain transport and EVM liquidity have distinct roles. Two action steps sit beside labeled testnet examples. |
 | **Signatures → transfer → receipt** | Who signed, why execution happened or was blocked, and where to verify it. |
@@ -405,7 +405,7 @@ visible on arrival; technical evidence stays one disclosure away.
 | --- | --- |
 | Global discovery | Debounced Photon/OpenStreetMap city and municipality search, keyboard selection, coordinate entry, map pinning, zoom/pan, and Mexico, California and Tokyo demos. Unaccented “Medellin” was verified. Search coverage depends on the upstream catalogue. |
 | Geographic NFT identity | Aivy Quorum branding, local map, approximate 100 km protected area, terms, payout and network replace abstract artwork. Cover NFTs and proposed LP receipts remain visually distinct. |
-| Understandable pricing history | Premium-over-time chart holds the modeled payout at **$800**, with the selected year and red/green annual variation. Click, tap or drag the chart—or use the keyboard/timeline—to choose a year. Historical exploration cannot change issued terms; returning to Cover restores the current M6+ quote. |
+| Understandable pricing history | A right-hand panel keeps the chart beside the map, directly under the selected location’s estimate. On phones/tablets, it stacks below the map and opens at the location details. The premium-over-time chart holds the modeled payout at **$800**, with the selected year and red/green annual variation. Click, tap or drag the chart—or use the keyboard/timeline—to choose a year. Historical exploration cannot change issued terms; returning to Cover restores the current M6+ quote. |
 | Visual funding preview | Contribution slider, premium share and two claim outcomes show how capital might participate. Annual premium rate is gross, before claims/costs; contributed principal can be used for a payout. Formula and assumptions expand on demand. Preview/unminted labels remain visible. |
 | A clearer six-scene story | Geographic terms → capital commitment → named signatures → transfer animation → NFT/receipts → blocked authorization control. Direct step links and previous/next controls keep the recorded mainnet demonstration navigable. |
 | Explicit signature evidence | Old circular diagrams were replaced with **agent key AND oracle threshold → observed result**. “3 signed · 2 required” avoids ambiguous counts. Missing agent signature explains the blocked control; unknown ledger status remains unverified. |
@@ -421,6 +421,8 @@ Cover, Policies, NFT/LP, historical chart, story and the direct Swap journey. Th
 [September 6 review](docs/FINAL-UX-REVIEW.md) preserves the earlier recording baseline. Legacy ring components in
 unrouted source files are not used by the active app. These are documented
 browser checks, not a claim of exhaustive device or accessibility certification.
+The [history sidebar review](docs/qa/EXPLORE-SIDEBAR.md) covers responsive placement,
+playback, pointer/touch/keyboard selection and returning to the current quote.
 
 </details>
 
