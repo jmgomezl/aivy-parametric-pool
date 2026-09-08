@@ -29,7 +29,8 @@ is one disclosure away. No extension or faucet setup is needed in the public app
 
 - Cover creation is real testnet issuance, paid from the visitor’s funded demo account.
 - Mainnet story proves a real 4 HBAR settlement with controlled signatures. It does not demonstrate autonomous event detection or independent oracle operators.
-- x402 evidence: [public request/result](evidence/x402-testnet.json), [settled payment](https://hashscan.io/testnet/transaction/0.0.7231440-1788672698-044530315).
+- Current Blocky402 evidence: [three successful policy-bound payments](evidence/blocky402-testnet.json), totaling **0.003 test aUSDd**, with Blocky paying network fees. All three catalogues returned no match; no policy signature or payout was produced. [Flow, screenshot and receipts](BLOCKY402.md).
+- Historical self-hosted x402 evidence: [public request/result](evidence/x402-testnet.json), [settled payment](https://hashscan.io/testnet/transaction/0.0.7231440-1788672698-044530315).
   Payment: 1,000 base units = 0.001 aUSDd; USGS service returned HTTP 200 after settlement.
   The query covers Mexico City in January 2025. It found no qualifying event and did not sign any policy.
 - Current x402 requests use the hosted **Blocky402 testnet facilitator**. [Implementation](BLOCKY402.md). Older self-hosted receipts remain historical; no mainnet Blocky payment is claimed.
@@ -57,7 +58,7 @@ not certify registration or organizer acceptance.
 | --- | --- |
 | **Uniswap Stack Contribution · Continuity** | Working Trading API swaps and V3 position operations, with code and receipts linked in the README. [FEEDBACK.md](../FEEDBACK.md) is prepared; **submit the [developer feedback form](https://developers.uniswap.org/hackathon-feedback)** with the [public FEEDBACK.md link](https://github.com/jmgomezl/aivy-parametric-pool/blob/main/FEEDBACK.md). Form submission has not been verified. |
 | **Hedera Continuity** | Plausible fit for the disclosed prior project and substantive new scheduling, paid-oracle and cross-chain work. Confirm Continuity registration and explain the new work using the repository history. |
-| **Hedera AI & Agentic Payments** | The oracle flow now uses hosted Blocky402 on Hedera testnet. Show a new paid request and its receipt in the video; confirm the dashboard offers this prize for your selected track. |
+| **Hedera AI & Agentic Payments** | Hosted Blocky402 integration is live, with [three independently verified testnet payments](evidence/blocky402-testnet.json). Show the paid request and receipt in the video; confirm the dashboard offers this prize for your selected track. |
 
 The Hedera tokenization prize requires Asset Tokenization Studio; the Harness
 prize requires a qualifying Harness contribution. Neither is established by the

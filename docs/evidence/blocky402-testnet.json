@@ -1,0 +1,211 @@
+{
+  "checkedAt": "2026-09-08T20:02:02.859Z",
+  "implementationRevision": "904c9ea",
+  "scope": "Fresh policy-bound requests made by the Quorum agent, settled by hosted Blocky402 on Hedera testnet. No mainnet funds.",
+  "policy": "https://quorum.aivylabs.xyz/policy/32",
+  "payer": "0.0.10408125",
+  "asset": "aUSDd",
+  "token": "0.0.10374011",
+  "totalPaid": 0.003,
+  "needsReview": false,
+  "discovery": {
+    "at": "2026-09-08T19:42:34.909Z",
+    "rows": [
+      {
+        "url": "https://api.testnet.blocky402.com/supported",
+        "status": 200,
+        "body": {
+          "kinds": [
+            {
+              "x402Version": 2,
+              "scheme": "exact",
+              "network": "eip155:80002"
+            },
+            {
+              "x402Version": 2,
+              "scheme": "exact",
+              "network": "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
+              "extra": {
+                "feePayer": "7B6Q2MvcJvNcy1A13wHmAzmmdo3L8DVriaXML7bvkojm"
+              }
+            },
+            {
+              "x402Version": 2,
+              "scheme": "exact",
+              "network": "hedera:testnet",
+              "extra": {
+                "feePayer": "0.0.7162784"
+              }
+            }
+          ],
+          "extensions": [],
+          "signers": {
+            "eip155:*": [
+              "0xDCF7D72C2eE049DE4269ac6AAf925F33efdA18de"
+            ],
+            "solana:*": [
+              "7B6Q2MvcJvNcy1A13wHmAzmmdo3L8DVriaXML7bvkojm"
+            ],
+            "hedera:*": [
+              "0.0.7162784"
+            ]
+          }
+        }
+      },
+      {
+        "url": "https://api.testnet.blocky402.com/health",
+        "status": 200,
+        "body": {
+          "status": "ok",
+          "timestamp": "2026-09-08T19:42:34.851Z",
+          "version": "1.0.0"
+        }
+      }
+    ]
+  },
+  "health": {
+    "ok": true,
+    "network": "testnet",
+    "writesAllowed": true,
+    "x402": {
+      "name": "Blocky402",
+      "url": "https://api.testnet.blocky402.com",
+      "network": "hedera:testnet",
+      "feePayer": "0.0.7162784"
+    }
+  },
+  "payments": [
+    {
+      "source": "usgs",
+      "verdict": "USGS ComCat recorded no seismic activity meeting these terms in the window.",
+      "result": "no-match",
+      "policySignature": null,
+      "facilitator": {
+        "name": "Blocky402",
+        "url": "https://api.testnet.blocky402.com",
+        "network": "hedera:testnet",
+        "feePayer": "0.0.7162784"
+      },
+      "transaction": "0.0.7162784-1788897516-226839066",
+      "consensusTimestamp": "1788897525.286670104",
+      "status": "SUCCESS",
+      "feePayer": "0.0.7162784",
+      "networkFeeTinybar": 1381845,
+      "tokenTransfers": [
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10386832",
+          "amount": 1000,
+          "is_approval": false
+        },
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10408125",
+          "amount": -1000,
+          "is_approval": false
+        }
+      ],
+      "hbarTransfers": [
+        {
+          "account": "0.0.802",
+          "amount": 1381845,
+          "is_approval": false
+        },
+        {
+          "account": "0.0.7162784",
+          "amount": -1381845,
+          "is_approval": false
+        }
+      ],
+      "explorer": "https://hashscan.io/testnet/transaction/0.0.7162784-1788897516-226839066"
+    },
+    {
+      "source": "emsc",
+      "verdict": "EMSC recorded no seismic activity meeting these terms in the window.",
+      "result": "no-match",
+      "policySignature": null,
+      "facilitator": {
+        "name": "Blocky402",
+        "url": "https://api.testnet.blocky402.com",
+        "network": "hedera:testnet",
+        "feePayer": "0.0.7162784"
+      },
+      "transaction": "0.0.7162784-1788897523-137340394",
+      "consensusTimestamp": "1788897530.536581104",
+      "status": "SUCCESS",
+      "feePayer": "0.0.7162784",
+      "networkFeeTinybar": 1381845,
+      "tokenTransfers": [
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10386833",
+          "amount": 1000,
+          "is_approval": false
+        },
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10408125",
+          "amount": -1000,
+          "is_approval": false
+        }
+      ],
+      "hbarTransfers": [
+        {
+          "account": "0.0.802",
+          "amount": 1381845,
+          "is_approval": false
+        },
+        {
+          "account": "0.0.7162784",
+          "amount": -1381845,
+          "is_approval": false
+        }
+      ],
+      "explorer": "https://hashscan.io/testnet/transaction/0.0.7162784-1788897523-137340394"
+    },
+    {
+      "source": "geofon",
+      "verdict": "GEOFON recorded no seismic activity meeting these terms in the window.",
+      "result": "no-match",
+      "policySignature": null,
+      "facilitator": {
+        "name": "Blocky402",
+        "url": "https://api.testnet.blocky402.com",
+        "network": "hedera:testnet",
+        "feePayer": "0.0.7162784"
+      },
+      "transaction": "0.0.7162784-1788897526-894307278",
+      "consensusTimestamp": "1788897535.619427106",
+      "status": "SUCCESS",
+      "feePayer": "0.0.7162784",
+      "networkFeeTinybar": 1381845,
+      "tokenTransfers": [
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10386835",
+          "amount": 1000,
+          "is_approval": false
+        },
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10408125",
+          "amount": -1000,
+          "is_approval": false
+        }
+      ],
+      "hbarTransfers": [
+        {
+          "account": "0.0.802",
+          "amount": 1381845,
+          "is_approval": false
+        },
+        {
+          "account": "0.0.7162784",
+          "amount": -1381845,
+          "is_approval": false
+        }
+      ],
+      "explorer": "https://hashscan.io/testnet/transaction/0.0.7162784-1788897526-894307278"
+    }
+  ]
+}

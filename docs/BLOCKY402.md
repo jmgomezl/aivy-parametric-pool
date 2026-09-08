@@ -5,6 +5,30 @@ facilitator on **Hedera testnet**. Each oracle costs **0.001 aUSDd**, with a max
 of **0.003 per check**. Blocky co-signs the payment and pays its network fee;
 the oracle serves its result only after Blocky reports successful settlement.
 
+## Verified live · September 8, 2026
+
+The agent checked [Tokyo policy #32](https://quorum.aivylabs.xyz/policy/32).
+All three payments reached **SUCCESS** on Hedera; Blocky's **0.0.7162784** account
+paid the network fees. Total spent: **0.003 test aUSDd**. No wallet extension was needed.
+
+| Paid source | Amount | Independent receipt |
+| --- | --- | --- |
+| USGS | 0.001 aUSDd | [Hedera transaction](https://hashscan.io/testnet/transaction/0.0.7162784-1788897516-226839066) |
+| EMSC | 0.001 aUSDd | [Hedera transaction](https://hashscan.io/testnet/transaction/0.0.7162784-1788897523-137340394) |
+| GEOFON | 0.001 aUSDd | [Hedera transaction](https://hashscan.io/testnet/transaction/0.0.7162784-1788897526-894307278) |
+
+Each catalogue returned **no matching event**. These were paid evidence requests;
+none produced a policy signature or payout. [Public evidence JSON](evidence/blocky402-testnet.json)
+records discovery, exact token transfers, fee sponsorship and consensus results.
+
+![The live app shows three Blocky402-settled oracle payments, with expandable evidence and explorer links](media/09-blocky402.png)
+
+Validation: **117 tests passed** locally and on Linux. The deployed policy and
+receipt views passed checks at **320, 390, 768 and 1440 px**, without horizontal
+overflow or browser errors. No additional payments were sent during UI checks.
+
+## Payment flow
+
 ```mermaid
 sequenceDiagram
     participant A as Quorum agent
