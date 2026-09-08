@@ -65,6 +65,26 @@ test('an abandoned issuance lock fails closed',async()=>{
   try{await assert.rejects(withIssuanceLock('testnet',()=>assert.fail('must not issue'),{directory,timeoutMs:0}),/recovery/);}finally{fs.rmSync(directory,{recursive:true,force:true});}
 });
 
+test('an issuance lock left by a dead process is reclaimed, an unreadable one is not',async()=>{
+  // pm2's memory ceiling, a crash or a deploy restart can kill the agent while
+  // it holds the lock. Before this, every later issuance failed until someone
+  // deleted the file by hand.
+  const {spawnSync}=await import('node:child_process');
+  const directory=fs.mkdtempSync(path.join(os.tmpdir(),'aivy-stale-'));
+  const lock=path.join(directory,'issuance-testnet.lock');
+  try{
+    const dead=spawnSync(process.execPath,['-e','']).pid;   // exited: this pid is gone
+    fs.writeFileSync(lock,JSON.stringify({pid:dead,startedAt:new Date().toISOString()}));
+    assert.equal(await withIssuanceLock('testnet',async()=>'issued',{directory,timeoutMs:0}),'issued');
+    assert.equal(fs.existsSync(lock),false,'the reclaimed lock is released again on completion');
+
+    // A live owner still blocks, even with no time to wait.
+    fs.writeFileSync(lock,JSON.stringify({pid:process.pid,startedAt:new Date().toISOString()}));
+    await assert.rejects(withIssuanceLock('testnet',()=>assert.fail('must not issue'),{directory,timeoutMs:0}),/recovery/);
+    fs.unlinkSync(lock);
+  }finally{fs.rmSync(directory,{recursive:true,force:true});}
+});
+
 test('chunked HCS terms are reassembled without mixing another transaction',async()=>{
   const raw=JSON.stringify(terms),encode=s=>Buffer.from(s).toString('base64');
   const chunk_info={number:1,total:2,initial_transaction_id:{account_id:'0.0.1',transaction_valid_start:'123.4'}};
