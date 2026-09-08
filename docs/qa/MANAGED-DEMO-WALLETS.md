@@ -30,3 +30,22 @@ provider fixtures; the Sepolia checks above are separate real transactions.
 size advisory remains. The initial screenshot exposed an expired local SSH
 proxy; the tunnel was restored and pool artwork rechecked. Empty API responses
 now produce readable recovery guidance instead of a JSON parsing error.
+
+## Public VPS verification
+
+The deployed UI allocated a different pre-funded Sepolia wallet to the existing
+Hedera test account **0.0.10408125**. One click confirmed a new HAK Axelar source
+transfer; a separate real Uniswap swap then completed with sponsored starter
+inventory. [Live receipts](../evidence/managed-wallet-demo.json) distinguish
+that swap from the new bridge's asynchronous destination delivery.
+
+Unauthenticated managed-wallet reads return 401 and injected recipient fields
+return 400. Served JS/CSS matched the production build; API and UI revisions
+matched the pushed commit. Three available wallets were pre-funded on the VPS.
+The source test reused an existing test account after repeated starter admission
+from the test IP reached its limit; the limit was retained.
+
+Four browser checks with controlled delivery-status responses also passed:
+unavailable is not labeled delivered, read-only retry recovers, failed refresh
+marks prior status stale, and the mobile status panel stays within the viewport.
+These are UI fixtures, not blockchain evidence.

@@ -54,11 +54,19 @@ export function DemoLiquidity(){
 }
 
 export function DemoBridge({onSwap}:{onSwap:()=>void}){
- const {wallet}=useEvmDemo(),{account}=useDemo(),[amount,setAmount]=useState('0.01'),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[status,setStatus]=useState<any>(null),[awaiting,setAwaiting]=useState(false);
+ const {wallet}=useEvmDemo(),{account}=useDemo(),[amount,setAmount]=useState('0.01'),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[status,setStatus]=useState<{status:string;explorer?:string;destinationHash?:string}|null>(null),[awaiting,setAwaiting]=useState(false),[deliveryError,setDeliveryError]=useState(false),[checkVersion,setCheckVersion]=useState(0);
  const KEY='quorum.demo.bridge.request';
  const latest=account?.actions.filter(a=>a.kind==='bridge'&&a.status==='complete'&&a.recipient?.toLowerCase()===wallet?.address).at(-1);
  const run=async(fn:()=>Promise<unknown>)=>{setBusy(true);setMessage('');try{await fn();}catch(e){setMessage((e as Error).message);}finally{setBusy(false);}};
- useEffect(()=>{let active=true;setStatus(null);if(!latest)return;const check=()=>demoCall('/api/demo/bridge/status?requestId='+encodeURIComponent(latest.requestId)).then(s=>{if(active)setStatus(s);}).catch(()=>{});void check();const timer=setInterval(()=>void check(),12000);return()=>{active=false;clearInterval(timer);};},[latest?.requestId,wallet?.address]);
+ useEffect(()=>{
+   let active=true,checking=false;setDeliveryError(false);if(!latest){setStatus(null);return;}
+   const check=async()=>{if(checking)return;checking=true;try{
+     const result=await demoCall('/api/demo/bridge/status?requestId='+encodeURIComponent(latest.requestId));
+     if(active){setStatus(result);setDeliveryError(false);if(result.status==='delivered')void refreshEvmDemo();}
+   }catch{if(active)setDeliveryError(true);}finally{checking=false;}};
+   void check();const timer=setInterval(()=>void check(),12000);return()=>{active=false;clearInterval(timer);};
+ },[latest?.requestId,wallet?.address,checkVersion]);
+ useEffect(()=>setStatus(null),[latest?.requestId,wallet?.address]);
  const send=async()=>{
    if(!/^\d+(\.\d{1,2})?$/.test(amount)||Number(amount)<.01||Number(amount)>10)throw Error('Bridge 0.01–10 aUSDd.');
    if(wallet?.status!=='ready'){const w=await startEvmDemo();if(w.status!=='ready'){setAwaiting(true);return;}}
@@ -69,6 +77,6 @@ export function DemoBridge({onSwap}:{onSwap:()=>void}){
  };
  useEffect(()=>{if(awaiting&&wallet?.status==='ready'&&!busy)void run(send);},[awaiting,wallet?.status,busy]);
  return <section className="testnet-swap swap-embedded"><div className="testnet-swap-body"><h2 className="flow-form-title">Move aUSDd to Sepolia</h2><p>Bridge from your Hedera demo account to your demo wallet. Gas is sponsored on both sides.</p><label>Bridge aUSDd<input value={amount} inputMode="decimal" disabled={busy||Boolean(localStorage.getItem(KEY))} onChange={e=>setAmount(e.target.value)}/></label><small>{account?`${account.balance.toLocaleString()} aUSDd on Hedera`:'Hedera starter tokens included with your first bridge'}</small><button className="buy" disabled={busy||wallet?.status==='funding'} onClick={()=>void run(send)}>{busy?'Preparing your bridge…':localStorage.getItem(KEY)?'Reconcile original bridge ↻':'Bridge test tokens →'}</button>
- {latest?<div className="testnet-swap-receipt"><strong>{status?.status==='delivered'?'✓ Delivered to your demo wallet':status?.status==='ready-to-deliver'?'Approved · ready to deliver':'Axelar delivery in progress'}</strong><a href={receipt(latest.result!.bridgeTxId!)} target="_blank" rel="noreferrer">Hedera receipt ↗</a>{status?.explorer?<a href={status.explorer} target="_blank" rel="noreferrer">Track Axelar ↗</a>:null}{status?.destinationHash?<a href={`https://sepolia.etherscan.io/tx/${status.destinationHash}`} target="_blank" rel="noreferrer">Sepolia receipt ↗</a>:null}{status?.status==='ready-to-deliver'?<button className="chip" disabled={busy||wallet?.actions?.some(a=>a.status==='pending')} onClick={()=>void run(async()=>{const q=await quoteEvmDemo('delivery',{bridgeRequestId:latest.requestId});await executeEvmDemo(q);})}>Complete sponsored delivery →</button>:null}{status?.status==='delivered'?<button className="buy" onClick={onSwap}>Continue to Uniswap swap →</button>:null}</div>:null}
+ {latest?<div className="testnet-swap-receipt"><strong>{status?.status==='delivered'?'✓ Delivered to your demo wallet':status?.status==='ready-to-deliver'?'Approved · ready to deliver':status?'Axelar delivery in progress':deliveryError?'Delivery status unavailable':'Checking Axelar delivery…'}</strong><a href={receipt(latest.result!.bridgeTxId!)} target="_blank" rel="noreferrer">Hedera receipt ↗</a>{status?.explorer?<a href={status.explorer} target="_blank" rel="noreferrer">Track Axelar ↗</a>:null}{status?.destinationHash?<a href={`https://sepolia.etherscan.io/tx/${status.destinationHash}`} target="_blank" rel="noreferrer">Sepolia receipt ↗</a>:null}{deliveryError&&status?<small>Update unavailable · showing last verified status.</small>:null}<button className="text-button" onClick={()=>setCheckVersion(v=>v+1)}>Check delivery ↻</button>{status?.status==='ready-to-deliver'?<button className="chip" disabled={busy||wallet?.actions?.some(a=>a.status==='pending')} onClick={()=>void run(async()=>{const q=await quoteEvmDemo('delivery',{bridgeRequestId:latest.requestId});await executeEvmDemo(q);})}>Complete sponsored delivery →</button>:null}{status?.status==='delivered'?<button className="buy" onClick={onSwap}>Continue to Uniswap swap →</button>:null}</div>:null}
  {message?<p role="status">{message}</p>:null}<DemoOperation kind="delivery"/></div></section>;
 }

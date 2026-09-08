@@ -235,5 +235,28 @@
         }
       ]
     }
-  ]
+  ],
+  "deployedVerification": {
+    "origin": "https://quorum.aivylabs.xyz",
+    "checkedAt": "2026-09-08T02:43:28.235Z",
+    "wallet": "0xf017332e6099d25889bad4b2bb98078f56487f4d",
+    "hederaAccount": "0.0.10408125",
+    "bridgeSource": {
+      "status": "source-confirmed",
+      "via": "hak-axelar-plugin",
+      "pluginVersion": "1.0.1",
+      "bridgeTxId": "0.0.10408125@1788835257.471349870",
+      "recipient": "0xf017332e6099d25889bad4b2bb98078f56487f4d",
+      "amount": 0.01,
+      "destinationToken": "0x5685B5660A86028d8a50C9e4Fc33fF081B3Cd9e9",
+      "destinationChain": 11155111
+    },
+    "bridgeStatus": "in-transit",
+    "swap": {
+      "status": "confirmed",
+      "hash": "0x5ec163316ba3039f5f2eac6c6392bad1d8f0591177bb39ee2d8ee626c2f0d50f",
+      "blockNumber": 11658304
+    },
+    "note": "This swap used sponsored starter inventory while the separate new bridge awaited delivery."
+  }
 }
