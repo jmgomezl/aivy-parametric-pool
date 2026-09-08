@@ -38,7 +38,15 @@ const key=(network:agent.Network)=>`aivy.created.${network}`;
 export function mine(network:agent.Network='testnet'):string[]{try{return JSON.parse(localStorage.getItem(key(network))??'[]');}catch{return[];}}
 export function remember(serial:string,network:agent.Network='testnet'){try{localStorage.setItem(key(network),JSON.stringify([...new Set([...mine(network),serial])]));}catch{/* private browser */}}
 export const policyState=(p:agent.Policy)=>p.state??'unavailable';
-export const statusLabel=(p:agent.Policy)=>({paid:'Payout sent',expired:'Cover ended',active:'Cover active',confirming:'Verifying event',unavailable:'Status unavailable'})[policyState(p)];
+// Policies issued before terms carried version, network, poolId and
+// beneficiaryId cannot be attested — the oracles reject them by design. They
+// are exactly the ones the agent publishes no trigger for.
+export const checkable=(p:agent.Policy)=>Boolean(p.trigger);
+export const statusLabel=(p:agent.Policy)=>{
+ const state=policyState(p);
+ if(!checkable(p)&&(state==='active'||state==='confirming'))return 'Legacy terms';
+ return {paid:'Payout sent',expired:'Cover ended',active:'Cover active',confirming:'Verifying event',unavailable:'Status unavailable'}[state];
+};
 
 export function pendingRequests(network:agent.Network):string[]{try{return JSON.parse(localStorage.getItem(`aivy.pending.${network}`)??'[]');}catch{return[];}}
 export function trackRequest(id:string,network:agent.Network,done=false){try{const ids=pendingRequests(network).filter(x=>x!==id);localStorage.setItem(`aivy.pending.${network}`,JSON.stringify(done?ids:[...ids,id]));}catch{/* storage unavailable */}}
