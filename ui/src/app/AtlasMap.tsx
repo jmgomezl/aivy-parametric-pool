@@ -25,7 +25,7 @@ export function AtlasMap({ pin, onPin, map, markers = [], onMarker, onExploringC
   useEffect(()=>{
     const svg=svgRef.current!;
     const observer=new ResizeObserver(()=>{
-      const controls=svg.parentElement?.querySelector('.map-zoom')?.getBoundingClientRect(),matrix=svg.getScreenCTM();
+      const controls=svg.closest('.atlas')?.querySelector('.map-zoom')?.getBoundingClientRect(),matrix=svg.getScreenCTM();
       if(matrix)setMapScale(Math.hypot(matrix.a,matrix.b)||1);
       if(controls&&matrix){
         const point=svg.createSVGPoint();point.x=controls.left;point.y=controls.top;const start=point.matrixTransform(matrix.inverse());
@@ -50,7 +50,7 @@ export function AtlasMap({ pin, onPin, map, markers = [], onMarker, onExploringC
     const timer=window.setTimeout(()=>{void findPlaces(q,controller.signal).then(rows=>{if(!controller.signal.aborted){setRemote({query:q,rows,status:'ready'});setActiveResult(-1);}}).catch(()=>{if(!controller.signal.aborted)setRemote({query:q,rows:[],status:'error'});});},500);
     return()=>{controller.abort();window.clearTimeout(timer);};
   },[search,searching,searchRetry]);
-  const drag = useRef<{ x: number; y: number; view: View; moved: boolean } | null>(null);
+  const drag = useRef<{ x: number; y: number; clientX:number; clientY:number; view:View; moved:boolean; markerId?:string } | null>(null);
   useEffect(() => {
     if (!pin) { setView(HOME); return; }
     const point = base(pin.lon, pin.lat), k = 5;
@@ -110,27 +110,33 @@ export function AtlasMap({ pin, onPin, map, markers = [], onMarker, onExploringC
   return <div className="atlas">
     <div className="place-search">
       <form onSubmit={e => { e.preventDefault(); if (results[activeResult<0?0:activeResult]) choose(results[activeResult<0?0:activeResult]); }} role="search">
-        <span aria-hidden="true">⌕</span><input aria-label="Find a city or municipality" placeholder="City, town or municipality" role="combobox" aria-autocomplete="list" aria-expanded={searching} aria-controls={searching?resultId:undefined} aria-activedescendant={searching&&activeResult>=0?`${resultId}-${activeResult}`:undefined} autoComplete="off" maxLength={100} value={search} onFocus={() => setSearching(true)} onChange={e => { setSearch(e.target.value); setSearching(true);setActiveResult(-1); }} onKeyDown={e => { if(e.nativeEvent.isComposing)return; if (e.key === 'Escape') {setSearching(false);setActiveResult(-1);} if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();setSearching(true);setActiveResult(i=>results.length?(i<0?(e.key==='ArrowDown'?0:results.length-1):(i+(e.key==='ArrowDown'?1:-1)+results.length)%results.length):-1);} }} />
+        <span aria-hidden="true">⌕</span><input aria-label="Find a city or municipality" placeholder="City, town or municipality" role="combobox" aria-autocomplete="list" aria-expanded={searching} aria-controls={searching?resultId:undefined} aria-activedescendant={searching&&activeResult>=0?`${resultId}-${activeResult}`:undefined} autoComplete="off" maxLength={100} value={search} onFocus={() => setSearching(true)} onChange={e => { setSearch(e.target.value); setSearching(true);setActiveResult(-1); }} onKeyDown={e => { if(e.nativeEvent.isComposing)return; if (e.key === 'Escape') {if(searching){e.preventDefault();e.stopPropagation();}setSearching(false);setActiveResult(-1);} if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();setSearching(true);setActiveResult(i=>results.length?(i<0?(e.key==='ArrowDown'?0:results.length-1):(i+(e.key==='ArrowDown'?1:-1)+results.length)%results.length):-1);} }} />
         <button type="submit" className="search-submit" disabled={!results.length} aria-label="Choose place result">→</button>
       </form>
       {searching ? <div className="search-results"><div className="eyebrow">{search ? 'Matching places' : 'Try a place'}</div><div id={resultId} role="listbox" aria-label="Matching places">{results.map((p,i) => <button type="button" role="option" aria-selected={activeResult===i} id={`${resultId}-${i}`} key={`${p.name}-${p.lat}-${p.lon}`} onMouseEnter={()=>setActiveResult(i)} onClick={() => choose(p)}><span>{p.name}</span><span aria-hidden="true">↗</span></button>)}</div><p className="search-status" role="status">{looking?'Searching worldwide…':searchError?'Worldwide search unavailable. Try again or use coordinates.':!results.length?'No match. Add a country, enter coordinates, or choose the map.':search.trim().length===1?'Keep typing to search worldwide.':''}</p>{remote.query===search.trim()&&remote.status==='ready'&&search.trim().length>=2?<small className="search-credit"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap contributors</a> · Photon</small>:null}<div className="search-actions">{searchError?<button className="search-dismiss" onClick={()=>setSearchRetry(n=>n+1)}>Retry worldwide search</button>:null}<button className="search-dismiss" onClick={() => setSearching(false)}>Close search</button></div></div> : null}
     </div>
-    {!pin && !searching ? <div className="suggested-places"><span>Try</span>{PLACES.slice(1,4).map(p=><button key={p.name} className="chip" onClick={()=>choose(p)}>{p.name.split(',')[0]} ↗</button>)}</div> : null}
+    {!pin ? <div className={`suggested-places${searching?' is-searching':''}`}><span>Try</span>{PLACES.slice(1,4).map(p=><button key={p.name} className="chip" onClick={()=>choose(p)}>{p.name.split(',')[0]} ↗</button>)}</div> : null}
     <div className="map-frame">
       <Heat view={view} toDay={dayOf(now)} minMag={minMag} />
       <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} className="map-svg" aria-label="Recorded earthquakes and selected coverage area. Use city search to choose a location with the keyboard."
-        onPointerDown={e => { if (e.button !== 0) return; const p = xy(e); drag.current = { x: p.x, y: p.y, view, moved: false }; e.currentTarget.setPointerCapture(e.pointerId); }}
-        onPointerMove={e => { const d = drag.current; if (!d) return; const p = xy(e); if (Math.hypot(p.x-d.x,p.y-d.y)>5) d.moved=true; if(d.moved) setView(pan(d.view,p.x-d.x,p.y-d.y)); }}
-        onPointerUp={e => { const d=drag.current; drag.current=null; if(!d || d.moved) return; const point=xy(e); const p=unproject(point.x,point.y,view); if(Math.abs(p.lon)<=180 && Math.abs(p.lat)<=90) choose({lat:Number(p.lat.toFixed(3)),lon:Number(p.lon.toFixed(3))}); }}
+        onPointerDown={e => {
+          if(e.button!==0)return;
+          const p=xy(e);
+          if(p.x<0||p.x>W||p.y<0||p.y>H)return;
+          const marker=e.target instanceof Element?e.target.closest('[data-policy-id]'):null;
+          drag.current={x:p.x,y:p.y,clientX:e.clientX,clientY:e.clientY,view,moved:false,markerId:marker?.getAttribute('data-policy-id')??undefined};
+          e.currentTarget.setPointerCapture(e.pointerId);
+        }}
+        onPointerMove={e => { const d = drag.current; if (!d) return; const p = xy(e); if (Math.hypot(e.clientX-d.clientX,e.clientY-d.clientY)>5) d.moved=true; if(d.moved) setView(pan(d.view,p.x-d.x,p.y-d.y)); }}
+        onPointerUp={e => { const d=drag.current; drag.current=null; if(!d || d.moved) return; if(d.markerId){onMarker?.(d.markerId);return;} const point=xy(e); if(point.x<0||point.x>W||point.y<0||point.y>H)return; const p=unproject(point.x,point.y,view); if(Math.abs(p.lon)<=180 && Math.abs(p.lat)<=90) choose({lat:Number(p.lat.toFixed(3)),lon:Number(p.lon.toFixed(3))}); }}
         onPointerCancel={() => { drag.current=null; }}>
         <path d={land} fill="rgba(155,168,171,0.07)" stroke="rgba(191,205,211,0.3)" strokeWidth={0.8} vectorEffect="non-scaling-stroke" />
         {labels.map(c=><g key={`${c.name}-${c.lat}`} pointerEvents="none"><circle cx={c.point.x} cy={c.point.y} r={1.5/mapScale} fill="#aeb3bc"/><text className="map-place-label" x={c.x} y={c.y} textAnchor={c.flip?'end':'start'} fill="#aeb3bc" fontSize={labelSize} style={{paintOrder:'stroke',stroke:'#0a0b0d',strokeWidth:2.5/mapScale}}>{c.label}</text></g>)}
-        {markers.map(m => { const p=project(m.lon,m.lat,view); return <g key={m.id} role="button" tabIndex={0} aria-label={`Open ${m.label}, policy ${m.id}`} onPointerDown={e=>e.stopPropagation()} onPointerUp={e=>{e.stopPropagation();onMarker?.(m.id);}} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();onMarker?.(m.id);}}}><circle cx={p.x} cy={p.y} r={22/mapScale} fill="transparent"/><circle cx={p.x} cy={p.y} r={4/mapScale} fill="#3fcf8e"/></g>; })}
+        {markers.map(m => { const p=project(m.lon,m.lat,view); if(p.x<0||p.x>W||p.y<0||p.y>H)return null; return <g key={m.id} data-policy-id={m.id} role="button" tabIndex={0} aria-label={`Open ${m.label}, policy ${m.id}`} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();onMarker?.(m.id);}}}><circle cx={p.x} cy={p.y} r={22/mapScale} fill="transparent"/><circle cx={p.x} cy={p.y} r={4/mapScale} fill="#3fcf8e"/></g>; })}
         {pin && selected ? <g pointerEvents="none"><ellipse cx={selected.x} cy={selected.y} rx={kmToPxX(MODEL.triggerRadiusKm,pin.lat,view)} ry={kmToPxY(MODEL.triggerRadiusKm,view)} fill="rgba(63,207,142,.1)" stroke="#3fcf8e" strokeWidth={1.5} vectorEffect="non-scaling-stroke"/><circle cx={selected.x} cy={selected.y} r={4/mapScale} fill="#f2f3f5"/>{selected.x>=0&&selected.x<=W&&selected.y>=0&&selected.y<=H?<text className="map-selected-label" x={selectedX} y={selectedY} textAnchor="middle" fill="#f2f3f5" fontSize={labelSize*1.1} style={{paintOrder:'stroke',stroke:'#0a0b0d',strokeWidth:2.5/mapScale}}>{selectedLabel}</text>:null}</g> : null}
       </svg>
-      <div className="map-zoom"><button aria-label="Zoom in" onClick={()=>setView(v=>zoomAt(v,W/2,H/2,1.6))}>+</button><button aria-label="Zoom out" onClick={()=>setView(v=>zoomAt(v,W/2,H/2,1/1.6))}>−</button><button aria-label="Show world map" onClick={()=>setView(HOME)}>◎</button></div>
     </div>
-    <div className="map-bottom"><div className="map-legend"><span className="map-legend-item"><i className="legend-quake"/>Recorded earthquakes</span><span className="map-legend-item"><i className="legend-cover"/>100 km cover</span></div>{!pin?<button id="explore-toggle" className={`chip ${exploring ? 'chip-on' : ''}`} aria-expanded={exploring} aria-controls={exploring?"historical-exploration":undefined} onClick={()=>onExploringChange(!exploring)}>{exploring ? 'Back to cover' : 'Explore data'}</button>:null}</div>
+    <div className="map-bottom"><div className="map-legend"><span className="map-legend-item"><i className="legend-quake"/>Recorded earthquakes</span><span className="map-legend-item"><i className="legend-cover"/>100 km cover</span></div><div className="map-actions"><div className="map-zoom"><button aria-label="Zoom in" onClick={()=>setView(v=>zoomAt(v,W/2,H/2,1.6))}>+</button><button aria-label="Zoom out" onClick={()=>setView(v=>zoomAt(v,W/2,H/2,1/1.6))}>−</button><button aria-label="Show world map" onClick={()=>setView(HOME)}>◎</button></div>{!pin?<button id="explore-toggle" className={`chip ${exploring ? 'chip-on' : ''}`} aria-expanded={exploring} aria-controls={exploring?"historical-exploration":undefined} onClick={()=>onExploringChange(!exploring)}>{exploring ? 'Back to cover' : 'Explore data'}</button>:null}</div></div>
 
   </div>;
 }

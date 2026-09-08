@@ -1,5 +1,5 @@
 import {NetworkPath} from '../components/NetworkPath';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { CATALOGUE, FIRST_YEAR, LAST_YEAR, PLACES, MODEL } from '../lib/hazard';
 import { navigate, policyPath, onLink } from '../lib/router';
 import { useAgent } from '../lib/store';
@@ -18,6 +18,19 @@ function readPin(): Pin | null {
 
 export function Home() {
   const a = useAgent();
+  const layout = useRef<HTMLDivElement>(null);
+  useLayoutEffect(()=>{
+    const element=layout.current!;
+    // Measure the actual header, including wrapped navigation and onchain details.
+    const measure=()=>{
+      const top=element.getBoundingClientRect().top+window.scrollY;
+      element.style.setProperty('--cover-viewport',`${Math.max(0,window.innerHeight-top)}px`);
+    };
+    const observer=new ResizeObserver(measure);
+    element.closest('.app')?.querySelectorAll('.chrome,.chain-activity').forEach(node=>observer.observe(node));
+    window.addEventListener('resize',measure);measure();
+    return()=>{observer.disconnect();window.removeEventListener('resize',measure);};
+  },[]);
   const [pin, setPinState] = useState<Pin | null>(readPin);
   const [exploring,setExploring]=useState(false);
   const [year,setYear]=useState(LAST_YEAR), [minMag,setMinMag]=useState(6), [playing,setPlaying]=useState(false);
@@ -47,7 +60,7 @@ export function Home() {
   const markers = (a.policies ?? []).filter(p => p.state === 'active' || p.state === 'confirming').map(p => ({ lat: p.lat, lon: p.lon, label: p.place ?? `Policy ${p.serial}`, id: String(p.serial), tone: 'ok' as const }));
   const record = exploring ? <ExploreControls pin={pin} days={days} map={map} playing={playing} labelledBy={pin?'explore-toggle':undefined} onPlay={()=>{if(!playing&&map.live)setYear(FIRST_YEAR);setPlaying(!playing);}} onYear={chooseYear} onMagnitude={setMinMag} onClose={()=>changeExploring(false)}/> : null;
   const exploration = pin ? <div className="quote-explore"><button id="explore-toggle" className="quote-option" aria-expanded={exploring} aria-controls={exploring?'historical-exploration':undefined} onClick={()=>changeExploring(!exploring)}>Explore data <span aria-hidden="true">{exploring?'−':'+'}</span></button>{record}</div> : record;
-  return <div className={`cover-layout ${pin ? 'has-quote' : ''} ${exploring ? 'is-exploring' : ''}`}>
+  return <div ref={layout} className={`cover-layout ${pin ? 'has-quote' : ''} ${exploring ? 'is-exploring' : ''}`}>
     <div className="atlas-surface">
       <div className="atlas-intro"><div className="eyebrow">Ready before it happens</div><h1>Earthquake cover.<br /><span>Choose a place.</span></h1><p>A payout committed in advance. Released when two oracles confirm.</p><NetworkPath/><div className="journey-links"><a href="/policies?view=fund" onClick={onLink}>Fund the pool <span>↗</span></a><button className="text-button" onClick={()=>window.dispatchEvent(new Event('quorum:account'))}>Refer & earn <span aria-hidden="true">↗</span></button><a href="/story#1" onClick={onLink}>Watch payout <span>→</span></a></div></div>
       <AtlasMap map={map} onExploringChange={changeExploring} pin={pin} onPin={setPin} markers={markers} onMarker={id => navigate(policyPath(id))} />

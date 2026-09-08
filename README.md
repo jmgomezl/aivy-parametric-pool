@@ -38,7 +38,9 @@ account payments, shared-pool deposits, oracle checks and bridge/swap controls.*
 
 **Made for a quick visual demo:** on large screens, the world map sits beside the
 introduction, then beside the selected quote and history. Labels stay readable
-and the heat layer adapts to display density. [Desktop, ultrawide and mobile checks](docs/qa/LARGE-SCREEN-MAP.md).
+and the heat layer adapts to display density. The map fits short, wide windows;
+search stays in place and zoom controls leave the geography clear.
+[Desktop, ultrawide and mobile checks](docs/qa/LARGE-SCREEN-MAP.md).
 
 No referral means 100% of the premium goes to the pool. There is no separate
 platform fee. Shared insurance-pool shares use demo 1:1 issuance, not NAV pricing;
