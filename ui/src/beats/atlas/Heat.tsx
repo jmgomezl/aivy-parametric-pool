@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MODEL, QUAKES } from '../../lib/hazard';
 import { H, W, base, kmToPxX, kmToPxY, type View } from './projection';
 
@@ -8,8 +8,6 @@ import { H, W, base, kmToPxX, kmToPxY, type View } from './projection';
 //
 // Re-renders when the view, the year or the magnitude floor change. Playback
 // (year advancing by one, nothing else changed) draws incrementally.
-const S = 2; // device-pixel oversampling
-
 function drawEvents(ctx: CanvasRenderingContext2D, v: View, minMag: number, fromDay: number, toDay: number) {
   ctx.globalCompositeOperation = 'lighter';
   const ry = kmToPxY(MODEL.referenceRadiusKm, v);
@@ -46,18 +44,35 @@ function drawEvents(ctx: CanvasRenderingContext2D, v: View, minMag: number, from
 
 export function Heat({ view, toDay, minMag }: { view: View; toDay: number; minMag: number }) {
   const ref = useRef<HTMLCanvasElement>(null);
+  const [size,setSize]=useState({width:W,height:H});
   const last = useRef<{ view: View; toDay: number; minMag: number } | null>(null);
   const raf = useRef(0);
+
+  useEffect(()=>{
+    const canvas=ref.current!;
+    const measure=()=>{
+      const rect=canvas.getBoundingClientRect();
+      // Use the same uniform fit as the SVG, including letterboxing on phones.
+      const scale=Math.min(rect.width/W,rect.height/H)*Math.min(window.devicePixelRatio||1,2);
+      if(scale<=0)return;
+      const width=Math.ceil(W*scale),height=Math.ceil(H*scale);
+      setSize(previous=>previous.width===width&&previous.height===height?previous:{width,height});
+    };
+    const observer=new ResizeObserver(measure);observer.observe(canvas);
+    window.addEventListener('resize',measure);measure();
+    return()=>{observer.disconnect();window.removeEventListener('resize',measure);};
+  },[]);
 
   useEffect(() => {
     cancelAnimationFrame(raf.current);
     raf.current = requestAnimationFrame(() => {
       const c = ref.current; if (!c) return;
-      if (c.width !== W * S) { c.width = W * S; c.height = H * S; }
+      const resized=c.width!==size.width||c.height!==size.height;
+      if (resized) { c.width=size.width; c.height=size.height; }
       const ctx = c.getContext('2d')!;
-      ctx.setTransform(S, 0, 0, S, 0, 0);
+      ctx.setTransform(size.width/W, 0, 0, size.height/H, 0, 0);
       const prev = last.current;
-      const sameField = prev && prev.view.x === view.x && prev.view.y === view.y && prev.view.k === view.k && prev.minMag === minMag;
+      const sameField = !resized && prev && prev.view.x === view.x && prev.view.y === view.y && prev.view.k === view.k && prev.minMag === minMag;
       if (sameField && toDay > prev.toDay) {
         drawEvents(ctx, view, minMag, prev.toDay, toDay); // playback: add the new events only
       } else {
@@ -67,7 +82,7 @@ export function Heat({ view, toDay, minMag }: { view: View; toDay: number; minMa
       last.current = { view, toDay, minMag };
     });
     return () => cancelAnimationFrame(raf.current);
-  }, [view, toDay, minMag]);
+  }, [view, toDay, minMag, size]);
 
-  return <canvas ref={ref} className="absolute inset-0 h-full w-full" style={{ mixBlendMode: 'screen' }} />;
+  return <canvas ref={ref} className="absolute inset-0 h-full w-full" aria-hidden="true" style={{ mixBlendMode: 'screen',objectFit:'contain' }} />;
 }

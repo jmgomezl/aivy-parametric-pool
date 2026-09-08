@@ -20,13 +20,13 @@ export function AtlasMap({ pin, onPin, map, markers = [], onMarker, onExploringC
   markers?: Marker[]; onMarker?: (id: string) => void;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [mapWidth,setMapWidth]=useState(W);
+  const [mapScale,setMapScale]=useState(1);
   const [controlsBounds,setControlsBounds]=useState<LabelBounds|null>(null);
   useEffect(()=>{
     const svg=svgRef.current!;
     const observer=new ResizeObserver(()=>{
-      setMapWidth(svg.getBoundingClientRect().width||W);
       const controls=svg.parentElement?.querySelector('.map-zoom')?.getBoundingClientRect(),matrix=svg.getScreenCTM();
+      if(matrix)setMapScale(Math.hypot(matrix.a,matrix.b)||1);
       if(controls&&matrix){
         const point=svg.createSVGPoint();point.x=controls.left;point.y=controls.top;const start=point.matrixTransform(matrix.inverse());
         point.x=controls.right;point.y=controls.bottom;const end=point.matrixTransform(matrix.inverse());
@@ -78,7 +78,8 @@ export function AtlasMap({ pin, onPin, map, markers = [], onMarker, onExploringC
   const looking=searching&&search.trim().length>=2&&!coordinatePattern.test(search)&&(remote.query!==search.trim()||remote.status==='loading');
   const searchError=remote.query===search.trim()&&remote.status==='error'&&!coordinatePattern.test(search);
   const selected = pin ? project(pin.lon, pin.lat, view) : null;
-  const labelSize=Math.min(72,Math.max(15,12*W/mapWidth));
+  // Geography scales with the view; labels and controls stay sized in CSS pixels.
+  const labelSize=12/mapScale;
   const selectedName=pin?(pin.name?.split(',')[0]??placeName(pin)):'';
   const maxLabelLength=Math.floor((W-48)/(labelSize*.65));
   const selectedLabel=selectedName.length>maxLabelLength?selectedName.slice(0,maxLabelLength-1)+'…':selectedName;
@@ -122,10 +123,10 @@ export function AtlasMap({ pin, onPin, map, markers = [], onMarker, onExploringC
         onPointerMove={e => { const d = drag.current; if (!d) return; const p = xy(e); if (Math.hypot(p.x-d.x,p.y-d.y)>5) d.moved=true; if(d.moved) setView(pan(d.view,p.x-d.x,p.y-d.y)); }}
         onPointerUp={e => { const d=drag.current; drag.current=null; if(!d || d.moved) return; const point=xy(e); const p=unproject(point.x,point.y,view); if(Math.abs(p.lon)<=180 && Math.abs(p.lat)<=90) choose({lat:Number(p.lat.toFixed(3)),lon:Number(p.lon.toFixed(3))}); }}
         onPointerCancel={() => { drag.current=null; }}>
-        <path d={land} fill="rgba(155,168,171,0.07)" stroke="rgba(191,205,211,0.3)" strokeWidth={0.8} />
-        {labels.map(c=><g key={`${c.name}-${c.lat}`} pointerEvents="none"><circle cx={c.point.x} cy={c.point.y} r={2.2} fill="#aeb3bc"/><text className="map-place-label" x={c.x} y={c.y} textAnchor={c.flip?'end':'start'} fill="#aeb3bc" fontSize={labelSize} style={{paintOrder:'stroke',stroke:'#0a0b0d',strokeWidth:4}}>{c.label}</text></g>)}
-        {markers.map(m => { const p=project(m.lon,m.lat,view); return <g key={m.id} role="button" tabIndex={0} aria-label={`Open ${m.label}, policy ${m.id}`} onPointerDown={e=>e.stopPropagation()} onPointerUp={e=>{e.stopPropagation();onMarker?.(m.id);}} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();onMarker?.(m.id);}}}><circle cx={p.x} cy={p.y} r={18} fill="transparent"/><circle cx={p.x} cy={p.y} r={5} fill="#3fcf8e"/></g>; })}
-        {pin && selected ? <g pointerEvents="none"><ellipse cx={selected.x} cy={selected.y} rx={kmToPxX(MODEL.triggerRadiusKm,pin.lat,view)} ry={kmToPxY(MODEL.triggerRadiusKm,view)} fill="rgba(63,207,142,.1)" stroke="#3fcf8e" strokeWidth={2}/><circle cx={selected.x} cy={selected.y} r={5} fill="#f2f3f5"/>{selected.x>=0&&selected.x<=W&&selected.y>=0&&selected.y<=H?<text className="map-selected-label" x={selectedX} y={selectedY} textAnchor="middle" fill="#f2f3f5" fontSize={labelSize*1.1} style={{paintOrder:'stroke',stroke:'#0a0b0d',strokeWidth:5}}>{selectedLabel}</text>:null}</g> : null}
+        <path d={land} fill="rgba(155,168,171,0.07)" stroke="rgba(191,205,211,0.3)" strokeWidth={0.8} vectorEffect="non-scaling-stroke" />
+        {labels.map(c=><g key={`${c.name}-${c.lat}`} pointerEvents="none"><circle cx={c.point.x} cy={c.point.y} r={1.5/mapScale} fill="#aeb3bc"/><text className="map-place-label" x={c.x} y={c.y} textAnchor={c.flip?'end':'start'} fill="#aeb3bc" fontSize={labelSize} style={{paintOrder:'stroke',stroke:'#0a0b0d',strokeWidth:2.5/mapScale}}>{c.label}</text></g>)}
+        {markers.map(m => { const p=project(m.lon,m.lat,view); return <g key={m.id} role="button" tabIndex={0} aria-label={`Open ${m.label}, policy ${m.id}`} onPointerDown={e=>e.stopPropagation()} onPointerUp={e=>{e.stopPropagation();onMarker?.(m.id);}} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();onMarker?.(m.id);}}}><circle cx={p.x} cy={p.y} r={22/mapScale} fill="transparent"/><circle cx={p.x} cy={p.y} r={4/mapScale} fill="#3fcf8e"/></g>; })}
+        {pin && selected ? <g pointerEvents="none"><ellipse cx={selected.x} cy={selected.y} rx={kmToPxX(MODEL.triggerRadiusKm,pin.lat,view)} ry={kmToPxY(MODEL.triggerRadiusKm,view)} fill="rgba(63,207,142,.1)" stroke="#3fcf8e" strokeWidth={1.5} vectorEffect="non-scaling-stroke"/><circle cx={selected.x} cy={selected.y} r={4/mapScale} fill="#f2f3f5"/>{selected.x>=0&&selected.x<=W&&selected.y>=0&&selected.y<=H?<text className="map-selected-label" x={selectedX} y={selectedY} textAnchor="middle" fill="#f2f3f5" fontSize={labelSize*1.1} style={{paintOrder:'stroke',stroke:'#0a0b0d',strokeWidth:2.5/mapScale}}>{selectedLabel}</text>:null}</g> : null}
       </svg>
       <div className="map-zoom"><button aria-label="Zoom in" onClick={()=>setView(v=>zoomAt(v,W/2,H/2,1.6))}>+</button><button aria-label="Zoom out" onClick={()=>setView(v=>zoomAt(v,W/2,H/2,1/1.6))}>−</button><button aria-label="Show world map" onClick={()=>setView(HOME)}>◎</button></div>
     </div>

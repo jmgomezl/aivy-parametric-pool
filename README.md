@@ -36,6 +36,10 @@ account payments, shared-pool deposits, oracle checks and bridge/swap controls.*
 
 [Verified business flows](docs/qa/PLATFORM-QA.md) · [Current security and submission review](docs/qa/SECURITY-FINAL.md) · [UX review](docs/qa/READINESS-REVIEW.md).
 
+**Made for a quick visual demo:** on large screens, the world map sits beside the
+introduction, then beside the selected quote and history. Labels stay readable
+and the heat layer adapts to display density. [Desktop, ultrawide and mobile checks](docs/qa/LARGE-SCREEN-MAP.md).
+
 No referral means 100% of the premium goes to the pool. There is no separate
 platform fee. Shared insurance-pool shares use demo 1:1 issuance, not NAV pricing;
 ARPS withdrawals and income distributions are not implemented. Per-policy cards

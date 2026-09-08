@@ -1334,6 +1334,18 @@ small { font-size:12px; color:var(--fg-2); }
  .policy-detail-grid .policy-main {order:2;}
 }
 .swap-workflow .quote-freshness button {width:auto;}
+/* A whole world, comfortably framed on large and ultrawide displays. */
+@media(min-width:1600px){
+ .app-body,.cover-layout {min-height:calc(100dvh - 121px);}
+ .cover-layout {max-width:2240px;margin-inline:auto;}
+ .cover-layout:not(.has-quote):not(.is-exploring) .atlas-surface {display:grid;grid-template-columns:400px minmax(0,1fr);gap:64px;align-items:center;padding:48px 64px;}
+ .cover-layout:not(.has-quote):not(.is-exploring) .atlas {margin-top:0;}
+ .cover-layout:not(.has-quote):not(.is-exploring) .suggested-places {position:static;margin-top:12px;}
+ .cover-layout.has-quote,.cover-layout.is-exploring {max-width:1920px;}
+ .has-quote .atlas-intro,.is-exploring .atlas-intro {display:none;}
+ .has-quote .atlas-surface,.is-exploring .atlas-surface {display:flex;align-items:center;align-self:start;min-height:calc(100dvh - 121px);padding-block:32px;}
+ .has-quote .atlas,.is-exploring .atlas {width:100%;margin-top:0;}
+}
 @media(max-width:600px){
  .replay-release {min-height:320px;gap:20px;padding:24px 16px;}
  .replay-money-path {grid-template-columns:minmax(0,1fr) 28px minmax(0,1fr);gap:8px;}
