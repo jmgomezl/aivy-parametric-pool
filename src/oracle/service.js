@@ -108,14 +108,22 @@ const server = http.createServer(async (req, res) => {
       }else spec=body.spec??body;
       try {spec=validateAttestationSpec(spec);}catch(error){return json(res,400,{error:'invalid_input',message:error.message});}
 
+      // Ask the catalogue before taking the money. Settling first meant a source
+      // that could not answer was still paid for its silence. Without a payment
+      // header there is nothing to ask about yet: the gate returns the 402 terms.
+      const paying = Boolean(req.headers['x-payment']);
+      const attestation = paying ? await attestOrUnavailable(SOURCE, spec) : null;
+      if (paying && attestation.unavailable) {
+        return json(res, 503, { error: 'source_unavailable', sourceKey: SOURCE, message: attestation.verdict });
+      }
+
+      // Reaching a settled payment requires a header, so `attestation` is set.
       const gate = await charge({
         header: req.headers['x-payment'],
         terms: termsFor(path),
         feePayerId: FEE_PAYER_ID, feePayerKey: FEE_PAYER_KEY, network: NETWORK,
       });
       if (!gate.paid) return json(res, gate.status, gate.body);
-
-      const attestation = await attestOrUnavailable(SOURCE, spec);
 
       // An oracle signs only what it just verified for itself.
       let signature = null;

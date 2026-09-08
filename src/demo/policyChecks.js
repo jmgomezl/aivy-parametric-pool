@@ -27,6 +27,13 @@ export async function checkPolicy({demo,network,reg,agent,sessionId,policy,input
   try{
    const result=await pay(resource,{payerId:signer.id,payerKey:signer.key,network,policy:{resource,payTo:reg.oracleAccountIds[i],feePayer:agent.id.toString(),asset:reg.demoTokenId,maxAmount:'1000'},init:{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({scheduleId:policy.scheduleId,termsPointer:policy.termsPointer})},checkpoint:payment=>{Object.assign(row,{paymentTxId:payment.transactionId,status:'payment-submitted'});patch({checks});}});
    const body=await result.response.json();
+   // A source that cannot answer declines before settling, so the signed payment
+   // was never submitted. That is a source casting no vote, not a receipt to
+   // reconcile: only 'source_unavailable' is returned ahead of the charge.
+   if(result.response.status===503&&body.error==='source_unavailable'&&body.sourceKey===sourceKey){
+    Object.assign(row,{status:'unavailable',paid:false,paymentTxId:undefined,verdict:'The catalogue could not answer, so it was not paid and casts no vote.'});
+    patch({checks});continue;
+   }
    if(!result.response.ok||!result.paid||body.sourceKey!==sourceKey||typeof body.triggered!=='boolean')throw Error('Oracle response could not be verified.');
    if(body.payment?.transaction!==row.paymentTxId)throw Error('Payment receipt does not match the submitted transaction.');
    Object.assign(row,{status:body.unavailable?'unavailable':body.triggered?'qualifying-event':'no-match',paid:true,verdict:String(body.verdict??'').slice(0,300),queriedAt:body.queriedAt,query:body.query,signatureTxId:!body.unavailable&&body.triggered&&body.signature?.signed?body.signature.transactionId:undefined,alreadySettled:Boolean(body.signature?.alreadySettled),matches:(body.matches??[]).slice(0,3)});

@@ -12,3 +12,16 @@ test('a confirmed payment survives catalogue failure without claiming a negative
   assert.ok(r.checks.every(c=>c.status==='unavailable'&&c.paid&&!c.signatureTxId));
  }finally{f.done();}
 });
+
+test('a source that declines before settling is not paid and does not need review',async()=>{
+ const f=fixture();try{
+  // The oracle asks its catalogue before charging, so a source that cannot
+  // answer returns 503 with the payment still unsubmitted.
+  const pay=async(url,o)=>{await o.checkpoint({transactionId:'0.0.1@123.000000001'});
+   return {paid:false,response:{ok:false,status:503,json:async()=>({error:'source_unavailable',sourceKey:new URL(url).hostname.split('.')[0],message:'Catalogue unavailable.'})}};};
+  const r=await checkPolicy({...f.config,pay});
+  assert.equal(r.cost,0,'nothing is charged for silence');
+  assert.equal(r.needsReview,false,'an unsubmitted payment is not a receipt to reconcile');
+  assert.ok(r.checks.every(c=>c.status==='unavailable'&&!c.paid&&!c.paymentTxId));
+ }finally{f.done();}
+});
