@@ -9,7 +9,7 @@ advance, then let verified signatures release that exact transfer on Hedera.
 [**Try Quorum →**](https://quorum.aivylabs.xyz) · [Monthly cover agent](https://aivylabs.xyz/quorum) ·
 [Bridge & swap](https://quorum.aivylabs.xyz/swap) · [Demo film and script](https://quorum.aivylabs.xyz/demo-video/)
 
-**Judge shortcuts:** [Hedera](#why-hedera) · [Uniswap](#why-uniswap) ·
+**Judge shortcuts:** [Contributions](#ecosystem-contributions) · [Hedera](#why-hedera) · [Uniswap](#why-uniswap) ·
 [Evidence](#verify-in-one-minute) · [Security](#security-by-architecture) ·
 [New vs. reused](#what-is-new) · [Setup](#run-locally)
 
@@ -18,6 +18,23 @@ advance, then let verified signatures release that exact transfer on Hedera.
 **Real testnet transactions, funded demo accounts, no wallet extension.**
 Demo tokens have no cash value. The mainnet payout is a labeled historical
 experiment.
+
+## Ecosystem contributions
+
+**Reusable plugins, developer skills and upstream proposals by Juan Gomez.**
+Quorum connects these contributions in a working product other builders can inspect.
+
+| Contribution | Value for other builders | Quorum / event status |
+| --- | --- | --- |
+| **[HAK scheduled settlement](https://github.com/jmgomezl/hak-scheduled-settlement)** | Reuse a committer + oracle-quorum settlement pattern. | **New this event** · key builders consumed here |
+| **[HAK Uniswap plugin](docs/HAK-UNISWAP.md)** | Give Hedera agents access to Uniswap's EVM liquidity. | Published on npm · prior work reused for quotes |
+| **[HAK Axelar plugin](https://github.com/jmgomezl/hak-axelar-plugin)** | Add token transfers and cross-chain messages to HAK agents. | Published on npm · ITS transfer builder used here |
+| **[Hedera developer skills](docs/CONTRIBUTIONS.md#developer-skills)** | Teach reliable Mirror Node reads and account/key handling. | Mirror Node skill applied · Accounts & Keys skill credited separately |
+| **[HAK core proposal #1088](https://github.com/hashgraph/hedera-agent-kit-js/pull/1088)** | Add flat threshold/key-list account creation to shared tooling. | **New this event** · PR open, not merged |
+| **[Aivy Labs integration](docs/COVER-AGENT.md)** | Connect approved monthly rules, guarded purchases and readable receipts. | **New this event** on the existing Aivy app |
+
+[**Full contribution map, code, skills and PR status →**](docs/CONTRIBUTIONS.md)
+Includes earlier SaucerSwap, Pyth, Stader and other HAK plugins as background work.
 
 ## Try the business model
 
@@ -228,9 +245,11 @@ Quorum's history starts September 4, 2026. Earlier work is credited explicitly;
 we do not claim to invent parametric insurance or multisignatures.
 
 **Upstream:** [reusable settlement plugin](https://github.com/jmgomezl/hak-scheduled-settlement) ·
-[Agent Kit nested-key PR #1088](https://github.com/hashgraph/hedera-agent-kit-js/pull/1088) ·
+[Agent Kit threshold-key PR #1088](https://github.com/hashgraph/hedera-agent-kit-js/pull/1088) ·
 [our Mirror Node skill PR #16, applied as development guidance](docs/MIRROR-NODE.md).
-Both PRs were open at the September 10 review. [AI assistance disclosure](docs/AI-ASSISTANCE.md).
+These PRs and our [Accounts & Keys skill PR #29](https://github.com/hedera-dev/hedera-skills/pull/29)
+were open at the September 10 review. [Exact contributions and boundaries](docs/CONTRIBUTIONS.md) ·
+[AI assistance disclosure](docs/AI-ASSISTANCE.md).
 
 ## Design: understand first, inspect deeper
 

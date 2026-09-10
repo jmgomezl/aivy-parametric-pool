@@ -6,6 +6,9 @@
 projects and packages reused here are disclosed below; they are not claimed as
 new event work.
 
+For the contribution overview, reusable packages, skills and upstream proposals,
+see the **[ecosystem contribution map](CONTRIBUTIONS.md)**.
+
 What existed before the event, and does **not** count as new work:
 
 - **[aivy-studio](https://github.com/jmgomezl/aivy-studio)** — earlier multi-agent
@@ -16,8 +19,6 @@ What existed before the event, and does **not** count as new work:
   brand and office robot art. Its new `/quorum` canvas, homepage/office links and
   companion integration were added for this event; its older agent runtime is
   not reused for monthly cover purchases.
-- **hak-saucerswap-plugin, hak-pyth-plugin** — endorsed third-party plugins in the
-  Hedera Agent Kit docs.
 - **[hak-uniswap-plugin](https://github.com/jmgomezl/hak-uniswap-plugin)** — Juan
   Gomez's reusable Uniswap integration for Hedera Agent Kit, [published on npm](https://www.npmjs.com/package/hak-uniswap-plugin)
   before the event. It gives HAK developers an EVM swap tool with allowance handling
@@ -38,6 +39,12 @@ What existed before the event, and does **not** count as new work:
   build on aivy-studio that also used HTS pools and Scheduled Transactions. The
   overlap is the *substrate*; what is new here is stated below.
 
+**Related work, not consumed here:** the Accounts & Keys skill
+[PR #29](https://github.com/hedera-dev/hedera-skills/pull/29), and our earlier
+SaucerSwap, Pyth, Stader, LayerZero, Ledger, GitHub Pay and CoinCap plugins.
+They are credited in the [contribution inventory](CONTRIBUTIONS.md#earlier-ecosystem-work),
+not claimed as new Quorum work or runtime dependencies.
+
 What is **new**, built during this event:
 
 1. **Signature-gated conditional settlement** — payout as a pre-signed Scheduled
@@ -50,6 +57,8 @@ What is **new**, built during this event:
    [hedera-agent-kit-js#1087](https://github.com/hashgraph/hedera-agent-kit-js/issues/1087)
    with a proposed fix in open PR
    [#1088](https://github.com/hashgraph/hedera-agent-kit-js/pull/1088).
+   The upstream proposal covers flat threshold/key-list accounts; Quorum's nested
+   key builder remains in the separate settlement plugin.
 2. **A hazard-priced underwriting agent** — premiums derived live from the USGS
    catalogue for any lat/lon on earth, with published inputs.
 3. **An issuance capacity guard** reserving aggregate exposure against available capital in the shared book. External spending can invalidate this off-ledger reservation.

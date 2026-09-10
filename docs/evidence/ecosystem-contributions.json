@@ -1,0 +1,107 @@
+{
+  "checkedAt": "2026-09-10T22:17:15.206452+00:00",
+  "pullRequests": [
+    {
+      "url": "https://github.com/hashgraph/hedera-agent-kit-js/pull/1088",
+      "title": "feat(core): support threshold and key-list keys in account creation",
+      "author": "jmgomezl",
+      "state": "open",
+      "mergedAt": null,
+      "createdAt": "2026-09-04T22:29:09Z",
+      "head": "442066978e7fb875849eb8ee71a7552e9b659fdd"
+    },
+    {
+      "url": "https://github.com/hedera-dev/hedera-skills/pull/16",
+      "title": "feat: add mirror-node plugin (hedera-mirror-node skill)",
+      "author": "jmgomezl",
+      "state": "open",
+      "mergedAt": null,
+      "createdAt": "2026-07-09T18:23:09Z",
+      "head": "378c1b4f169e6df26c293e99f52eb3095bfc7e05"
+    },
+    {
+      "url": "https://github.com/hedera-dev/hedera-skills/pull/29",
+      "title": "feat(native-services-js): add hedera-accounts-keys skill",
+      "author": "jmgomezl",
+      "state": "open",
+      "mergedAt": null,
+      "createdAt": "2026-09-04T18:17:26Z",
+      "head": "b5c73c39d5f3484c63dafe7f99dfe2d8adab980b"
+    }
+  ],
+  "consumedPlugins": [
+    {
+      "name": "hak-scheduled-settlement",
+      "version": "0.1.0",
+      "resolved": "git+ssh://git@github.com/jmgomezl/hak-scheduled-settlement.git#771f86f017387dedade1769f3b3d102043d0d91d"
+    },
+    {
+      "name": "hak-uniswap-plugin",
+      "version": "0.2.0",
+      "resolved": "git+ssh://git@github.com/jmgomezl/hak-uniswap-plugin.git#05bdc45ec1dbe6b142132dd1e81d6cec8457a58e"
+    },
+    {
+      "name": "hak-axelar-plugin",
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/hak-axelar-plugin/-/hak-axelar-plugin-1.0.1.tgz"
+    }
+  ],
+  "boundaries": [
+    "Open pull requests are proposals, not merged core features.",
+    "HAK PR 1088 covers flat threshold keys; the settlement plugin builds the nested key used by Quorum.",
+    "Skill PR 16 was applied as development guidance. Skill PR 29 is related work; no application to Quorum is claimed.",
+    "Background plugin repositories are not Quorum runtime dependencies."
+  ],
+  "backgroundRepositories": [
+    {
+      "url": "https://github.com/hedera-dev/hak-saucerswap-plugin",
+      "visibility": "public",
+      "createdAt": "2026-01-02T23:48:03Z"
+    },
+    {
+      "url": "https://github.com/jmgomezl/hak-saucerswap-plugin-py",
+      "visibility": "public",
+      "createdAt": "2026-06-10T03:46:20Z"
+    },
+    {
+      "url": "https://github.com/jmgomezl/hak-pyth-plugin",
+      "visibility": "public",
+      "createdAt": "2026-01-16T02:36:38Z"
+    },
+    {
+      "url": "https://github.com/hedera-dev/hak-stader-plugin",
+      "visibility": "public",
+      "createdAt": "2026-05-16T03:20:54Z"
+    },
+    {
+      "url": "https://github.com/jmgomezl/hak-layerzero-plugin",
+      "visibility": "public",
+      "createdAt": "2026-05-16T03:56:22Z"
+    },
+    {
+      "url": "https://github.com/jmgomezl/hak-ledger-plugin",
+      "visibility": "public",
+      "createdAt": "2026-06-14T06:29:23Z"
+    },
+    {
+      "url": "https://github.com/jmgomezl/hak-plugin-github-pay",
+      "visibility": "public",
+      "createdAt": "2026-05-30T03:07:35Z"
+    },
+    {
+      "url": "https://github.com/jmgomezl/coincap-hedera-plugin-py",
+      "visibility": "public",
+      "createdAt": "2026-07-31T20:13:48Z"
+    },
+    {
+      "url": "https://github.com/jmgomezl/aivy",
+      "visibility": "public",
+      "createdAt": "2026-03-10T01:57:00Z"
+    },
+    {
+      "url": "https://github.com/jmgomezl/aivy-studio",
+      "visibility": "public",
+      "createdAt": "2026-06-12T18:54:39Z"
+    }
+  ]
+}

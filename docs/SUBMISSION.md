@@ -9,6 +9,28 @@ and the network executes it. The app makes the terms, NFT and receipts visible.
 [Reusable settlement plugin](https://github.com/jmgomezl/hak-scheduled-settlement) ·
 [Aivy integration source](https://github.com/jmgomezl/aivy).
 
+## Make the contributions visible
+
+**[Open the contribution map](CONTRIBUTIONS.md)** when a judge asks what other
+developers can reuse. The main README also presents this before the product flows.
+
+| Judge interest | Lead with | Evidence |
+| --- | --- | --- |
+| Hedera native settlement | New conditional-settlement HAK plugin; the account-creation gap also produced an upstream proposal. | [Plugin and actual imports](CONTRIBUTIONS.md#hak-plugins-used-in-quorum) · [PR #1088](https://github.com/hashgraph/hedera-agent-kit-js/pull/1088) |
+| Uniswap reach | Our npm-published HAK Uniswap plugin gives other Hedera agent developers access to EVM swaps. | [Package, dated downloads and exact integration](HAK-UNISWAP.md) |
+| Developer safety | Our Mirror Node skill informed concrete read-path fixes; Accounts & Keys is a separate authored skill proposal. | [Both skills and their status](CONTRIBUTIONS.md#developer-skills) |
+| Cross-chain and agent UX | Our HAK Axelar transfer builder, guarded adapters, and the new Aivy monthly-cover integration. | [Contribution map](CONTRIBUTIONS.md) · [Receipts](evidence/hak-axelar-plugin.json) |
+
+Suggested explanation: “I want other developers to build on this. Quorum adds a
+reusable settlement plugin, builds on my Uniswap and Axelar plugins, and applies
+my Mirror Node skill. Building it also led to a HAK core improvement proposal.”
+
+Keep **new event work**, **earlier contributions**, and **open PRs** explicit.
+The broader plugin portfolio is background evidence, not a list of integrations
+running in Quorum. All linked PRs were open at the September 10 verification.
+
+## Repository and recording evidence
+
 **Repository review:** [September 10 findings and checks](qa/SUBMISSION-REVIEW.md).
 The main README now leads with the problem, sponsor-specific code and verifiable
 results. Full [prior-work disclosure](PRIOR-WORK.md), [design decisions](DESIGN.md)
@@ -61,7 +83,7 @@ This flow uses Quorum's demo custody, not Aivy's older KMS/vault runtime.
 | 1:35–2:00 | Fund the pool → deposit and ARPS balance | One shared pool backs all policies. ARPS arrives atomically. Per-policy cards are economics previews; no separate vault or guaranteed yield. |
 | 2:00–2:40 | How it works | Replay commit → one confirmation → two confirmations → executed transfer. Controlled mainnet recording, not a live earthquake claim. Open the actual receipt. |
 | 2:40–3:00 | Policy → Check for earthquakes | Bounded Blocky402 testnet x402 payments query the published policy terms. No-match and unavailable are different; payment does not mean claim approval. |
-| 3:00–3:15 | Final story step / repository | Oracle keys alone cannot spend. Explain the reusable plugin and new hackathon work. |
+| 3:00–3:15 | Repository → Ecosystem contributions | Show the new settlement plugin, reused Uniswap/Axelar plugins, applied Mirror Node skill and open HAK proposal. Link the full contribution map for detail. |
 
 ## Business model (proposed)
 
