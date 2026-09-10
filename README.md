@@ -26,10 +26,10 @@ needs the founder's human narration before submission.
 **Judge shortcuts:** [Hedera](#why-hedera) · [Uniswap](#why-uniswap) · [Aivy Labs](#connected-to-aivy-labs) ·
 [Economics](docs/ECONOMIC-MODEL.md) · [Novelty](#what-is-new) · [Security](#security-by-architecture) · [Evidence](#verify-in-one-minute)
 
-![Live Quorum: world map, Tokyo quote, draggable premium history, global NFTs and a real network question to the companion](docs/media/quorum-flow.gif)
+![Current Quorum screenshot: the world map beside a real companion answer explaining Hedera, Axelar and Uniswap](docs/media/quorum-companion.png)
 
-*Current UI · September 10, 2026. Place → premium history → NFT → ask the network.
-Real read-only captures. [Full-size images and capture notes](docs/media/README.md).*
+*Live screenshot · September 10, 2026. Ask the network and open its evidence.
+[Animated product tour](docs/media/quorum-flow.gif) · [All screenshots](docs/media/README.md).*
 
 > Public cover is a **funded testnet demo**. `aUSDd` has no cash value; dollars are
 > model outputs. Request event checks from a policy page. Mainnet settlement is a
@@ -55,10 +55,12 @@ policy in Quorum.** The Aivy homepage and agent office link directly to the canv
 
 > Medellín · up to 10 aUSDd per month · at least 800 aUSDd conditional payout.
 
-![Aivy Labs integration: saved monthly rules, actual policy 34, a live companion answer, next planned renewal and the same NFT in Quorum](docs/media/aivy-quorum.gif)
+![Current Aivy Labs screenshot: monthly cover rules, actual policy 34, spending and next attempt beside its read-only companion](docs/media/cover-companion.png)
 
 *Existing policy #34: 10 aUSDd premium → 1,398.89 aUSDd conditional payout.
 The next date is a planned attempt. This capture creates no new purchase.*
+
+[Canvas without the companion](docs/media/cover-agent.png) · [Animated integration walkthrough](docs/media/aivy-quorum.gif).
 
 ```mermaid
 flowchart LR
