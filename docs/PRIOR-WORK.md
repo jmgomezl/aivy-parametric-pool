@@ -18,10 +18,12 @@ What existed before the event, and does **not** count as new work:
   not reused for monthly cover purchases.
 - **hak-saucerswap-plugin, hak-pyth-plugin** — endorsed third-party plugins in the
   Hedera Agent Kit docs.
-- **hak-uniswap-plugin** — Uniswap Trading API plugin with allowance handling and a
-  Ledger threshold gate, proven on Sepolia. Reused here for live USDC-to-ETH
-  conversion quotes on Base and Unichain. The mainnet quote UI does not execute
-  swaps; the Sepolia execution adapters are project-specific integration work.
+- **[hak-uniswap-plugin](https://github.com/jmgomezl/hak-uniswap-plugin)** — Juan
+  Gomez's reusable Uniswap integration for Hedera Agent Kit, [published on npm](https://www.npmjs.com/package/hak-uniswap-plugin)
+  before the event. It gives HAK developers an EVM swap tool with allowance handling
+  and an optional Ledger threshold gate. Quorum consumes the GitHub 0.2.0 version's
+  quote tool for Base and Unichain; the published npm release is 0.1.0. Sepolia
+  execution adapters are project-specific event work. [Package, reach and exact use](HAK-UNISWAP.md).
 - **[hak-axelar-plugin](https://github.com/jmgomezl/hak-axelar-plugin)** — Juanma
   Gomez's pre-existing cross-chain plugin for Hedera Agent Kit, reused at **1.0.1**.
   Its **`axelar_send_token`** builder prepares the Hedera ITS transfer to Sepolia.

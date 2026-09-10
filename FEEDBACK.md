@@ -5,6 +5,17 @@ asset to Sepolia, then the Uniswap Trading API to swap it and manage V3 position
 The public app supplies isolated, funded demo wallets so judges can execute real
 testnet transactions without installing an extension.
 
+## Reusable access for Hedera developers
+
+I developed [`hak-uniswap-plugin`](https://www.npmjs.com/package/hak-uniswap-plugin)
+for Hedera Agent Kit so other HAK developers can add Uniswap swaps to their
+agents. Publishing it on npm makes this integration reusable beyond Quorum:
+Hedera agent applications can reach EVM liquidity through familiar JavaScript
+tools. [Source, package reach and exact Quorum use](docs/HAK-UNISWAP.md).
+
+The plugin predates this event. Quorum reuses its quote tool and adds guarded
+Axelar bridging, Sepolia execution, funded demo wallets and a V3 LP lifecycle.
+
 ## What helped
 
 - Quote and transaction-building APIs fit the existing JavaScript agent workflow;

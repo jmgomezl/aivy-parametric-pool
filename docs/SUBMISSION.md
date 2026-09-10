@@ -129,7 +129,7 @@ not certify registration or organizer acceptance.
 
 | Prize | Current fit / remaining action |
 | --- | --- |
-| **Uniswap Stack Contribution · Continuity** | Working Trading API swaps and V3 position operations, with code and receipts linked in the README. [FEEDBACK.md](../FEEDBACK.md) is prepared; **submit the [developer feedback form](https://developers.uniswap.org/hackathon-feedback)** with the [public FEEDBACK.md link](https://github.com/jmgomezl/aivy-parametric-pool/blob/main/FEEDBACK.md). Form submission has not been verified. |
+| **Uniswap Stack Contribution · Continuity** | Our [npm-published HAK Uniswap plugin](HAK-UNISWAP.md) gives Hedera Agent Kit developers reusable access to EVM swaps. Quorum builds on that prior contribution with a guarded Hedera-origin asset journey, Trading API swaps and V3 positions. [FEEDBACK.md](../FEEDBACK.md) is prepared; **submit the [developer feedback form](https://developers.uniswap.org/hackathon-feedback)** with the [public FEEDBACK.md link](https://github.com/jmgomezl/aivy-parametric-pool/blob/main/FEEDBACK.md). Form submission has not been verified. |
 | **Hedera Continuity** | Plausible fit for the disclosed prior project and substantive new scheduling, paid-oracle and cross-chain work. Confirm Continuity registration and explain the new work using the repository history. |
 | **Hedera AI & Agentic Payments** | Hosted Blocky402 integration is live, with [three independently verified testnet payments](evidence/blocky402-testnet.json). Show the paid request and receipt in the video; confirm the dashboard offers this prize for your selected track. |
 
@@ -145,9 +145,11 @@ For the two sponsor explanations, lead with the implemented value:
 - **Hedera:** native scheduled payouts and nested keys connect a fixed promise
   to oracle authorization; HCS/HTS record terms and receipts, and Blocky402 settles
   paid evidence requests. Link the payment flow and actual receipt.
-- **Uniswap:** a Hedera-origin demo asset reaches EVM swaps and V3 position
-  operations through the Trading and LP APIs. Link the exact adapter code, pool,
-  router, position manager and lifecycle receipts from the README.
+- **Uniswap:** “I built and published a Uniswap plugin for Hedera Agent Kit, so
+  other HAK developers can give their agents access to EVM swaps. Quorum shows
+  what that access can make possible in a cover product.” Link the [npm package
+  and exact reuse](HAK-UNISWAP.md), then show the new guarded bridge, swap and V3
+  position receipts. The plugin is prior work; Quorum's integration is event work.
 
 Before recording, check `/api/health`, `/api/pool`, `/api/activity`, and policy
 receipts. Use the existing demo policies if a new issuance is interrupted; do not
@@ -177,9 +179,11 @@ and [the HAK Axelar plugin transaction](evidence/hak-axelar-plugin.json). The
 page also presents labeled recorded examples; distinguish those from your own
 current transaction receipts.
 
-Explain: “Hedera commits the cover, Axelar transports its demo asset, and Uniswap
-provides EVM liquidity. The app uses reusable agent tools and validates their
-transactions before signing.” Sponsored test liquidity is not a USD peg. The
+Explain: “My HAK Uniswap plugin is available on npm, so other Hedera developers
+can add Uniswap swaps to their agents. Here, Quorum uses its quote tool and adds
+guarded execution. Axelar moves the demo asset; Uniswap provides EVM liquidity.”
+Show the [plugin source, package and Quorum adapter](HAK-UNISWAP.md).
+Sponsored test liquidity is not a USD peg. The
 mainnet price preview is quote-only. ARPS is not traded in this Uniswap pool.
 
 The final [judge review rehearsal](evidence/judge-review-live.json) repeated all

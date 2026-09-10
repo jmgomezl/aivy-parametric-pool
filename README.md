@@ -84,7 +84,17 @@ monitor is deployed. The ledger enforces signatures, not earthquake truth.
 
 ## Why Uniswap
 
-**A Hedera-native application reaches EVM liquidity through APIs.**
+**Bring Hedera agents to Uniswap. Let other developers do the same.**
+Quorum's creator, Juan Gomez, built [`hak-uniswap-plugin`](https://github.com/jmgomezl/hak-uniswap-plugin),
+an open-source **Hedera Agent Kit (HAK) plugin published on npm**. HAK developers
+can add Uniswap swaps to their agents: a reusable route from the Hedera developer
+ecosystem to EVM liquidity.
+
+**Reuse it:** `npm i hak-uniswap-plugin` · [npm package](https://www.npmjs.com/package/hak-uniswap-plugin)
+· [233 downloads through September 9](docs/HAK-UNISWAP.md#published-and-reusable).
+
+**Quorum puts that access into a cover journey.** It uses the plugin for live
+Base/Unichain quotes and adds guarded Sepolia swap and LP adapters.
 Axelar transports the demo asset; Uniswap routes its swap and manages trading
 positions. Quorum validates the prepared transactions before its scoped demo
 signer executes them. No custom Solidity swap contract was added.
@@ -102,6 +112,7 @@ flowchart LR
 
 | Integration | Exact implementation / contract |
 | --- | --- |
+| **Our HAK Uniswap plugin** · reusable agent tools | [Source and npm release](docs/HAK-UNISWAP.md) · [Quorum's `uniswap_quote` call](src/settlement/crossAsset.js#L65) |
 | Trading API `/quote` + `/swap` | [API calls](https://github.com/jmgomezl/aivy-parametric-pool/blob/47aa2f72af3c2f26658276418254533a91fe9e5c/src/settlement/bridgedSwap.js#L40) · [calldata and Permit2 checks](src/settlement/bridgedSwap.js#L14) |
 | LP API: create, increase, collect, remove | [API adapter](https://github.com/jmgomezl/aivy-parametric-pool/blob/47aa2f72af3c2f26658276418254533a91fe9e5c/src/settlement/liquidity.js#L79) · [validation](src/settlement/liquidity.js#L44) |
 | Sepolia aUSDd / test USDC · 0.3% pool | [Pool contract](https://sepolia.etherscan.io/address/0x520388428673bc16fad5aa5e49fdb1d30727ceb3) · [position manager](https://sepolia.etherscan.io/address/0x1238536071e1c677a632429e3655c799b22cda52) |
@@ -206,7 +217,7 @@ result through geographic receipts, constrained agents and an EVM liquidity path
 | --- | --- |
 | Earlier Aivy app, orchestration infrastructure and robot art | Dedicated monthly-cover canvas, persistent purchase worker and read-only companions |
 | Earlier HTS pools and Scheduled Transaction experiments | Extracted conditional-settlement HAK plugin, policy-bound oracle signatures, issuance and recovery guards |
-| HAK Uniswap and Axelar plugins | Guarded cross-chain adapters, funded demo wallets, Trading API swaps and V3 liquidity lifecycle |
+| Our [published HAK Uniswap plugin](docs/HAK-UNISWAP.md) and HAK Axelar plugin | Guarded cross-chain adapters, funded demo wallets, Trading API swaps and V3 liquidity lifecycle |
 | Existing earthquake catalogues and geographic data | Hazard-price model, global search, geographic NFTs, interactive $800-payout premium history |
 | Our pre-existing Mirror Node developer skill | September 10 read-path hardening and public verification |
 

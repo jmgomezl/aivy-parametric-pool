@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-09-10T22:10:55.867410+00:00",
+  "package": "hak-uniswap-plugin",
+  "author": {
+    "name": "Juan Gomez",
+    "url": "jmgomezl"
+  },
+  "registry": {
+    "url": "https://registry.npmjs.org/hak-uniswap-plugin",
+    "latest": "0.1.0",
+    "publishedAt": "2026-06-13T21:22:43.309Z",
+    "repository": "git+https://github.com/jmgomezl/hak-uniswap-plugin.git"
+  },
+  "downloads": {
+    "source": "https://api.npmjs.org/downloads/point/2026-06-13:2026-09-09/hak-uniswap-plugin",
+    "downloads": 233,
+    "start": "2026-06-13",
+    "end": "2026-09-09",
+    "package": "hak-uniswap-plugin",
+    "meaning": "npm package downloads, not unique developers, active users, or swap volume."
+  },
+  "quorumDependency": {
+    "version": "0.2.0",
+    "resolved": "git+ssh://git@github.com/jmgomezl/hak-uniswap-plugin.git#05bdc45ec1dbe6b142132dd1e81d6cec8457a58e",
+    "tool": "uniswap_quote",
+    "adapter": "src/settlement/crossAsset.js",
+    "boundary": "Live Base/Unichain quotes only. Sepolia swaps and V3 operations use separate Quorum adapters."
+  },
+  "publishedToolVerified": "uniswap_swap"
+}
