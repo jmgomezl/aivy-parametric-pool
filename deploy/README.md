@@ -101,3 +101,20 @@ are evidence, not requests to replay through the current policy API.
 
 [Security and locking protocol](../docs/AGENT-SECURITY.md) ·
 [Managed demo wallet operations](../docs/MANAGED-DEMO-WALLETS.md)
+
+## Take Studio is deployed separately
+
+The creator tool has moved to
+[jmgomezl/aivy-take-studio](https://github.com/jmgomezl/aivy-take-studio).
+Its source is `/opt/take-studio` and its public release symlink is
+`/var/www/take-studio`, outside Quorum's source and web directories.
+
+The VPS serves `/demo-video/studio/` through its own nginx location snippet.
+That keeps the existing browser origin, IndexedDB and saved recordings intact.
+The optional include in `nginx-quorum.conf` allows a fresh Quorum deployment
+without installing the creator tool. Quorum's rehearsal page links to the
+hosted studio; it does not bundle the application.
+
+Follow the [studio deployment guide](https://github.com/jmgomezl/aivy-take-studio/blob/main/deploy/README.md)
+for its releases. A Quorum deployment must not overwrite `/opt/take-studio`,
+`/var/www/take-studio-releases` or the studio nginx snippet.
