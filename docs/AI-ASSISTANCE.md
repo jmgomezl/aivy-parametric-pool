@@ -13,6 +13,9 @@ For the work represented in this task, Codex assistance includes:
   consent/receipt UI, recovery tests, deployment and a real first-policy capture.
   The founder requested the Aivy-to-Quorum monthly-budget interaction. It uses a
   deterministic worker, not an LLM with transaction authority.
+- The right-side cover companion: existing Aivy pixel art, responsive chat UI,
+  topic-only OpenAI interpretation, owner-bound policy reads and deterministic
+  receipt answers. The AI has no tools, policy write access or signing authority.
 - `ui/src/app/`, `ui/src/components/`, `ui/src/story/`, `ui/src/styles.css`: map/search,
   cover flow, historical chart, geographic NFT presentation, LP preview, evidence
   disclosures, navigation and responsive layout.

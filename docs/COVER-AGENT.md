@@ -32,7 +32,8 @@ flowchart LR
 | Quorum | A deterministic worker persists the mandate and checks due purchases every 30 seconds, including when the browser is closed. |
 | First purchase | Real testnet premium debit, recorded terms, cover NFT and scheduled payout through the existing issuer. |
 | Future date | A planned attempt, **not a transaction receipt or guarantee of continuous cover**. |
-| Agent runtime | This path does not use the older Aivy office's LLM, AWS KMS or AivyVault. Its signing and custody remain with Quorum's demo service. |
+| Purchase runtime | Does not use an LLM, AWS KMS or AivyVault. Signing and custody remain with Quorum's demo service. |
+| Cover companion | A separate read-only chat. AI selects a question topic; Quorum renders facts and receipts for the authenticated browser's latest policy. |
 | Earthquake checks | Still requested from a policy page. The purchase scheduler does not monitor earthquakes or approve claims. |
 
 ## Limits are checked in code
@@ -51,6 +52,37 @@ flowchart LR
 The instruction is structured rather than free-form. A future language model can
 propose these fields; it must not bypass the consent or purchase boundary.
 
+## Ask your agent, without granting it spending power
+
+Open the animated companion at the right of the canvas. Try **“What is my policy
+status?”**, **“When is my next renewal?”** or **“How much have I spent?”** Quick
+questions read the same records without a model call. The pixel agent reuses
+Aivy's existing office sprite art; motion respects the reduced-motion setting.
+
+```mermaid
+flowchart LR
+  Q["Your question"] --> AI["OpenAI · strict topic enum"]
+  AI --> R["Read-only answer renderer"]
+  C["Browser capability"] --> O["Owner's saved mandate"]
+  O --> R
+  H["Hedera Mirror Node<br/>current schedule state"] --> R
+  R --> UI["Facts + public receipts"]
+  UI -. "Changes require canvas controls" .-> G["Existing consent + purchase guards"]
+```
+
+| Boundary | What enforces it |
+| --- | --- |
+| No model authority | The pinned model returns **one of nine topics**, never answer text, links, parameters or tools. Server code renders the response. It cannot buy, pause, transfer or sign. |
+| Owner isolation | The browser capability selects the mandate. The endpoint rejects client-supplied policy IDs, state and extra fields. Anonymous questions receive onboarding only. |
+| Current status | Ledger state comes from Mirror Node. An unavailable read is shown as **unverified**, never active or paid. Future purchases remain planned dates. |
+| Bounded AI usage | 400 characters per question, 12 requests/minute/IP, three concurrent interpretations and a persistent 1,000-call rolling daily cap. 6.5-second model timeout; deterministic fallback if unavailable. |
+| Privacy | Only the typed question goes to OpenAI, with `store: false`; no account capability, policy data, conversation history or signing keys. Quick questions skip AI. This is not a claim of zero provider retention. |
+| Honest fallback | The panel distinguishes AI-interpreted, direct and fallback answers. It does not pretend a model answered when the provider or quota is unavailable. |
+
+The model uses [strict Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
+for intent classification. This is a constrained policy companion, not a
+general-purpose adviser or a language model controlling the renewal worker.
+
 ## Calendar and custody
 
 - Calendar months preserve the original UTC day, clamping short months: January 31 → February 28 → March 31. Policy terms are 28–31 days accordingly.
@@ -67,6 +99,8 @@ propose these fields; it must not bypass the consent or purchase boundary.
 | [Rules](../src/cover-agent/rules.js) | Typed limits, calendar calculations and fresh-quote checks. |
 | [Service](../src/cover-agent/service.js) | Deterministic scheduling, cycle claims and recovery. |
 | [Store](../src/cover-agent/store.js) | Private atomic journal and short state transactions. |
+| [Companion](../src/cover-agent/companion.js) | Topic-only AI, authenticated read-only answers, rate and quota bounds. |
+| [Companion tests](../tests/cover-companion.test.js) | Injection, owner selection, unavailable ledger, action denial, fallback and persistent quota. |
 | [Shared purchase adapter](../src/demo/purchase.js) | Same guarded issuer used by normal Quorum purchases. |
 | [Server](../src/server.js) | Capability-authenticated routes, worker lifecycle and graceful drain. |
 | [Tests](../tests/cover-agent.test.js) | Duplicate attempts, price changes, owner isolation, pause, month boundaries and restart recovery. |
@@ -79,6 +113,12 @@ Run one Quorum worker. Preserve `.artifacts/cover-agents-testnet.json`, its
 `.initialized` marker and lock files together with the existing demo and policy
 journals. Missing or invalid state disables this feature instead of starting an
 empty purchase history. `COVER_AGENTS_ENABLED=0` disables the worker explicitly.
+
+Set `OPENAI_API_KEY` in the private Quorum service environment for typed-question
+interpretation. It is never a frontend variable. Preserve
+`.artifacts/cover-companion-ai.json`, its `.initialized` marker and lock with the
+other journals; losing an initialized quota journal disables AI calls rather
+than resetting its budget. Quick questions and deterministic fallback still work.
 
 Validation: `node --test tests/cover-agent.test.js`; calendar and restart cases
 use a fake clock and mocked issuer. They do not claim future onchain execution.

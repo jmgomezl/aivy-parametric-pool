@@ -47,6 +47,9 @@ checks due dates; it cannot choose another recipient, exceed the approved budget
 or buy below the minimum payout. Uncertain transactions pause for review.
 Future dates are planned attempts, not completed transactions. This path uses
 Quorum's service-managed testnet custody, not Aivy's older LLM/KMS/vault runtime.
+**Ask the animated companion:** policy status, next renewal, budget and receipt
+links. AI interprets the question; authenticated Quorum records and Hedera supply
+the answer. Chat is read only and cannot sign or change the plan.
 [Visual architecture, limits and recovery](docs/COVER-AGENT.md).
 [Live first-purchase and restart checks](docs/qa/AIVY-COVER-AGENT.md).
 

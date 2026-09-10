@@ -20,6 +20,7 @@ import {demoService} from './demo/service.js';
 import {createDemoPurchase} from './demo/purchase.js';
 import {coverAgentStore} from './cover-agent/store.js';
 import {coverAgentService} from './cover-agent/service.js';
+import {coverCompanion} from './cover-agent/companion.js';
 import {PLACES,TRIGGER,MAX_CYCLES} from './cover-agent/rules.js';
 import {capability} from './demo/store.js';
 import { searchPlaces } from './places.js';
@@ -86,6 +87,14 @@ async function main() {
     }),
   }):null;
   if(coverAgents){try{await coverAgents.initialize();}catch(error){console.error('Cover agents disabled until journal recovery:',error);coverAgents=null;}}
+  const companion=coverCompanion({snapshot:async owner=>{
+    if(!owner)return {mandate:null,policy:null};
+    const {mandate}=coverAgents.view(owner);
+    const latest=mandate?.attempts.filter(a=>a.status==='complete').at(-1)?.policy;
+    const recorded=latest?policies(NETWORK).find(p=>String(p.serial)===latest.serial):null;
+    const [policy]=recorded?await readPolicies(NETWORK,[recorded],identities):[];
+    return {mandate,policy:policy??null};
+  }});
   const evmDemo=createEvmDemo({network:NETWORK,liquidity,demo});
 
   const server = http.createServer(withHttpErrors(async (req, res) => {
@@ -97,6 +106,7 @@ async function main() {
         const action=route.slice('/api/cover-agents'.length)||'/';
         if(action==='/info'&&req.method==='GET')return json(res,200,{ok:true,network:NETWORK,places:PLACES,trigger:TRIGGER,maxCycles:MAX_CYCLES,maxMonthlyPremium:10,asset:'aUSDd',execution:'deterministic'});
         if(action==='/quote'&&req.method==='POST')return json(res,200,await coverAgents.preview(await readJsonBody(req)));
+        if(action==='/chat'&&req.method==='POST')return json(res,200,await companion({owner:req.headers.authorization?capability(req):null,ip:clientIp(req),input:await readJsonBody(req)}));
         const id=capability(req);
         if(action==='/'&&req.method==='GET')return json(res,200,coverAgents.view(id));
         if(action==='/account'&&req.method==='GET')return json(res,200,await demo.view(id));
