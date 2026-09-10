@@ -249,5 +249,67 @@
       }
     ],
     "errors": []
+  },
+  "cover-agent": {
+    "phase": "cover-agent",
+    "site": "https://aivylabs.xyz/quorum",
+    "capturedAt": "2026-09-10T04:19:34.081Z",
+    "viewport": {
+      "width": 1440,
+      "height": 780
+    },
+    "marks": [
+      {
+        "name": "homepage",
+        "time": 4.803
+      },
+      {
+        "name": "review",
+        "time": 12.835
+      },
+      {
+        "name": "submitted",
+        "time": 17.542
+      },
+      {
+        "name": "confirmed",
+        "time": 46.117
+      },
+      {
+        "name": "paused",
+        "time": 56.433
+      },
+      {
+        "name": "end",
+        "time": 62.842
+      }
+    ],
+    "errors": [],
+    "requests": [
+      "/api/quorum/quote",
+      "/api/quorum/start",
+      "/api/quorum/activate",
+      "/api/quorum/run",
+      "/api/quorum/pause",
+      "/api/quorum/resume"
+    ]
+  },
+  "cover-agent-state": {
+    "phase": "cover-agent-state",
+    "site": "https://aivylabs.xyz/quorum",
+    "capturedAt": "2026-09-10T04:26:05.677Z",
+    "scope": "Read-only view of existing policy #34. No new purchase.",
+    "viewport": {
+      "width": 1440,
+      "height": 780
+    },
+    "marks": [
+      {
+        "name": "confirmed",
+        "time": 3.12
+      }
+    ],
+    "errors": [],
+    "requests": []
   }
 }

@@ -7,7 +7,7 @@ def clock(t,ms=False,comma=False):
  whole=int(t);fraction=round((t-whole)*1000)
  return (f'{whole//3600:02}:{whole//60%60:02}:{whole%60:02}'+(',' if comma else '.')+f'{fraction:03}') if ms else f'{whole//60}:{whole%60:02}'
 md=['# Aivy Quorum · your narration script','',
- '**3:45 · English · around 110 words/minute, including pauses.**','',
+ '**3:59 · English · around 110 words/minute, including pauses.**','',
  'Read this as if you were showing the app to one curious person. The delivery notes are not spoken. Make the wording your own. This is an AI-assisted draft shaped around your concept; it is not represented as an unaided human-written script. Record it in your own voice.','',
  'The video has no narration yet. [Open the rehearsal studio](https://quorum.aivylabs.xyz/demo-video/) to play it beside these cues.','']
 plain=[];cues=[]

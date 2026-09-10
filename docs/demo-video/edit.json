@@ -1,5 +1,5 @@
 {
-  "duration": 225,
+  "duration": 239,
   "resolution": [
     1920,
     1080
@@ -219,16 +219,35 @@
       "start": 193
     },
     {
+      "scene": "cover-agent",
+      "duration": 2,
+      "query": "home=1",
+      "source": "assets/footage/30-cover-agent.mp4",
+      "start": 201
+    },
+    {
+      "scene": "cover-agent",
+      "duration": 6,
+      "source": "assets/footage/31-cover-agent.mp4",
+      "start": 203
+    },
+    {
+      "scene": "cover-agent",
+      "duration": 6,
+      "source": "assets/footage/32-cover-agent-state.mp4",
+      "start": 209
+    },
+    {
       "scene": "novelty",
       "duration": 16,
       "clip": null,
-      "start": 201
+      "start": 215
     },
     {
       "scene": "close",
       "duration": 8,
       "clip": null,
-      "start": 217
+      "start": 231
     }
   ]
 }

@@ -206,23 +206,36 @@ Long term, Quorum could earn service fees from insurance
 partners.
 
 49
-00:03:21,000 --> 00:03:26,647
+00:03:21,000 --> 00:03:26,133
+From Aivy, I can also set a monthly cover budget.
+
+50
+00:03:26,133 --> 00:03:28,933
+The first policy is real.
+
+51
+00:03:28,933 --> 00:03:35,000
+Future purchases follow saved limits, and I can pause the
+agent anytime.
+
+52
+00:03:35,000 --> 00:03:41,194
 Earlier Aivy infrastructure and the Uniswap and Axelar
 plugins already existed.
 
-50
-00:03:26,647 --> 00:03:31,824
-What's new here is the guarded policy flow: pricing, paid
+53
+00:03:41,194 --> 00:03:46,871
+The new work connects guarded policies, paid verification,
+native settlement,
 
-51
-00:03:31,824 --> 00:03:37,000
-verification, native settlement, cross-chain integration,
-and a reusable settlement plugin.
+54
+00:03:46,871 --> 00:03:51,000
+cross-chain access, and now bounded monthly purchasing.
 
-52
-00:03:37,000 --> 00:03:41,889
+55
+00:03:51,000 --> 00:03:55,889
 The goal is simple: less uncertainty when people need help.
 
-53
-00:03:41,889 --> 00:03:45,000
+56
+00:03:55,889 --> 00:03:59,000
 A promise you can actually verify.

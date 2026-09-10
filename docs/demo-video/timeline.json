@@ -1,6 +1,6 @@
 {
   "title": "Aivy Quorum — ready before it happens",
-  "duration": 225,
+  "duration": 239,
   "language": "en",
   "status": "Visual edit; human narration required before submission",
   "chapters": [
@@ -76,14 +76,21 @@
     },
     {
       "start": 201,
-      "end": 217,
-      "title": "What I reused, what I added",
-      "direction": "Matter-of-fact. This is a strength: a clear contribution boundary.",
-      "script": "Earlier Aivy infrastructure and the Uniswap and Axelar plugins already existed. What's new here is the guarded policy flow: pricing, paid verification, native settlement, cross-chain integration, and a reusable settlement plugin."
+      "end": 215,
+      "title": "A monthly agent from Aivy",
+      "direction": "Personal and practical. The first policy is confirmed; the next date is a planned attempt, not another receipt.",
+      "script": "From Aivy, I can also set a monthly cover budget. The first policy is real. Future purchases follow saved limits, and I can pause the agent anytime."
     },
     {
-      "start": 217,
-      "end": 225,
+      "start": 215,
+      "end": 231,
+      "title": "What I reused, what I added",
+      "direction": "Matter-of-fact. This is a strength: a clear contribution boundary.",
+      "script": "Earlier Aivy infrastructure and the Uniswap and Axelar plugins already existed. The new work connects guarded policies, paid verification, native settlement, cross-chain access, and now bounded monthly purchasing."
+    },
+    {
+      "start": 231,
+      "end": 239,
       "title": "Ready before it happens",
       "direction": "Warm finish. Pause before the final sentence.",
       "script": "The goal is simple: less uncertainty when people need help. A promise you can actually verify."

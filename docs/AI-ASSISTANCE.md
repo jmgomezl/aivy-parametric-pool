@@ -8,6 +8,11 @@ scope, evaluated the interface, and requested revisions.
 
 For the work represented in this task, Codex assistance includes:
 
+- `src/cover-agent/`, `src/demo/purchase.js`, and the separate Aivy repository's
+  Quorum canvas: bounded monthly purchase mandates, persisted scheduling,
+  consent/receipt UI, recovery tests, deployment and a real first-policy capture.
+  The founder requested the Aivy-to-Quorum monthly-budget interaction. It uses a
+  deterministic worker, not an LLM with transaction authority.
 - `ui/src/app/`, `ui/src/components/`, `ui/src/story/`, `ui/src/styles.css`: map/search,
   cover flow, historical chart, geographic NFT presentation, LP preview, evidence
   disclosures, navigation and responsive layout.

@@ -27,6 +27,6 @@ cross-chain transport and end-to-end access to cash are not promised to be insta
 
 [ETHOnline video rules](https://ethglobal.com/events/ethonline2026/info/details),
 checked September 8, 2026: 2–4 minutes, at least 720p, human narration, no speeding
-up the video to fit. The delivered 3:45 visual cut needs your recorded voice before
+up the video to fit. The delivered 3:59 visual cut needs your recorded voice before
 it can serve as the submission video. Draft subtitle cues are not a replacement
 for narration.

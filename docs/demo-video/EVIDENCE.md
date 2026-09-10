@@ -3,6 +3,22 @@
 **September 8, 2026 · public site · new actions use testnet tokens only.**
 [Machine-readable, independently checked receipts](evidence.json).
 
+**Added September 9 in Colombia (September 10 UTC):** the Aivy monthly canvas
+created [Medellín policy #34](https://quorum.aivylabs.xyz/policy/34), with a
+10 aUSDd premium and 1,398.885588 aUSDd conditional payout.
+[Premium](https://hashscan.io/testnet/transaction/0.0.7231440-1789013941-231286735),
+[NFT mint](https://hashscan.io/testnet/transaction/0.0.7231440-1789013938-556873410),
+[NFT delivery](https://hashscan.io/testnet/transaction/0.0.7231440-1789013940-352957462)
+and [scheduled payout](https://hashscan.io/testnet/schedule/0.0.10453186) were independently checked.
+The payout carries the agent signature and has **not executed**.
+[Full evidence](cover-agent-evidence.json).
+
+Pause survived a reload; resume and “Check renewal now” preserved exactly one
+completed purchase. The next planned attempt is **October 9, 2026, 11:18:56 PM
+in Colombia** (October 10, 04:18:56 UTC), no earlier than this policy's expiration.
+The mandate permits up to three purchases and 30 aUSDd total premiums. Later
+renewals were tested with a fake clock, not presented as completed onchain events.
+
 | Video action | Actual outcome / verify |
 | --- | --- |
 | Create Medellín cover | [Policy #33](https://quorum.aivylabs.xyz/policy/33): 4 aUSDd premium, 559.519216 aUSDd conditional payout. [Premium transfer](https://hashscan.io/testnet/transaction/0.0.7231440-1788901774-667959908), [NFT mint](https://hashscan.io/testnet/transaction/0.0.7231440-1788901774-912603251), [NFT delivery](https://hashscan.io/testnet/transaction/0.0.7231440-1788901777-829385744), [scheduled payout](https://hashscan.io/testnet/schedule/0.0.10427620). All new receipts confirmed. |
@@ -45,4 +61,5 @@ To recheck the recording without sending transactions:
 
 ```sh
 node docs/demo-video/production/verify-recording.mjs
+node docs/demo-video/production/verify-cover-agent.mjs
 ```

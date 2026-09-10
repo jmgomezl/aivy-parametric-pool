@@ -14,7 +14,7 @@ Transactions are real; test tokens have no cash value.
 
 [Demo video and narration kit](docs/demo-video/README.md) ·
 [Play the visual edit beside the script](https://quorum.aivylabs.xyz/demo-video/).
-The 3:45 edit still needs the founder's human narration before submission.
+The 3:59 edit still needs the founder's human narration before submission.
 
 **Judge shortcuts:** [Hedera](#why-hedera) · [Uniswap](#why-uniswap) · [Monthly cover agent](docs/COVER-AGENT.md) ·
 [Economics](docs/ECONOMIC-MODEL.md) · [Novelty](#what-is-new) · [Security](#security-by-architecture) · [Evidence](#verify-in-one-minute)
@@ -48,6 +48,7 @@ or buy below the minimum payout. Uncertain transactions pause for review.
 Future dates are planned attempts, not completed transactions. This path uses
 Quorum's service-managed testnet custody, not Aivy's older LLM/KMS/vault runtime.
 [Visual architecture, limits and recovery](docs/COVER-AGENT.md).
+[Live first-purchase and restart checks](docs/qa/AIVY-COVER-AGENT.md).
 
 **Made for a quick visual demo:** on large screens, the world map sits beside the
 introduction, then beside the selected quote and history. Labels stay readable

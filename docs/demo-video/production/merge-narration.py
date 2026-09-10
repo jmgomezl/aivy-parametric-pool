@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Merge a real human recording with the 3:45 visual edit; never synthesize speech."""
+"""Merge a real human recording with the 3:59 visual edit; never synthesize speech."""
 import argparse, json, pathlib, subprocess
 p=argparse.ArgumentParser(description=__doc__)
 p.add_argument('audio',type=pathlib.Path)
@@ -17,11 +17,11 @@ except (KeyError,ValueError):
     ends=[float(x.get('pts_time',0))+float(x.get('duration_time',0)) for x in packets.get('packets',[])]
     if not ends:p.error('The audio recording has no readable packets.')
     duration=max(ends)
-if duration+a.offset>225.1:p.error('The take extends past the 3:45 edit. Re-record or adjust the edit; this tool will not silently cut your speech or speed up the video.')
+if duration+a.offset>239.1:p.error('The take extends past the 3:59 edit. Re-record or adjust the edit; this tool will not silently cut your speech or speed up the video.')
 filters=[]
 if a.offset<0:filters+=['atrim=start='+str(-a.offset),'asetpts=PTS-STARTPTS']
 elif a.offset>0:filters+=['adelay='+str(round(a.offset*1000))+':all=1']
 filters+=['loudnorm=I=-16:TP=-1.5:LRA=11','apad']
-subprocess.run(['ffmpeg','-hide_banner','-i',str(video),'-i',str(a.audio),'-map','0:v:0','-map','1:a:0','-c:v','copy','-af',','.join(filters),'-c:a','aac','-b:a','192k','-t','225','-movflags','+faststart',str(a.output)],check=True)
+subprocess.run(['ffmpeg','-hide_banner','-i',str(video),'-i',str(a.audio),'-map','0:v:0','-map','1:a:0','-c:v','copy','-af',','.join(filters),'-c:a','aac','-b:a','192k','-t','239','-movflags','+faststart',str(a.output)],check=True)
 print('Exported:',a.output.resolve())
 print('Watch the entire export and check narration timing before submission. Draft subtitle cues need alignment to your actual voice.')

@@ -1,17 +1,24 @@
 # Aivy Quorum · demo video kit
 
-**A 3:45 visual edit, 1920 × 1080 at 30 fps, with a timed English narration script.**
+**A 3:59 visual edit, 1920 × 1080 at 30 fps, with a timed English narration script.**
 It opens with the small-loss problem and verified Colombia/Venezuela earthquake
 records, then shows the product, onchain evidence, the technology choices and the
 prior-work boundary.
+
+**Added at 3:21:** a short interaction from [Aivy's new cover canvas](https://aivylabs.xyz/quorum).
+Review a monthly budget, activate, and inspect real Medellín policy #34.
+Future dates are planned attempts; only the first purchase was executed for the
+recording. The updated script totals 438 words and the edit remains under four minutes.
 
 **The visual edit is complete; human narration has not been added.** ETHOnline
 requires a human voice. Do not submit the silent MP4 as the final video.
 
 - [Open the video + synchronized script](https://quorum.aivylabs.xyz/demo-video/)
 - [Download the visual edit](aivy-quorum-visual-cut.mp4)
+- [Just the 14-second Aivy interaction](aivy-monthly-cover.mp4)
 - [Read the script](SCRIPT.md) · [plain text](SCRIPT.txt)
 - [Recording evidence](EVIDENCE.md) · [sources and image credits](SOURCES.md)
+- [Monthly-agent architecture](../COVER-AGENT.md) · [Verified first-purchase evidence](cover-agent-evidence.json)
 
 ## Record your part
 
@@ -40,7 +47,7 @@ python3 docs/demo-video/production/merge-narration.py /absolute/path/to/your-tak
 ```
 
 The tool normalizes speech, preserves the original video speed and pads silence
-to 3:45. It refuses to overwrite an existing file or silently trim a take extending
+to 3:59. It refuses to overwrite an existing file or silently trim a take extending
 past the edit. `--offset 0.3` delays speech; a negative offset trims the beginning.
 Watch the complete narrated export and align `narration.srt` to your actual voice.
 The current VTT/SRT files are **draft pacing cues**, not speech-aligned subtitles.
@@ -73,10 +80,17 @@ the recording work directory; they are not part of this kit.
 - Quiet network labels distinguish testnet activity from the controlled mainnet recording.
 - “Parametric trigger” is explained as a pre-agreed condition, not pitched as a bet.
 - Public app = manually requested deterministic workflow, not autonomous AI claim approval.
+- The Aivy purchase worker is automatic only within a saved, three-period
+  testnet mandate. It does not monitor earthquakes or authorize claims.
 - New source bridge and confirmed swap are distinct operations; swap uses previously
   bridged starter inventory. Cross-chain delivery is not presented as instantaneous.
 - Shared-pool ARPS and actual Uniswap V3 position NFTs are explicitly separate.
 - Per-policy investment, ARPS distributions/exits and commercial fees are not presented as live.
 - Existing Aivy infrastructure and prior Uniswap/Axelar plugins are credited; new work is identified.
 
-No public app behavior or security control was changed to obtain this footage.
+No security control was bypassed to obtain this footage.
+
+`production/capture-cover-agent.mjs` records one explicit testnet activation;
+`capture-cover-agent-state.mjs` can refresh the existing-state footage with all
+writes blocked. Do not repeat activation to improve the edit. The latter capture
+was used after fixing a stale account-setup warning; it shows the same policy #34.

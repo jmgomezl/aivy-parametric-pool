@@ -1,0 +1,275 @@
+{
+  "checkedAt": "2026-09-10T04:19:33.750Z",
+  "site": "https://aivylabs.xyz/quorum",
+  "scope": "One real first purchase. Future monthly dates are planned, not executed.",
+  "checks": [
+    "consent required",
+    "first policy confirmed",
+    "run did not duplicate",
+    "pause persisted across reload",
+    "resume did not duplicate",
+    "390/320 no overflow",
+    "VPS worker restarted: same active mandate, one confirmed policy, unchanged next date"
+  ],
+  "ok": true,
+  "network": "testnet",
+  "execution": "deterministic",
+  "scheduler": {
+    "intervalSeconds": 30,
+    "lastCheckedAt": "2026-09-10T04:19:31.275Z"
+  },
+  "places": {
+    "medellin": {
+      "name": "Medellín, Colombia",
+      "lat": 6.2442,
+      "lon": -75.5812
+    },
+    "mexico": {
+      "name": "Mexico City, Mexico",
+      "lat": 19.4326,
+      "lon": -99.1332
+    },
+    "tokyo": {
+      "name": "Tokyo, Japan",
+      "lat": 35.6762,
+      "lon": 139.6503
+    }
+  },
+  "mandate": {
+    "id": "515f9297-ee00-4696-9e4b-58539bf3c249",
+    "place": {
+      "name": "Medellín, Colombia",
+      "lat": 6.2442,
+      "lon": -75.5812
+    },
+    "rules": {
+      "requestId": "48aa88d2-242e-4968-9b27-18ed5910df68",
+      "placeId": "medellin",
+      "monthlyBudget": 10,
+      "minimumPayout": 800,
+      "acceptTerms": true
+    },
+    "accountId": "0.0.10453178",
+    "asset": "aUSDd",
+    "status": "scheduled",
+    "enabled": true,
+    "createdAt": "2026-09-10T04:18:55.354Z",
+    "expiresAt": "2026-12-10T04:18:55.354Z",
+    "nextDueAt": "2026-10-10T04:18:56.204Z",
+    "maxPurchases": 3,
+    "maxTotalPremium": 30,
+    "trigger": {
+      "minMagnitude": 6,
+      "radiusKm": 100,
+      "maxDepthKm": 70
+    },
+    "reason": null,
+    "message": null,
+    "attempts": [
+      {
+        "cycle": 0,
+        "requestId": "cover-agent-515f9297-ee00-4696-9e4b-58539bf3c249-0",
+        "status": "complete",
+        "startedAt": "2026-09-10T04:18:55.357Z",
+        "finishedAt": "2026-09-10T04:19:13.401Z",
+        "policy": {
+          "serial": "34",
+          "premium": 10,
+          "payout": 1398.885588,
+          "beneficiaryId": "0.0.10453181",
+          "lapsesAt": "2026-10-10T04:18:56.204Z",
+          "saleTxId": "0.0.7231440@1789013941.231286735",
+          "scheduleId": "0.0.10453186",
+          "termsPointer": "hcs://0.0.10373727/63",
+          "receipts": {
+            "mint": "0.0.7231440@1789013938.556873410",
+            "delivery": "0.0.7231440@1789013940.352957462",
+            "freeze": "0.0.7231440@1789013945.493432908"
+          }
+        },
+        "reason": null
+      }
+    ]
+  },
+  "verifiedAt": "2026-09-10T04:22:22.692Z",
+  "transactions": [
+    {
+      "role": "premium",
+      "id": "0.0.7231440@1789013941.231286735",
+      "status": "SUCCESS",
+      "type": "CRYPTOTRANSFER",
+      "consensusTimestamp": "1789013946.419241104",
+      "tokenTransfers": [
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10373722",
+          "amount": 10000000,
+          "is_approval": false
+        },
+        {
+          "token_id": "0.0.10374011",
+          "account": "0.0.10453181",
+          "amount": -10000000,
+          "is_approval": false
+        }
+      ],
+      "nftTransfers": [],
+      "source": "https://testnet.mirrornode.hedera.com/api/v1/transactions/0.0.7231440-1789013941-231286735",
+      "explorer": "https://hashscan.io/testnet/transaction/0.0.7231440-1789013941-231286735"
+    },
+    {
+      "role": "mint",
+      "id": "0.0.7231440@1789013938.556873410",
+      "status": "SUCCESS",
+      "type": "TOKENMINT",
+      "consensusTimestamp": "1789013945.639553655",
+      "tokenTransfers": [],
+      "nftTransfers": [
+        {
+          "is_approval": false,
+          "receiver_account_id": "0.0.7231440",
+          "sender_account_id": null,
+          "serial_number": 34,
+          "token_id": "0.0.10373726"
+        }
+      ],
+      "source": "https://testnet.mirrornode.hedera.com/api/v1/transactions/0.0.7231440-1789013938-556873410",
+      "explorer": "https://hashscan.io/testnet/transaction/0.0.7231440-1789013938-556873410"
+    },
+    {
+      "role": "delivery",
+      "id": "0.0.7231440@1789013940.352957462",
+      "status": "SUCCESS",
+      "type": "CRYPTOTRANSFER",
+      "consensusTimestamp": "1789013948.288927230",
+      "tokenTransfers": [],
+      "nftTransfers": [
+        {
+          "is_approval": false,
+          "receiver_account_id": "0.0.10453181",
+          "sender_account_id": "0.0.7231440",
+          "serial_number": 34,
+          "token_id": "0.0.10373726"
+        }
+      ],
+      "source": "https://testnet.mirrornode.hedera.com/api/v1/transactions/0.0.7231440-1789013940-352957462",
+      "explorer": "https://hashscan.io/testnet/transaction/0.0.7231440-1789013940-352957462"
+    },
+    {
+      "role": "freeze",
+      "id": "0.0.7231440@1789013945.493432908",
+      "status": "SUCCESS",
+      "type": "TOKENFREEZE",
+      "consensusTimestamp": "1789013949.924441627",
+      "tokenTransfers": [],
+      "nftTransfers": [],
+      "source": "https://testnet.mirrornode.hedera.com/api/v1/transactions/0.0.7231440-1789013945-493432908",
+      "explorer": "https://hashscan.io/testnet/transaction/0.0.7231440-1789013945-493432908"
+    }
+  ],
+  "schedule": {
+    "id": "0.0.10453186",
+    "executedAt": null,
+    "signatures": 1,
+    "expirationTime": "1791605936.204000000",
+    "source": "https://testnet.mirrornode.hedera.com/api/v1/schedules/0.0.10453186"
+  },
+  "policy": {
+    "serial": "34",
+    "lat": 6.2442,
+    "lon": -75.5812,
+    "place": "Medellín, Colombia",
+    "trigger": {
+      "kind": "earthquake.parametric.v1",
+      "location": {
+        "lat": 6.2442,
+        "lon": -75.5812
+      },
+      "radiusKm": 100,
+      "minMagnitude": 6,
+      "maxDepthKm": 70,
+      "windowDays": 30,
+      "sources": [
+        "USGS ComCat",
+        "EMSC",
+        "GEOFON"
+      ],
+      "resolution": "k-of-n oracle attestation; 2 of 3 signatures release the payout",
+      "windowStart": "2026-09-10T04:19:03.129Z",
+      "windowEnd": "2026-10-10T04:18:56.204Z"
+    },
+    "monitoring": {
+      "mode": "manual",
+      "message": "Oracle services must be asked to verify an event. This demo does not run background event checks."
+    },
+    "premiumUsd": 10,
+    "payoutUsd": 1398.8855880726921,
+    "premiumUnits": 10000000,
+    "payoutUnits": 1398885588,
+    "premiumHbar": 10,
+    "payoutHbar": 1398.885588,
+    "asset": "aUSDd",
+    "settlementAsset": {
+      "kind": "token",
+      "symbol": "aUSDd",
+      "tokenId": "0.0.10374011",
+      "decimals": 6,
+      "isUsdc": false
+    },
+    "buyerId": "0.0.10453181",
+    "brokerId": null,
+    "termsPointer": "hcs://0.0.10373727/63",
+    "saleTxId": "0.0.7231440@1789013941.231286735",
+    "receipts": {
+      "mint": "0.0.7231440@1789013938.556873410",
+      "delivery": "0.0.7231440@1789013940.352957462",
+      "freeze": "0.0.7231440@1789013945.493432908"
+    },
+    "scheduleId": "0.0.10453186",
+    "lapsesAt": "2026-10-10T04:18:56.204Z",
+    "settled": false,
+    "recordedAt": "2026-09-10T04:19:13.394Z",
+    "network": "testnet",
+    "state": "active",
+    "executedAt": null,
+    "ledger": {
+      "checkedAt": "2026-09-10T04:22:22.144Z",
+      "available": true,
+      "agentSigned": true,
+      "oracles": [
+        {
+          "name": "USGS ComCat",
+          "signed": false
+        },
+        {
+          "name": "EMSC",
+          "signed": false
+        },
+        {
+          "name": "GEOFON",
+          "signed": false
+        }
+      ],
+      "executedAt": null
+    },
+    "hashscan": {
+      "schedule": "https://hashscan.io/testnet/schedule/0.0.10453186",
+      "sale": "https://hashscan.io/testnet/transaction/0.0.7231440@1789013941.231286735"
+    }
+  },
+  "terms": {
+    "pointer": "hcs://0.0.10373727/63",
+    "consensusTimestamp": "1789013943.324296745",
+    "source": "https://testnet.mirrornode.hedera.com/api/v1/topics/0.0.10373727/messages/63"
+  },
+  "restartCheck": {
+    "checkedAt": "2026-09-10T04:27:04.510Z",
+    "scheduler": {
+      "intervalSeconds": 30,
+      "lastCheckedAt": "2026-09-10T04:26:34.626Z"
+    },
+    "policyCount": 1,
+    "enabled": true,
+    "nextDueAt": "2026-10-10T04:18:56.204Z"
+  }
+}

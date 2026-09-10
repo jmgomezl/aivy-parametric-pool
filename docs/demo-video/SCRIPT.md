@@ -1,6 +1,6 @@
 # Aivy Quorum · your narration script
 
-**3:45 · English · around 110 words/minute, including pauses.**
+**3:59 · English · around 110 words/minute, including pauses.**
 
 Read this as if you were showing the app to one curious person. The delivery notes are not spoken. Make the wording your own. This is an AI-assisted draft shaped around your concept; it is not represented as an unaided human-written script. Record it in your own voice.
 
@@ -66,13 +66,19 @@ Uniswap also provides a real position NFT, fee collection, and withdrawal. That'
 
 Here, twenty-five test tokens buy twenty-five ARPS. ARPS earnings and exits aren't enabled yet. Brokers can earn referral commissions. Long term, Quorum could earn service fees from insurance partners.
 
-## 3:21–3:37 · What I reused, what I added
+## 3:21–3:35 · A monthly agent from Aivy
+
+*Personal and practical. The first policy is confirmed; the next date is a planned attempt, not another receipt.*
+
+From Aivy, I can also set a monthly cover budget. The first policy is real. Future purchases follow saved limits, and I can pause the agent anytime.
+
+## 3:35–3:51 · What I reused, what I added
 
 *Matter-of-fact. This is a strength: a clear contribution boundary.*
 
-Earlier Aivy infrastructure and the Uniswap and Axelar plugins already existed. What's new here is the guarded policy flow: pricing, paid verification, native settlement, cross-chain integration, and a reusable settlement plugin.
+Earlier Aivy infrastructure and the Uniswap and Axelar plugins already existed. The new work connects guarded policies, paid verification, native settlement, cross-chain access, and now bounded monthly purchasing.
 
-## 3:37–3:45 · Ready before it happens
+## 3:51–3:59 · Ready before it happens
 
 *Warm finish. Pause before the final sentence.*
 

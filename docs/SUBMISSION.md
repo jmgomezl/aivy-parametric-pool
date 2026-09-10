@@ -8,9 +8,10 @@ Live: https://quorum.aivylabs.xyz/
 App: https://github.com/jmgomezl/aivy-parametric-pool
 Reusable plugin: https://github.com/jmgomezl/hak-scheduled-settlement
 
-**Prepared video kit:** [3:45 visual edit, timed script and rehearsal page](demo-video/README.md).
+**Prepared video kit:** [3:59 visual edit, timed script and rehearsal page](demo-video/README.md).
 It includes newly recorded testnet issuance, Blocky402 checks, a deposit and a
-confirmed Uniswap swap. **Human narration is still required** before submitting
+confirmed Uniswap swap, plus a short [Aivy monthly-agent interaction](COVER-AGENT.md)
+with real policy #34. **Human narration is still required** before submitting
 the edit. Its new bridge source is confirmed but delivery was pending at capture;
 the swap uses previously bridged starter tokens. [Recording receipts](demo-video/EVIDENCE.md).
 
@@ -18,7 +19,7 @@ Latest [QA and judge review](qa/JUDGE-REVIEW.md); earlier [security review](qa/S
 on one complete cover journey and the Hedera → Uniswap path; technical evidence
 is one disclosure away. No extension or faucet setup is needed in the public app.
 
-## 3-minute 15-second walkthrough
+## Alternative 3-minute 15-second live walkthrough
 
 | Time | Screen / action | Explain |
 | --- | --- | --- |

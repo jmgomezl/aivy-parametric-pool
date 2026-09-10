@@ -39,8 +39,13 @@ add('lp',8,await clip('liquidity','lp',7));
 add('fund',5,await clip('fund','before',5));
 add('fund',3,await clip('fund','confirmed',3));
 add('fund',5,await clip('fund-position','position',5));
-add('business',8);add('novelty',16);add('close',8);
-if(shots.reduce((n,s)=>n+s.duration,0)!==225)throw Error('Timeline does not total 3:45.');
+add('business',8);
+add('cover-agent',2,await clip('cover-agent','homepage',2),{query:'home=1'});
+add('cover-agent',6,await clip('cover-agent','review',6));
+add('cover-agent',6,await clip('cover-agent-state','confirmed',6));
+add('novelty',16);add('close',8);
+const duration=JSON.parse(await fs.readFile(path.join(root,'timeline.json'),'utf8')).duration;
+if(shots.reduce((n,s)=>n+s.duration,0)!==duration)throw Error('Shots do not match the narration timeline.');
 const browser=await chromium.launch({channel:'chrome',headless:true});
 const page=await browser.newPage({viewport:{width:1920,height:1080},deviceScaleFactor:1});
 const browserErrors=[];page.on('pageerror',e=>browserErrors.push(e.message));
@@ -66,7 +71,7 @@ for(let i=0;i<shots.length;i++){
  shot.start=shots.slice(0,i).reduce((n,s)=>n+s.duration,0);
 }
 }finally{await browser.close();}
-await fs.writeFile(path.join(root,'edit.json'),JSON.stringify({duration:225,resolution:[1920,1080],fps:30,sourcePlaybackRate:1,shots},null,2)+'\n');
+await fs.writeFile(path.join(root,'edit.json'),JSON.stringify({duration,resolution:[1920,1080],fps:30,sourcePlaybackRate:1,shots},null,2)+'\n');
 await fs.writeFile(path.join(build,'concat.txt'),shots.map((_,i)=>`file '${String(i).padStart(2,'0')}.mp4'`).join('\n'));
 await run(['-f','concat','-safe','0','-i',path.join(build,'concat.txt'),'-c','copy','-movflags','+faststart',path.join(root,'aivy-quorum-visual-cut.mp4')]);
 console.log('Visual cut exported. Human narration is still required.');
