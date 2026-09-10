@@ -1,4 +1,4 @@
-import { PublicKey } from '@hiero-ledger/sdk';
+import { AccountId, TokenId, PublicKey } from '@hiero-ledger/sdk';
 import { SOURCES } from './oracle/sources.js';
 const iso = value => value ? new Date(Number(value) * 1000).toISOString() : null;
 /** Preserve large Mirror integers before JSON parsing can round them (Node 22+). */
@@ -28,6 +28,10 @@ export async function mirrorGet(network, path, fetcher = fetch) {
 }
 /** Query a known token directly: unrelated holdings cannot push it off page one. */
 export async function readTokenBalance(network, accountId, tokenId, fetcher = fetch) {
+  // Server pool state uses SDK entities; demo accounts use stored string IDs.
+  // Normalize only known SDK types, then apply the same strict entity checks.
+  if (accountId instanceof AccountId) accountId = accountId.toString();
+  if (tokenId instanceof TokenId) tokenId = tokenId.toString();
   if (![accountId, tokenId].every(id => typeof id === 'string' && /^\d+\.\d+\.\d+$/.test(id))) throw new Error('Invalid ledger entity');
   const page = await mirrorGet(network, `/accounts/${accountId}/tokens?token.id=${tokenId}`, fetcher);
   if (!Array.isArray(page.tokens) || page.tokens.length !== 1 || page.tokens[0].token_id !== tokenId || page.links?.next) {

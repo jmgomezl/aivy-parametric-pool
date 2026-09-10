@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {AccountId, TokenId} from '@hiero-ledger/sdk';
 import {mirrorGet, mirrorUnits, parseMirrorJson, readTokenBalance, readPolicies} from '../src/ledger.js';
 
 test('Mirror wire integers survive parsing exactly, including negative transfer legs and arrays', async () => {
@@ -35,6 +36,20 @@ test('known balances use token filters even when more than 25 unrelated holdings
   };
   assert.deepEqual(await Promise.all(['0.0.100','0.0.101'].map(id => readTokenBalance('testnet','0.0.5',id,fetcher))), [990000000,2600000000]);
   assert.equal(calls.length, 2);
+});
+
+test('pool balance accepts SDK entities while refusing arbitrary objects before network access', async () => {
+  const calls = [];
+  const fetcher = async url => {
+    calls.push(url);
+    return Response.json({tokens:[{token_id:'0.0.10374011',balance:200115400000}],links:{next:null}});
+  };
+  assert.equal(await readTokenBalance('testnet', AccountId.fromString('0.0.10373722'),
+    TokenId.fromString('0.0.10374011'), fetcher), 200115400000);
+  assert.deepEqual(calls, ['https://testnet.mirrornode.hedera.com/api/v1/accounts/0.0.10373722/tokens?token.id=0.0.10374011']);
+  const untrusted = {toString:()=>'0.0.10373722'};
+  await assert.rejects(readTokenBalance('testnet',untrusted,'0.0.10374011',fetcher), /Invalid ledger entity/);
+  assert.equal(calls.length,1);
 });
 
 test('an unindexed association or incomplete response is never presented as a zero balance', async () => {
