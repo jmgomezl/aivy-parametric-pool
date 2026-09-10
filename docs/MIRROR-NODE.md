@@ -44,6 +44,7 @@ during this September 10, 2026 review.
 | JSON parsing can round large integer balances | The shared server reader uses Node 22's `JSON.parse` source context to retain oversized integer literals as exact strings. Existing `BigInt` receipt/payment checks receive the original digits. |
 | Missing/indexing data is not a zero balance | Known demo-token and pool relationships must be present and valid. Missing, malformed or incomplete responses fail the read; a verified zero remains zero. |
 | Number conversion needs a defined range | Demo account and pool balance displays reject units above `Number.MAX_SAFE_INTEGER` instead of silently rounding them. |
+| Callers use both SDK entities and stored IDs | The submission review found the pool reader passing an SDK `AccountId` to a string-only validator. The reader now normalizes known `AccountId`/`TokenId` instances before applying the same strict ID checks; arbitrary objects remain rejected. |
 | Mirror data can lag consensus | 404 is identified as missing or not yet indexed; policy reads remain unavailable, not active, paid or expired by assumption. No automatic replacement payment is submitted. |
 | Follow `links.next` for multi-page data | Reviewed existing HCS reconstruction: it follows same-topic cursors, rejects foreign/repeated cursors, checks chunk identity and stops at a bounded limit. Incomplete terms cannot authorize a payout. |
 | Keep public reads bounded | Existing eight-second timeout, schedule cache and in-flight request sharing remain. 429/5xx fail unavailable; this change adds no automatic retry loop. |
@@ -87,3 +88,7 @@ this review does not claim a complete arbitrary-precision conversion of the app.
 Public Mirror availability and indexing still limit freshness. Responses carry
 check timestamps; they are observations, not atomic snapshots or cryptographic
 proofs supplied by the model.
+
+**Submission follow-up:** [September 10 review](qa/SUBMISSION-REVIEW.md) includes
+the SDK-entity regression and rechecks the live pool endpoint. The 161-test count
+above is the original Mirror Node review, not the later expanded suite.

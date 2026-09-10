@@ -37,6 +37,9 @@ For the work represented in this task, Codex assistance includes:
 - Earlier audit work in this task assisted issuance locking/recovery, policy-bound
   oracle verification, payment validation, tests and reproduction documentation.
 - READMEs, `AUDIT-IMPLEMENTATION.md`, and `docs/`: explanation, audit and recording guidance.
+  The September 10 submission review condensed the judge overview, preserved
+  detailed disclosures, added CI and fixed SDK-entity handling in the pool balance
+  reader with a regression test.
 - `docs/demo-video/`: AI-assisted narration draft, original SVG/HTML visual
   composition, capture/edit scripts, a browser rehearsal and voice-recording page,
   and the silent visual edit. The founder directed the emotional problem framing,

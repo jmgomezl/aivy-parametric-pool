@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Settlement timeline for the Aivy parametric pool: one real mainnet policy, from quote to payout, every step verifiable on HashScan.",
+  "description": "Aivy Quorum: global earthquake cover, verifiable testnet flows, constrained companions and cross-chain liquidity.",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

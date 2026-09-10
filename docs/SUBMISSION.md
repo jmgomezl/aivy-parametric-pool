@@ -4,9 +4,15 @@ Aivy Quorum commits an earthquake payout before an event. The agent signs a
 Hedera Scheduled Transaction; two of three oracle keys complete the authorization
 and the network executes it. The app makes the terms, NFT and receipts visible.
 
-Live: https://quorum.aivylabs.xyz/
-App: https://github.com/jmgomezl/aivy-parametric-pool
-Reusable plugin: https://github.com/jmgomezl/hak-scheduled-settlement
+[Live demo](https://quorum.aivylabs.xyz/) ·
+[Application repository](https://github.com/jmgomezl/aivy-parametric-pool) ·
+[Reusable settlement plugin](https://github.com/jmgomezl/hak-scheduled-settlement) ·
+[Aivy integration source](https://github.com/jmgomezl/aivy).
+
+**Repository review:** [September 10 findings and checks](qa/SUBMISSION-REVIEW.md).
+The main README now leads with the problem, sponsor-specific code and verifiable
+results. Full [prior-work disclosure](PRIOR-WORK.md), [design decisions](DESIGN.md)
+and [development details](DEVELOPMENT.md) remain available separately.
 
 **Prepared video kit:** [3:59 visual edit, timed script and rehearsal page](demo-video/README.md).
 It includes newly recorded testnet issuance, Blocky402 checks, a deposit and a
@@ -103,15 +109,19 @@ How this business works**, labeled **Beyond the demo · proposed**.
 
 ## Submission checklist
 
-Use the event dashboard to confirm the selected Continuity track and partner eligibility.
-Keep the README's prior-work boundary and provide both repositories. Describe the
-new scheduled-settlement plugin, key restriction, pricing, reservation guard,
-premium split and paid oracle services. Include [AI assistance](AI-ASSISTANCE.md).
+| Item | Status / action |
+| --- | --- |
+| Public code, setup, license and integration evidence | Present in the [main README](../README.md). Include the settlement-plugin and Aivy repository links. |
+| New vs. reused work and AI assistance | [Prior-work disclosure](PRIOR-WORK.md), linked history/diff and [AI attribution](AI-ASSISTANCE.md) are included. |
+| Final narrated video | The prepared cut is 3:59 at 1080p. Human narration/export and the uploaded submission video have **not been verified**. |
+| Uniswap feedback submission | [FEEDBACK.md](../FEEDBACK.md) is present. Completion of the external feedback form has **not been verified**. |
+| Event track, partner choices and final submit | Confirm in your signed-in Hacker Dashboard. Public code cannot establish registration or acceptance. |
 
-Official rules: https://ethglobal.com/events/ethonline2026/info/details
-Rechecked September 8, 2026: video must be 2–4 minutes, at least 720p, with human
+Rechecked September 10, 2026 against the [official event rules](https://ethglobal.com/events/ethonline2026/info/details):
+video must be 2–4 minutes, at least 720p, with human
 narration (no AI voiceover); deadline September 13 at 12:00 EDT / 11:00 Bogotá.
-Select up to three partner prizes and explain the actual integration for each.
+Select up to three **partners** and explain the actual integration for each;
+multiple eligible tracks from one partner still count as one partner selection.
 Confirm your selected track in the event dashboard. The technical fit below does
 not certify registration or organizer acceptance.
 
@@ -127,8 +137,17 @@ The Hedera tokenization prize requires Asset Tokenization Studio; the Harness
 prize requires a qualifying Harness contribution. Neither is established by the
 current HTS NFTs or HAK plugin alone. Do not claim those integrations.
 
-Sources checked September 8, 2026: [Uniswap prize rules](https://ethglobal.com/events/ethonline2026/prizes/uniswap-foundation)
+Sources checked September 10, 2026: [Uniswap prize rules](https://ethglobal.com/events/ethonline2026/prizes/uniswap-foundation)
 and [Hedera prize rules](https://ethglobal.com/events/ethonline2026/prizes/hedera).
+
+For the two sponsor explanations, lead with the implemented value:
+
+- **Hedera:** native scheduled payouts and nested keys connect a fixed promise
+  to oracle authorization; HCS/HTS record terms and receipts, and Blocky402 settles
+  paid evidence requests. Link the payment flow and actual receipt.
+- **Uniswap:** a Hedera-origin demo asset reaches EVM swaps and V3 position
+  operations through the Trading and LP APIs. Link the exact adapter code, pool,
+  router, position manager and lifecycle receipts from the README.
 
 Before recording, check `/api/health`, `/api/pool`, `/api/activity`, and policy
 receipts. Use the existing demo policies if a new issuance is interrupted; do not
