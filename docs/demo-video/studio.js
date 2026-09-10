@@ -19,9 +19,10 @@ function show(i){if(i===active||!chapters[i])return;active=i;const c=chapters[i]
 function seek(i){if(recording)return;video.currentTime=chapters[Math.max(0,Math.min(chapters.length-1,i))].start;show(Math.max(0,Math.min(chapters.length-1,i)));}
 fetch('timeline.json?v=20260910-mirror').then(r=>{if(!r.ok)throw Error('Script could not load.');return r.json();}).then(data=>{chapters=data.chapters;chapters.forEach((c,i)=>{const b=document.createElement('button');b.textContent=String(i+1).padStart(2,'0');b.title=c.title;b.setAttribute('aria-label',`${fmt(c.start)} · ${c.title}`);b.onclick=()=>seek(i);byId('chapters').append(b);const row=document.createElement('tr');for(const value of [`${fmt(c.start)}–${fmt(c.end)}`,c.script,c.direction]){const cell=document.createElement('td');cell.textContent=value;row.append(cell);}byId('script-table').append(row);});show(0);}).catch(e=>byId('cue-script').textContent=e.message);
 video.addEventListener('timeupdate',()=>{const i=chapters.findIndex(c=>video.currentTime>=c.start&&video.currentTime<c.end);if(i>=0)show(i);});
-byId('aivy-preview').onclick=async()=>{if(recording)return;seek(10);await video.play();};
+async function playPreview(){try{await video.play();}catch(e){if(e.name!=='AbortError')byId('record-status').textContent='Playback could not start. Use the video controls to try again.';}}
+byId('aivy-preview').onclick=()=>{if(recording)return;seek(10);void playPreview();};
 byId('prev').onclick=()=>seek(active-1);byId('next').onclick=()=>seek(active+1);
-byId('rehearse').onclick=async()=>{if(recording)return;video.currentTime=0;await video.play();};
+byId('rehearse').onclick=()=>{if(recording)return;video.currentTime=0;void playPreview();};
 video.addEventListener('play',()=>{if(narration&&!recording){narration.currentTime=video.currentTime;void narration.play().catch(()=>{});}});
 video.addEventListener('pause',()=>{narration?.pause();});video.addEventListener('seeking',()=>{if(narration)narration.currentTime=video.currentTime;});
 byId('audio-file').onchange=e=>{const file=e.target.files?.[0];if(!file)return;if(narration){narration.pause();URL.revokeObjectURL(narration.src);}narration=new Audio(URL.createObjectURL(file));narration.addEventListener('error',()=>byId('record-status').textContent='That recording could not be played. Try a supported audio file.');byId('record-status').textContent=`Previewing “${file.name}”. Press Rehearse to play it with the video.`;};

@@ -6,6 +6,7 @@
 | Editing | Captured interactions play at 1×. Confirmation waits are cut and some final frames held. Graphics and representative full-resolution frames were visually inspected. |
 | Rehearsal page | Tested at 1600, 1024, 768, 390 and 320 px. Playback, revised chapter seeking, the “Watch the Aivy moment” shortcut, synchronized script, full script table and no horizontal overflow passed. No page errors or missing assets. |
 | Voice recording | Synthetic Chrome microphone input used only to test local recording and a non-empty audio download. No synthetic audio appears in the visual edit or kit. |
+| Interrupted playback | Pausing while a preview is still loading cancels playback cleanly. Other playback failures show a retry message. |
 | Audio export | Rechecked with a temporary WebM test tone: the merge produced a 3:59 H.264/AAC file without changing video speed. Duration-less MediaRecorder input was also covered in the original kit checks. QA audio/export remain outside this repository. |
 | Original transaction evidence | Eight Hedera receipts independently confirmed; three oracle checks returned no match. Sepolia swap receipt has status 1. New Axelar destination delivery was pending at capture and is labeled accordingly. |
 | Privacy | Browser/session recovery files and credentials remain outside the kit. Public evidence contains transaction IDs and public account addresses only. |
