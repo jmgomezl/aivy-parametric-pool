@@ -69,7 +69,7 @@ sequenceDiagram
   A->>O: Validated, signed exact payment
   O->>O: Verify payer, terms and catalogue availability
   O->>B: Verify and settle once
-  B->>H: Co-sign payment; sponsor network fee
+  B->>H: Co-sign payment and sponsor network fee
   H-->>B: Consensus receipt
   B-->>O: Matching settlement receipt
   O-->>A: Evidence result and receipt

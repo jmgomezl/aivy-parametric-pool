@@ -42,7 +42,7 @@ sequenceDiagram
     O->>O: Verify payer key, balance and exact transfer
     O->>B: /supported + /verify
     B-->>O: Payment valid
-    O->>O: Query catalogue; decline if unavailable
+    O->>O: Query catalogue and decline if unavailable
     O->>O: Reserve transaction ID once
     O->>B: /settle
     B->>H: Co-sign and submit transfer
