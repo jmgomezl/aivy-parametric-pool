@@ -16,6 +16,10 @@ For the work represented in this task, Codex assistance includes:
 - The right-side cover companion: existing Aivy pixel art, responsive chat UI,
   topic-only OpenAI interpretation, owner-bound policy reads and deterministic
   receipt answers. The AI has no tools, policy write access or signing authority.
+- `src/companion/quorum.js` and the Quorum companion UI extend this boundary to
+  public policy pages, network roles, x402 receipts, pool capital and authenticated
+  balances. Codex assisted the implementation, tests, live checks and video edit.
+  The animated robot art is reused from the earlier Aivy office.
 - `ui/src/app/`, `ui/src/components/`, `ui/src/story/`, `ui/src/styles.css`: map/search,
   cover flow, historical chart, geographic NFT presentation, LP preview, evidence
   disclosures, navigation and responsive layout.

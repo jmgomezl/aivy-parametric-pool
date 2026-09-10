@@ -83,6 +83,11 @@ The model uses [strict Structured Outputs](https://developers.openai.com/api/doc
 for intent classification. This is a constrained policy companion, not a
 general-purpose adviser or a language model controlling the renewal worker.
 
+The [Quorum website companion](COMPANION.md) shares this AI quota, IP admission
+limit and concurrency gate. It also explains public policies and network roles;
+it does not share browser capabilities across the two origins or infer an Aivy
+monthly mandate from a public policy.
+
 ![Live cover companion reading policy 34 from Quorum and Hedera beside the monthly canvas](media/cover-companion.png)
 
 [Watch the live interaction](https://quorum.aivylabs.xyz/demo-video/aivy-cover-companion.mp4) ·

@@ -10,6 +10,11 @@ aUSDd with Axelar, then swap or provide liquidity on Uniswap Sepolia.
 **No wallet extension needed:** each browser gets a separate funded demo wallet.
 Transactions are real; test tokens have no cash value.
 
+**Ask Quorum:** the animated companion explains the current policy, balances,
+pool funding and network roles, with labeled receipt links. AI interprets the
+question; Quorum supplies the facts. **Chat cannot sign or move funds.**
+[How the companion is constrained](docs/COMPANION.md).
+
 [Try the demo](https://quorum.aivylabs.xyz) · [Bridge & swap](https://quorum.aivylabs.xyz/swap) · [Watch the mechanism](https://quorum.aivylabs.xyz/story) · [Recording guide](docs/SUBMISSION.md)
 
 [Demo video and narration kit](docs/demo-video/README.md) ·

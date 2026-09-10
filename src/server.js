@@ -20,7 +20,10 @@ import {demoService} from './demo/service.js';
 import {createDemoPurchase} from './demo/purchase.js';
 import {coverAgentStore} from './cover-agent/store.js';
 import {coverAgentService} from './cover-agent/service.js';
-import {coverCompanion} from './cover-agent/companion.js';
+import {coverCompanion,companionGate} from './cover-agent/companion.js';
+import {quorumCompanion} from './companion/quorum.js';
+import mainnetRecord from '../ui/src/data/mainnet.json' with {type:'json'};
+import {LP_POOL} from './settlement/liquidity.js';
 import {PLACES,TRIGGER,MAX_CYCLES} from './cover-agent/rules.js';
 import {capability} from './demo/store.js';
 import { searchPlaces } from './places.js';
@@ -87,7 +90,8 @@ async function main() {
     }),
   }):null;
   if(coverAgents){try{await coverAgents.initialize();}catch(error){console.error('Cover agents disabled until journal recovery:',error);coverAgents=null;}}
-  const companion=coverCompanion({snapshot:async owner=>{
+  const chatGate=companionGate();
+  const companion=coverCompanion({gate:chatGate,snapshot:async owner=>{
     if(!owner)return {mandate:null,policy:null};
     const {mandate}=coverAgents.view(owner);
     const latest=mandate?.attempts.filter(a=>a.status==='complete').at(-1)?.policy;
@@ -97,10 +101,42 @@ async function main() {
   }});
   const evmDemo=createEvmDemo({network:NETWORK,liquidity,demo});
 
+  const poolSnapshot=async()=>{
+        const asset = settlementAsset(NETWORK);
+        const rows=await currentPolicies();
+        const balance=asset.kind==='hbar'?await mirrorGet(NETWORK,`/accounts/${poolId}?transactions=false`):await mirrorGet(NETWORK,`/accounts/${poolId}/tokens?token.id=${asset.tokenId}`);
+        const capital=asset.kind==='hbar'?balance.balance.balance:Number(balance.tokens?.find(t=>t.token_id===asset.tokenId)?.balance??0);
+        const exposure=summarizeExposure([...rows,...reservations(NETWORK)],{legacyTokens:legacyTokens(NETWORK)});
+        const current=exposure.find(group=>assetKey(group)===assetKey(asset)),committed=current?.committedUnits??0;
+        return {
+          checkedAt:new Date().toISOString(),network: NETWORK, poolAccountId: reg.poolAccountId, policyTokenId: reg.policyTokenId,
+          asset: { symbol: asset.symbol, tokenId: asset.tokenId, isUsdc: Boolean(asset.isUsdc) },
+          capital: fromUnits(capital, asset), committed: fromUnits(committed, asset),
+          headroom: fromUnits(capital - committed, asset),
+          capitalHbar: fromUnits(capital, asset), committedHbar: fromUnits(committed, asset),
+          headroomHbar: fromUnits(capital - committed, asset),
+          livePolicies: current?.obligations??0,
+          otherCommitments: exposure.filter(group=>assetKey(group)!==assetKey(asset)).map(group=>({asset:group.symbol,tokenId:group.tokenId,committed:fromUnits(group.committedUnits,group),obligations:group.obligations})),
+          budgetToday: writeGuard.budget(),
+          hashscan: HASHSCAN('account', reg.poolAccountId),
+        };
+  };
+  const quorumChat=NETWORK==='testnet'?quorumCompanion({gate:chatGate,read:{
+    network:NETWORK,poolId:reg.poolAccountId,tokenId:reg.demoTokenId,swapPool:LP_POOL,mainnet:mainnetRecord,
+    owner:id=>{const a=demo.store.read().accounts[id];return a?.status==='ready'?{accountId:a.accountId,actions:a.actions}:null;},
+    account:id=>demo.view(id),pool:poolSnapshot,payments:()=>paymentActivity(NETWORK),
+    policy:async serial=>{const row=policies(NETWORK).find(p=>String(p.serial)===serial);return row?(await readPolicies(NETWORK,[row],identities))[0]:null;},
+    swapRecord:id=>{let w;try{w=evmDemo.store.wallet(id);}catch(e){if(e.status===401)return null;throw e;}const a=w.actions.at(-1);if(!a)return null;const hash=a.result?.transactionHash;return {kind:a.kind,status:a.status,hash:/^0x[a-fA-F0-9]{64}$/.test(hash??'')?hash:null};},
+  }}):null;
+
   const server = http.createServer(withHttpErrors(async (req, res) => {
     if (req.method === 'OPTIONS') return json(res, 204, {});
       const url = new URL(req.url, 'http://localhost');
       const route = url.pathname.replace(/\/$/, '');
+      if(route==='/api/companion/chat'&&req.method==='POST'){
+        if(!quorumChat)throw new HttpError(403,'The companion is available on the testnet demo.');
+        return json(res,200,await quorumChat({owner:req.headers.authorization?capability(req):null,ip:clientIp(req),input:await readJsonBody(req)}));
+      }
       if(route==='/api/cover-agents'||route.startsWith('/api/cover-agents/')){
         if(!coverAgents)throw new HttpError(403,'Testnet cover agents are unavailable.');
         const action=route.slice('/api/cover-agents'.length)||'/';
@@ -178,26 +214,7 @@ async function main() {
         return json(res, 200, { ok: true, network: NETWORK, writesAllowed: NETWORK === 'testnet', x402:NETWORK==='testnet'?BLOCKY_INFO:null });
       }
 
-      if (route === '/api/pool') {
-        const asset = settlementAsset(NETWORK);
-        const rows=await currentPolicies();
-        const balance=asset.kind==='hbar'?await mirrorGet(NETWORK,`/accounts/${poolId}?transactions=false`):await mirrorGet(NETWORK,`/accounts/${poolId}/tokens?token.id=${asset.tokenId}`);
-        const capital=asset.kind==='hbar'?balance.balance.balance:Number(balance.tokens?.find(t=>t.token_id===asset.tokenId)?.balance??0);
-        const exposure=summarizeExposure([...rows,...reservations(NETWORK)],{legacyTokens:legacyTokens(NETWORK)});
-        const current=exposure.find(group=>assetKey(group)===assetKey(asset)),committed=current?.committedUnits??0;
-        return json(res, 200, {
-          network: NETWORK, poolAccountId: reg.poolAccountId, policyTokenId: reg.policyTokenId,
-          asset: { symbol: asset.symbol, tokenId: asset.tokenId, isUsdc: Boolean(asset.isUsdc) },
-          capital: fromUnits(capital, asset), committed: fromUnits(committed, asset),
-          headroom: fromUnits(capital - committed, asset),
-          capitalHbar: fromUnits(capital, asset), committedHbar: fromUnits(committed, asset),
-          headroomHbar: fromUnits(capital - committed, asset),
-          livePolicies: current?.obligations??0,
-          otherCommitments: exposure.filter(group=>assetKey(group)!==assetKey(asset)).map(group=>({asset:group.symbol,tokenId:group.tokenId,committed:fromUnits(group.committedUnits,group),obligations:group.obligations})),
-          budgetToday: writeGuard.budget(),
-          hashscan: HASHSCAN('account', reg.poolAccountId),
-        });
-      }
+      if (route === '/api/pool') return json(res,200,await poolSnapshot());
 
       // Free: no ledger write, no key, no limit.
       if (route === '/api/quote') {
