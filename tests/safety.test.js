@@ -92,9 +92,9 @@ test('chunked HCS terms are reassembled without mixing another transaction',asyn
   const first={sequence_number:10,chunk_info,message:encode(raw.slice(0,100))};
   const last={sequence_number:11,chunk_info:{...chunk_info,number:2},message:encode(raw.slice(100))};
   const unrelated={...last,chunk_info:{...last.chunk_info,initial_transaction_id:{account_id:'0.0.2',transaction_valid_start:'123.4'}},message:encode('untrusted')};
-  const fetcher=async url=>({ok:true,json:async()=>({messages:String(url).includes('order=asc')?[unrelated,last]:[],links:{next:null}})});
+  const fetcher=async url=>Response.json({messages:String(url).includes('order=asc')?[unrelated,last]:[],links:{next:null}});
   assert.deepEqual(await readTermsMessage('testnet','0.0.3',first,fetcher),terms);
-  await assert.rejects(readTermsMessage('testnet','0.0.3',first,async()=>({ok:true,json:async()=>({messages:[unrelated]})})),/incomplete/);
+  await assert.rejects(readTermsMessage('testnet','0.0.3',first,async()=>Response.json({messages:[unrelated]})),/incomplete/);
 });
 
 test('terms whose chunks reached consensus out of order are still readable',async()=>{
@@ -105,13 +105,13 @@ test('terms whose chunks reached consensus out of order are still readable',asyn
   const first={sequence_number:48,chunk_info,message:encode(raw.slice(0,100))};
   const earlier={sequence_number:47,chunk_info:{...chunk_info,number:2},message:encode(raw.slice(100))};
   const queried=[];
-  const fetcher=async(url)=>{queried.push(String(url));return{ok:true,json:async()=>({messages:String(url).includes('order=desc')?[earlier]:[],links:{next:null}})};};
+  const fetcher=async(url)=>{queried.push(String(url));return Response.json({messages:String(url).includes('order=desc')?[earlier]:[],links:{next:null}});};
   assert.deepEqual(await readTermsMessage('testnet','0.0.3',first,fetcher),terms);
   assert.ok(queried.some(url=>url.includes('sequencenumber=lt:48')&&url.includes('order=desc')),'search before the pointer without assuming contiguous chunks');
 });
 
 test('concurrent policy and pool refreshes share one ledger request per schedule',async()=>{
- let calls=0;const fetcher=async()=>{calls++;await new Promise(r=>setTimeout(r,20));return{ok:true,json:async()=>schedule()};};
+ let calls=0;const fetcher=async()=>{calls++;await new Promise(r=>setTimeout(r,20));return Response.json(schedule());};
  const book=[{serial:'qa',scheduleId:'0.0.999991',lapsesAt:terms.lapsesAt}];
  const [a,b]=await Promise.all([readPolicies('testnet',book,identities,{fetcher,cacheMs:0}),readPolicies('testnet',book,identities,{fetcher,cacheMs:0})]);assert.equal(calls,1);assert.equal(a[0].ledger.available,true);assert.equal(b[0].state,'active');
 });

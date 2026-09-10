@@ -160,12 +160,18 @@ flowchart LR
 | **Scheduled Transactions + nested KeyList/ThresholdKey** | Prepare the exact payout now; release it only with agent + oracle quorum authorization. | [Payout](src/policy/payout.js), [reusable settlement plugin](https://github.com/jmgomezl/hak-scheduled-settlement) |
 | **Hedera Consensus Service (HCS)** | Publish ordered policy terms; hash-bind them to the schedule so oracles verify the same obligation. | [Terms](src/policy/terms.js), [binding](src/policy/binding.js) |
 | **Hedera Token Service (HTS)** | Issue a cover receipt NFT and transfer the demo settlement token; premium and broker split can settle atomically. | [NFT](src/policy/collection.js), [premium transfer](src/policy/purchase.js) |
-| **Mirror Node + HashScan** | Read actual signer/transaction evidence and let judges independently inspect receipts. | [Ledger reader](src/ledger.js), [recorded evidence](ui/src/data/mainnet.json) |
+| **Mirror Node + HashScan** | Read policy signatures, balances, NFTs and transaction evidence; ground the companion's answers in verifiable records. | [Ledger reader](src/ledger.js), [live verification](docs/evidence/mirror-node-review.json), [integration](docs/MIRROR-NODE.md) |
 | **Hedera Agent Kit plugin** | Extract the scheduling primitive for reuse beyond this earthquake UI. | [Dependency](package.json), [plugin repository](https://github.com/jmgomezl/hak-scheduled-settlement) |
 
 **Boundary:** the ledger enforces signatures, not earthquake truth or every
 underwriting rule. Oracle software checks conditions. Separate keys on our demo
 host do not prove independent operators.
+
+**Our Mirror Node skill, applied here.** Juanma authored the
+[`hedera-mirror-node` skill in hedera-dev/hedera-skills PR #16](https://github.com/hedera-dev/hedera-skills/pull/16).
+We used it in the September 10 review to fix token-balance pagination and preserve
+large ledger integers before parsing. It is development guidance, with the PR
+still open as of that review. [Diagram, safeguards and repeatable checks →](docs/MIRROR-NODE.md)
 
 ## Why Uniswap
 
@@ -633,6 +639,11 @@ What existed before the event, and does **not** count as new work:
   Its **`axelar_send_token`** builder prepares the Hedera ITS transfer to Sepolia.
   The plugin itself is prior work; Quorum's guarded adapter and verified delivery
   flow were built during this event. [Integration and receipts](#built-with-our-hak-axelar-plugin).
+- **[Mirror Node skill · hedera-skills PR #16](https://github.com/hedera-dev/hedera-skills/pull/16)** —
+  Juanma's pre-event development guidance, submitted before September 4. Applied
+  to Quorum's September 10 read-path review and fixes; the skill itself is prior
+  work, not a runtime package or new event contribution. The PR remains open as of
+  the review. [Exact version and application](docs/MIRROR-NODE.md).
 - **Aivy Settlement Layer (ETHGlobal Lisbon, July 2026)** — a prior continuity
   build on aivy-studio that also used HTS pools and Scheduled Transactions. The
   overlap is the *substrate*; what is new here is stated below.

@@ -6,7 +6,7 @@ import {createFundedAccount,known} from '../accounts.js';
 import {associate} from '../pool/shares.js';
 import {deposit} from '../pool/deposit.js';
 import {settlementAsset} from '../asset.js';
-import {mirrorGet} from '../ledger.js';
+import {readTokenBalance} from '../ledger.js';
 import {policies} from '../book.js';
 import {demoStore} from './store.js';
 export function demoService({client,agent,network,reg}){
@@ -21,7 +21,14 @@ export function demoService({client,agent,network,reg}){
    const tx=await new TransferTransaction().addTokenTransfer(asset.tokenId,agent.id,-1000e6).addTokenTransfer(asset.tokenId,a.id,1000e6).freezeWith(client);
    store.patch(id,{starterTx:tx.transactionId.toString()});const sent=await tx.execute(client);await sent.getReceipt(client);store.patch(id,{status:'ready'});
   },
-  async view(id){enabled();const a=store.account(id),tokens=(await mirrorGet(network,`/accounts/${a.accountId}/tokens`)).tokens??[],b={tokens:Number(tokens.find(t=>t.token_id===asset.tokenId)?.balance??0)/1e6,shares:Number(tokens.find(t=>t.token_id===reg.shareTokenId)?.balance??0)/1e8};return {ok:true,network,accountId:a.accountId,asset:asset.symbol,tokenId:asset.tokenId,shareTokenId:reg.shareTokenId,balance:b.tokens,shares:b.shares,referralCode:a.code,starterTx:a.starterTx,actions:a.actions,commissions:policies(network).filter(p=>p.brokerId===a.accountId).map(p=>({serial:p.serial,amount:Math.round(p.premiumUnits*.15)/1e6,transaction:p.saleTxId})),checkedAt:new Date().toISOString(),custody:'Service-managed testnet account. Browser access token controls this demo session. No cash value.'};},
+  async view(id){
+   enabled();const a=store.account(id);
+   const [tokens,shares]=await Promise.all([
+    readTokenBalance(network,a.accountId,asset.tokenId),
+    readTokenBalance(network,a.accountId,reg.shareTokenId),
+   ]);
+   return {ok:true,network,accountId:a.accountId,asset:asset.symbol,tokenId:asset.tokenId,shareTokenId:reg.shareTokenId,balance:tokens/1e6,shares:shares/1e8,referralCode:a.code,starterTx:a.starterTx,actions:a.actions,commissions:policies(network).filter(p=>p.brokerId===a.accountId).map(p=>({serial:p.serial,amount:Math.round(p.premiumUnits*.15)/1e6,transaction:p.saleTxId})),checkedAt:new Date().toISOString(),custody:'Service-managed testnet account. Browser access token controls this demo session. No cash value.'};
+  },
   async bridge(id,input){
    enabled();const terms=bridgeInput(input),account=store.account(id),prior=account.actions.find(x=>x.requestId===terms.requestId);
    if(prior){if(prior.kind!=='bridge'||prior.amount!==terms.amount||prior.recipient!==terms.recipient)throw Object.assign(Error('Request already used for other bridge terms.'),{status:409});if(prior.status==='complete')return prior.result;

@@ -8,6 +8,10 @@ scope, evaluated the interface, and requested revisions.
 
 For the work represented in this task, Codex assistance includes:
 
+- Applying Juanma's pre-existing `hedera-mirror-node` skill from
+  [hedera-skills PR #16](https://github.com/hedera-dev/hedera-skills/pull/16) to the
+  September 10 Mirror Node review: filtered token balances, exact integer parsing,
+  regression tests and public read-only verification. [Scope and attribution](MIRROR-NODE.md).
 - `src/cover-agent/`, `src/demo/purchase.js`, and the separate Aivy repository's
   Quorum canvas: bounded monthly purchase mandates, persisted scheduling,
   consent/receipt UI, recovery tests, deployment and a real first-policy capture.

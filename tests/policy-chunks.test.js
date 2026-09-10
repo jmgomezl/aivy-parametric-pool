@@ -10,7 +10,7 @@ function mirror(rows){
  return {calls,fetch:async url=>{calls.push(String(url));const u=new URL(url),[op,n]=u.searchParams.get('sequencenumber').split(':'),desc=u.searchParams.get('order')==='desc';
  const selected=rows.filter(r=>op==='gt'?r.sequence_number>Number(n):r.sequence_number<Number(n)).sort((a,b)=>desc?b.sequence_number-a.sequence_number:a.sequence_number-b.sequence_number),page=selected.slice(0,100);
  const next=selected.length>100?`/api/v1/topics/${topic}/messages?sequencenumber=${op}:${page.at(-1).sequence_number}&order=${desc?'desc':'asc'}&limit=100`:null;
- return {ok:true,json:async()=>({messages:page,links:{next}})};}};
+ return Response.json({messages:page,links:{next}});}};
 }
 test('finds interleaved sibling chunks on later pages in both directions',async()=>{
  const first=part(201,1,3,raw.slice(0,100)),before=part(50,2,3,raw.slice(100,200)),after=part(399,3,3,raw.slice(200));
@@ -30,7 +30,7 @@ test('conflicting numbers and totals are rejected, including across both sides',
 test('foreign or repeated pagination fails closed',async()=>{
  const first=part(10,1,2,raw.slice(0,100));
  for(const next of ['https://other.example/messages','/api/v1/topics/0.0.999/messages?limit=100']){
-  await assert.rejects(readTermsMessage('testnet',topic,first,async()=>({ok:true,json:async()=>({messages:[],links:{next}})})),/Invalid message pagination/);
+  await assert.rejects(readTermsMessage('testnet',topic,first,async()=>Response.json({messages:[],links:{next}})),/Invalid message pagination/);
  }
- await assert.rejects(readTermsMessage('testnet',topic,first,async()=>({ok:true,json:async()=>({messages:[],links:{next:`/api/v1/topics/${topic}/messages?sequencenumber=gt:10&order=asc&limit=100`}})})),/Repeated message pagination/);
+ await assert.rejects(readTermsMessage('testnet',topic,first,async()=>Response.json({messages:[],links:{next:`/api/v1/topics/${topic}/messages?sequencenumber=gt:10&order=asc&limit=100`}})),/Repeated message pagination/);
 });

@@ -33,7 +33,7 @@ import { AccountId } from '@hiero-ledger/sdk';
 import { client, operator, assertOperatorKey, NETWORK, HASHSCAN } from './config.js';
 import { load } from './registry.js';
 import { quotePolicy, isIssuing } from './policy/issue.js';
-import { readPolicies, mirrorGet } from './ledger.js';
+import { readPolicies, mirrorGet, mirrorUnits, readTokenBalance } from './ledger.js';
 import { policies, reservations, settle, request, legacyTokens } from './book.js';
 import { summarizeExposure, assetKey } from './pool/exposure.js';
 import { withIssuanceLock } from './issuance-lock.js';
@@ -104,8 +104,7 @@ async function main() {
   const poolSnapshot=async()=>{
         const asset = settlementAsset(NETWORK);
         const rows=await currentPolicies();
-        const balance=asset.kind==='hbar'?await mirrorGet(NETWORK,`/accounts/${poolId}?transactions=false`):await mirrorGet(NETWORK,`/accounts/${poolId}/tokens?token.id=${asset.tokenId}`);
-        const capital=asset.kind==='hbar'?balance.balance.balance:Number(balance.tokens?.find(t=>t.token_id===asset.tokenId)?.balance??0);
+        const capital=asset.kind==='hbar'?mirrorUnits((await mirrorGet(NETWORK,`/accounts/${poolId}?transactions=false`)).balance?.balance):await readTokenBalance(NETWORK,poolId,asset.tokenId);
         const exposure=summarizeExposure([...rows,...reservations(NETWORK)],{legacyTokens:legacyTokens(NETWORK)});
         const current=exposure.find(group=>assetKey(group)===assetKey(asset)),committed=current?.committedUnits??0;
         return {

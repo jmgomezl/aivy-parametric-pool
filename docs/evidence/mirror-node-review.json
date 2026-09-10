@@ -1,0 +1,44 @@
+{
+  "checkedAt": "2026-09-10T06:12:52.947Z",
+  "mode": "read-only",
+  "policySerial": "34",
+  "observations": [
+    {
+      "check": "HCS terms match the pre-signed transfer",
+      "network": "testnet",
+      "scheduleId": "0.0.10453186",
+      "termsPointer": "hcs://0.0.10373727/63",
+      "executedTimestamp": null,
+      "deleted": false,
+      "signatures": 1,
+      "payoutUnits": 1398885588
+    },
+    {
+      "check": "Cover NFT owner and HCS pointer",
+      "network": "testnet",
+      "tokenId": "0.0.10373726",
+      "serial": "34",
+      "owner": "0.0.10453181"
+    },
+    {
+      "check": "Premium arrived in the pool",
+      "network": "testnet",
+      "transactionId": "0.0.7231440-1789013941-231286735",
+      "consensusTimestamp": "1789013946.419241104"
+    },
+    {
+      "check": "Filtered pool token balance",
+      "network": "testnet",
+      "accountId": "0.0.10373722",
+      "tokenId": "0.0.10374011",
+      "units": "200115400000"
+    },
+    {
+      "check": "Recorded 4 HBAR payout still verifiable",
+      "network": "mainnet",
+      "scheduleId": "0.0.10843721",
+      "executedTimestamp": "1788563478.715401105",
+      "recordedDemonstration": true
+    }
+  ]
+}

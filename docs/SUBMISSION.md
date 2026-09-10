@@ -20,6 +20,11 @@ Latest [QA and judge review](qa/JUDGE-REVIEW.md); earlier [security review](qa/S
 on one complete cover journey and the Hedera → Uniswap path; technical evidence
 is one disclosure away. No extension or faucet setup is needed in the public app.
 
+**Technical evidence:** [Mirror Node integration and reproducible read-only checks](MIRROR-NODE.md)
+show how signatures, balances, NFT ownership and receipts support the UI and
+companion. The review applies our pre-existing [Hedera skill PR #16](https://github.com/hedera-dev/hedera-skills/pull/16);
+credit it as development guidance and prior work, not a new event contribution.
+
 ## Aivy Labs integration · show the complete loop
 
 **[Aivy Labs](https://aivylabs.xyz/quorum) sets the rules. Quorum creates the policy.

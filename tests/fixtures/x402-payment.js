@@ -14,6 +14,6 @@ export const header=payload=>Buffer.from(JSON.stringify(payload)).toString('base
 export function payerFetcher({key=payerKey,type='ED25519',balance=2000000,deleted=false,account=PAYER,freeze_status='UNFROZEN',kyc_status='GRANTED',token=TOKEN,events=[]}={}){
  return async url=>{
   events.push(String(url));
-  return {ok:true,json:async()=>String(url).includes('/tokens?')?{tokens:[{token_id:token,balance,freeze_status,kyc_status}]}:{account,deleted,key:{_type:type,key:key.publicKey.toStringRaw()},balance:{balance}}};
+  return Response.json(String(url).includes('/tokens?')?{tokens:[{token_id:token,balance,freeze_status,kyc_status}]}:{account,deleted,key:{_type:type,key:key.publicKey.toStringRaw()},balance:{balance}});
  };
 }
