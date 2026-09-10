@@ -34,7 +34,8 @@ requires a human voice. Do not submit the silent MP4 as the final video.
 Record the 14 chapters separately, choose your best takes, trim pauses and export
 a combined video. Optional MacBook/iPhone camera, local background removal and a
 presenter overlay are included. Your takes save in this browser; download a
-backup before moving devices. [Studio guide](studio/README.md).
+backup before moving devices. [Separate repository and studio guide](https://github.com/jmgomezl/aivy-take-studio).
+Take Studio is independently deployed; the existing URL keeps browser-saved takes accessible.
 
 The original page also supports one continuous voice take:
 

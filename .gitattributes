@@ -1,2 +1,0 @@
-# Keep unmodified browser dependencies out of application-code language totals.
-docs/demo-video/studio/vendor/** linguist-vendored=true

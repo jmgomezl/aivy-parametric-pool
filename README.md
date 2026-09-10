@@ -22,7 +22,8 @@ question; Quorum supplies the facts. **Chat cannot sign or move funds.**
 [Play the visual edit beside the script](https://quorum.aivylabs.xyz/demo-video/).
 For recording: [Take Studio](https://quorum.aivylabs.xyz/demo-video/studio/) —
 14 separate voice takes, optional presenter cutout, and a combined export.
-This is a creator tool, separate from the Quorum product.
+Maintained in its own [Take Studio repository](https://github.com/jmgomezl/aivy-take-studio),
+with an independent static deployment. It is not part of the Quorum product.
 Updated September 10: **Aivy → Quorum at 2:57**, policy questions at 3:21 and
 Mirror Node evidence at 3:29. [Just the 24-second Aivy demo](docs/demo-video/aivy-monthly-cover.mp4).
 The 3:59 edit still needs the founder's human narration before submission.
