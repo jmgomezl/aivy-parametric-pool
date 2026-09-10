@@ -17,22 +17,24 @@ import {createTestnetSwap} from './settlement/testnetSwap.js';
 // AgentMode.RETURN_BYTES.
 import http from 'node:http';
 import {demoService} from './demo/service.js';
+import {createDemoPurchase} from './demo/purchase.js';
+import {coverAgentStore} from './cover-agent/store.js';
+import {coverAgentService} from './cover-agent/service.js';
+import {PLACES,TRIGGER,MAX_CYCLES} from './cover-agent/rules.js';
 import {capability} from './demo/store.js';
 import { searchPlaces } from './places.js';
 import { paymentActivity } from './activity.js';
 import {BLOCKY_INFO} from './x402/blocky.js';
-import { AccountId, TokenId, TransferTransaction } from '@hiero-ledger/sdk';
+import { AccountId } from '@hiero-ledger/sdk';
 import { client, operator, assertOperatorKey, NETWORK, HASHSCAN } from './config.js';
 import { load } from './registry.js';
-import { createFundedAccount } from './accounts.js';
-import { quotePolicy, issuePolicy, isIssuing } from './policy/issue.js';
+import { quotePolicy, isIssuing } from './policy/issue.js';
 import { readPolicies, mirrorGet } from './ledger.js';
 import { policies, reservations, settle, request, legacyTokens } from './book.js';
 import { summarizeExposure, assetKey } from './pool/exposure.js';
 import { withIssuanceLock } from './issuance-lock.js';
 import { createWriteGuard, LIMITS } from './guards.js';
-import { clientIp, readJsonBody, policyInput, HttpError, withHttpErrors } from './http-safety.js';
-import { associate } from './pool/shares.js';
+import { clientIp, readJsonBody, HttpError, withHttpErrors } from './http-safety.js';
 import { settlementAsset, fromUnits } from './asset.js';
 import { quoteCrossAsset, STABLES } from './settlement/crossAsset.js';
 
@@ -73,12 +75,42 @@ async function main() {
   const bridgedSwaps=createBridgedSwap();
   const liquidity=createLiquidity();
   const demo=demoService({client:c,agent,network:NETWORK,reg});
+  const purchaseDemoPolicy=createDemoPurchase({demo,deps,writeGuard,reg,network:NETWORK});
+  let coverAgents=NETWORK==='testnet'&&process.env.COVER_AGENTS_ENABLED!=='0'?coverAgentService({
+    store:coverAgentStore(),account:id=>demo.store.account(id),purchase:purchaseDemoPolicy,
+    quote:quotePolicy,lookup:id=>request(NETWORK,id),network:NETWORK,tokenId:reg.demoTokenId,
+    reconcile:(id,requestId,p)=>withIssuanceLock(NETWORK,()=>{
+      const action=demo.store.account(id).actions.find(a=>a.requestId===requestId);
+      if(!action||action.kind!=='cover')throw Error('Renewal purchase ownership cannot be reconciled.');
+      if(action.status!=='complete')demo.store.finish(id,requestId,{serial:String(p.serial),saleTxId:p.saleTxId,beneficiaryId:p.buyerId,brokerId:p.brokerId});
+    }),
+  }):null;
+  if(coverAgents){try{await coverAgents.initialize();}catch(error){console.error('Cover agents disabled until journal recovery:',error);coverAgents=null;}}
   const evmDemo=createEvmDemo({network:NETWORK,liquidity,demo});
 
   const server = http.createServer(withHttpErrors(async (req, res) => {
     if (req.method === 'OPTIONS') return json(res, 204, {});
       const url = new URL(req.url, 'http://localhost');
       const route = url.pathname.replace(/\/$/, '');
+      if(route==='/api/cover-agents'||route.startsWith('/api/cover-agents/')){
+        if(!coverAgents)throw new HttpError(403,'Testnet cover agents are unavailable.');
+        const action=route.slice('/api/cover-agents'.length)||'/';
+        if(action==='/info'&&req.method==='GET')return json(res,200,{ok:true,network:NETWORK,places:PLACES,trigger:TRIGGER,maxCycles:MAX_CYCLES,maxMonthlyPremium:10,asset:'aUSDd',execution:'deterministic'});
+        if(action==='/quote'&&req.method==='POST')return json(res,200,await coverAgents.preview(await readJsonBody(req)));
+        const id=capability(req);
+        if(action==='/'&&req.method==='GET')return json(res,200,coverAgents.view(id));
+        if(action==='/account'&&req.method==='GET')return json(res,200,await demo.view(id));
+        if(action==='/start'&&req.method==='POST'){
+          const body=await readJsonBody(req);if(Object.keys(body).length)throw new HttpError(400,'Unsupported account options.');
+          await withIssuanceLock(NETWORK,()=>demo.start(id,clientIp(req)));return json(res,200,await demo.view(id));
+        }
+        if(action==='/activate'&&req.method==='POST')return json(res,202,await coverAgents.activate(id,await readJsonBody(req),clientIp(req)));
+        if(['/pause','/resume','/run'].includes(action)&&req.method==='POST'){
+          const body=await readJsonBody(req);if(Object.keys(body).length)throw new HttpError(400,'Renewal rules cannot be overridden by a run request.');
+          return json(res,200,await coverAgents[action.slice(1)](id));
+        }
+        throw new HttpError(404,'Unknown cover-agent action.');
+      }
       if (route.startsWith('/api/demo/evm')) {
         const id=capability(req);
         if (route==='/api/demo/evm'&&req.method==='GET') return json(res,200,await evmDemo.view(id));
@@ -216,39 +248,8 @@ async function main() {
 
       if (route === '/api/policies' && req.method === 'POST') {
         if (NETWORK !== 'testnet') return json(res,403,{ok:false,reason:'mainnet_writes_disabled',message:'The public demo creates policies on testnet only.'});
-        const body=await readJsonBody(req),{referralCode,...raw}=body;
-        const input = policyInput(raw);
-        const sessionId=capability(req);demo.enabled();demo.store.account(sessionId);
-        const brokerId=demo.store.broker(referralCode,sessionId);
-        if(request(NETWORK,input.requestId)&&!demo.store.account(sessionId).actions.some(x=>x.requestId===input.requestId))throw new HttpError(403,'This request belongs to another demo session.');
-        if(!input.requestId)throw new HttpError(400,'A saved request identifier is required.');
-        const result = await issuePolicy({...deps,
-          beforeWrite:async quote=>{
-            const account=demo.store.account(sessionId),balance=await demo.balance(account.accountId);
-            if(balance.tokens<quote.settled.premium)return {status:400,reason:'insufficient_balance',message:'Your demo account does not have enough aUSDd for this premium.'};
-            return writeGuard.check({ip:clientIp(req),usd:quote.payout});
-          },
-          beforeLedgerWrite:quote=>{
-            const prior=demo.store.account(sessionId).actions.find(x=>x.requestId===input.requestId);
-            if(prior)return {status:409,reason:'pending_recovery',message:'This account request needs review before another payment.'};
-            const denied=writeGuard.admit({ip:clientIp(req),usd:quote.payout});if(denied)return denied;
-            demo.store.begin(sessionId,input.requestId,'cover',quote.settled.premium);return null;
-          },
-          createBuyer:async quote=>{
-            const asset=settlementAsset(NETWORK);
-            const buyer=await createFundedAccount(c,NETWORK,1,'demo beneficiary');
-            await associate(c,buyer.id,buyer.key,TokenId.fromString(reg.policyTokenId));
-            if(asset.kind==='token'){
-              await associate(c,buyer.id,buyer.key,TokenId.fromString(asset.tokenId));
-              const payer=demo.signer(sessionId);
-              const fund=await new TransferTransaction().addTokenTransfer(TokenId.fromString(asset.tokenId),payer.id,-quote.settled.premiumUnits).addTokenTransfer(TokenId.fromString(asset.tokenId),buyer.id,quote.settled.premiumUnits).freezeWith(c);
-              await fund.sign(payer.key);await(await fund.execute(c)).getReceipt(c);
-            }
-            return buyer;
-          }
-        },{...input,brokerId});
+        const result = await purchaseDemoPolicy({sessionId:capability(req),ip:clientIp(req),input:await readJsonBody(req)});
         if(!result.ok)return json(res,200,result);
-        await withIssuanceLock(NETWORK,()=>{const a=demo.store.account(sessionId);if(a.actions.some(x=>x.requestId===input.requestId))demo.store.finish(sessionId,input.requestId,{serial:String(result.policy.serial),saleTxId:result.policy.saleTxId,beneficiaryId:result.policy.buyerId,brokerId});});
         return json(res, 201, {
           ...result, policy:publicPolicy(result.policy),
           hashscan: {
@@ -269,11 +270,13 @@ async function main() {
     console.log(`  writes ${NETWORK !== 'testnet' ? 'DISABLED (mainnet)' : 'enabled'}` +
       `  · ${LIMITS.perIpPerHour}/ip/hour · ${LIMITS.policiesPerDay}/day · $${LIMITS.usdPerDay.toLocaleString()}/day`);
   });
+  coverAgents?.start();
   let draining=false;
   const shutdown=async()=>{
     if(draining)return;draining=true;
     // Stop admission, finish accepted requests, then drain journaled EVM jobs.
     await new Promise(resolve=>server.close(resolve));
+    await coverAgents?.close();
     await evmDemo.close();liquidity.close();c.close();process.exit(0);
   };
   process.once('SIGTERM',()=>void shutdown());

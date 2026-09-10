@@ -16,7 +16,7 @@ Transactions are real; test tokens have no cash value.
 [Play the visual edit beside the script](https://quorum.aivylabs.xyz/demo-video/).
 The 3:45 edit still needs the founder's human narration before submission.
 
-**Judge shortcuts:** [Hedera](#why-hedera) · [Uniswap](#why-uniswap) ·
+**Judge shortcuts:** [Hedera](#why-hedera) · [Uniswap](#why-uniswap) · [Monthly cover agent](docs/COVER-AGENT.md) ·
 [Economics](docs/ECONOMIC-MODEL.md) · [Novelty](#what-is-new) · [Security](#security-by-architecture) · [Evidence](#verify-in-one-minute)
 
 ![Current app: explore the world map, price Tokyo cover, drag through premium history and inspect existing geographic cover NFTs](docs/media/quorum-flow.gif)
@@ -33,12 +33,21 @@ inspect existing testnet cover NFTs. [Screenshot and recording notes](docs/media
 | Role | Click | Real testnet outcome |
 | --- | --- | --- |
 | Buyer | **Your demo account → Start**, then choose a place and **Pay premium & create cover** | 1,000 starter aUSDd; actual premium debit, NFT receipt and scheduled payout. |
+| Monthly buyer | **[Aivy cover agent](https://aivylabs.xyz/quorum) → Review → Activate** | First policy purchased on testnet; up to three monthly purchases follow saved place, budget and minimum-payout rules. Receipt, next attempt and pause control stay visible. |
 | Cover funder | **Fund the pool → Deposit into shared pool** | Tokens enter the shared insurance pool; ARPS shares arrive atomically. Balance and receipt update. |
 | Swap liquidity provider | **Swap → Provide swap liquidity** | Create a real Uniswap V3 NFT, add tokens, collect swap fees and withdraw the position. |
 | Policyholder | **Policy → Check for earthquakes** | Three policy-bound oracle requests, up to 0.003 test aUSDd via **Blocky402 x402**; qualifying signatures can release the scheduled payout. |
 | Broker | **Refer & earn → Copy referral link** | Buyer pays the same premium; 15% goes to the broker and 85% to the pool. Commission history is visible. |
 
 [Verified business flows](docs/qa/PLATFORM-QA.md) · [Current QA and judge review](docs/qa/JUDGE-REVIEW.md) · [UX review](docs/qa/READINESS-REVIEW.md).
+
+**From intent to a bounded agent:** Aivy's dedicated canvas connects a monthly
+budget to Quorum's existing guarded issuer. A persistent deterministic worker
+checks due dates; it cannot choose another recipient, exceed the approved budget,
+or buy below the minimum payout. Uncertain transactions pause for review.
+Future dates are planned attempts, not completed transactions. This path uses
+Quorum's service-managed testnet custody, not Aivy's older LLM/KMS/vault runtime.
+[Visual architecture, limits and recovery](docs/COVER-AGENT.md).
 
 **Made for a quick visual demo:** on large screens, the world map sits beside the
 introduction, then beside the selected quote and history. Labels stay readable
