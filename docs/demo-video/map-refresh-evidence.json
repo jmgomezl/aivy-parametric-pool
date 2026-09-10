@@ -1,0 +1,30 @@
+{
+  "capturedAt": "2026-09-10T06:27:37.762Z",
+  "phase": "map",
+  "scope": "Read-only refresh of actual UI and existing policy #34; no ledger or mandate change.",
+  "viewport": {
+    "width": 1440,
+    "height": 780
+  },
+  "sourcePlaybackRate": 1,
+  "segments": [
+    {
+      "name": "map-atlas-current",
+      "start": 3.45,
+      "duration": 3
+    },
+    {
+      "name": "map-search-current",
+      "start": 6.45,
+      "duration": 9
+    },
+    {
+      "name": "map-history-current",
+      "start": 16.32,
+      "duration": 8
+    }
+  ],
+  "requests": [],
+  "answers": [],
+  "errors": []
+}

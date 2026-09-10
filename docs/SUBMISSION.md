@@ -12,7 +12,8 @@ Reusable plugin: https://github.com/jmgomezl/hak-scheduled-settlement
 It includes newly recorded testnet issuance, Blocky402 checks, a deposit and a
 confirmed Uniswap swap, plus a short [Aivy monthly-agent interaction](COVER-AGENT.md)
 with real policy #34, and a typed question to the Quorum companion. The monthly
-canvas appears at **3:11**, and the companion at **3:25**. **Human narration is still required** before submitting
+Aivy journey starts at **2:57**; Quorum’s status question is at **3:21** and its
+Mirror Node evidence at **3:29**. **Human narration is still required** before submitting
 the edit. Its new bridge source is confirmed but delivery was pending at capture;
 the swap uses previously bridged starter tokens. [Recording receipts](demo-video/EVIDENCE.md).
 

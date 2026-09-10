@@ -1,246 +1,251 @@
 1
-00:00:00,000 --> 00:00:02,381
+00:00:00,000 --> 00:00:02,222
 An earthquake lasts seconds.
 
 2
-00:00:02,381 --> 00:00:05,238
+00:00:02,222 --> 00:00:04,889
 The cost stays with you.
 
 3
-00:00:05,238 --> 00:00:10,476
-Imagine a small shop in Colombia: a cracked window, lost
+00:00:04,889 --> 00:00:10,667
+Think of a small shop in Colombia: a cracked window, lost
+stock.
 
 4
-00:00:10,476 --> 00:00:13,333
-stock, a day without income.
+00:00:10,667 --> 00:00:16,000
+A loss below the deductible can still overwhelm a family's
+savings.
 
 5
-00:00:13,333 --> 00:00:20,000
-The loss can sit below a deductible—and still be more than
-your savings.
+00:00:16,000 --> 00:00:21,042
+I built Aivy Quorum for parametric cover: agree the trigger
 
 6
-00:00:20,000 --> 00:00:24,172
-I built Aivy Quorum around parametric cover: agree on an
+00:00:21,042 --> 00:00:23,333
+and payout in advance.
 
 7
-00:00:24,172 --> 00:00:27,966
-earthquake trigger and a fixed payout before it happens.
+00:00:23,333 --> 00:00:27,000
+Verify the earthquake, not every broken window.
 
 8
-00:00:27,966 --> 00:00:31,000
-Verify the event, not every broken window.
-
-9
-00:00:31,000 --> 00:00:32,949
+00:00:27,000 --> 00:00:28,889
 Let's try Medellín.
 
-10
-00:00:32,949 --> 00:00:38,308
-Choose the place, review the premium, and see the
-conditions.
+9
+00:00:28,889 --> 00:00:32,194
+Pick a place and a budget.
 
-11
-00:00:38,308 --> 00:00:43,667
-The history chart compares premiums for the same eight-
+10
+00:00:32,194 --> 00:00:37,861
+Drag through history to compare premiums for the same eight-
 hundred-dollar payout.
 
+11
+00:00:37,861 --> 00:00:40,222
+This is a model.
+
 12
-00:00:43,667 --> 00:00:47,077
-It's a model, not a forecast.
+00:00:40,222 --> 00:00:44,000
+Payment depends on the agreed earthquake conditions.
 
 13
-00:00:47,077 --> 00:00:49,1000
-Damage alone doesn't trigger payment.
+00:00:44,000 --> 00:00:48,089
+Here, I pay with funded test tokens.
 
 14
-00:00:50,000 --> 00:00:54,174
-Now I pay with funded test tokens.
-
-15
-00:00:54,174 --> 00:00:56,261
+00:00:48,089 --> 00:00:50,133
 No wallet extension.
 
-16
-00:00:56,261 --> 00:01:02,000
+15
+00:00:50,133 --> 00:00:55,756
 This creates a real cover NFT, publishes the terms, and
 
-17
-00:01:02,000 --> 00:01:05,130
+16
+00:00:55,756 --> 00:00:58,822
 schedules the payout on Hedera.
 
-18
-00:01:05,130 --> 00:01:07,217
+17
+00:00:58,822 --> 00:01:00,867
 Here's the receipt.
 
-19
-00:01:07,217 --> 00:01:14,000
-The demo tokens have no cash value, but these transactions
-really happened.
+18
+00:01:00,867 --> 00:01:07,000
+The tokens have no cash value, but these transactions really
+happened.
 
-20
-00:01:14,000 --> 00:01:19,628
+19
+00:01:07,000 --> 00:01:12,500
 The agent pays three oracle services through Blocky402 using
 x402.
 
+20
+00:01:12,500 --> 00:01:15,500
+Each checks the recorded conditions.
+
 21
-00:01:19,628 --> 00:01:23,209
-Each checks the policy's recorded conditions.
+00:01:15,500 --> 00:01:18,000
+Here are the receipts.
 
 22
-00:01:23,209 --> 00:01:26,279
-Here are the payment receipts.
+00:01:18,000 --> 00:01:23,500
+No matching earthquake was found, so the payout stays
+locked.
 
 23
-00:01:26,279 --> 00:01:32,419
-These checks found no matching earthquake, so the payout
-stays locked.
-
-24
-00:01:32,419 --> 00:01:35,1000
+00:01:23,500 --> 00:01:27,000
 Buying data is not buying approval.
 
-25
-00:01:36,000 --> 00:01:39,059
+24
+00:01:27,000 --> 00:01:29,880
 This is why Hedera matters.
 
-26
-00:01:39,059 --> 00:01:43,647
+25
+00:01:29,880 --> 00:01:34,200
 The agent signs the exact transfer in advance.
 
-27
-00:01:43,647 --> 00:01:48,235
+26
+00:01:34,200 --> 00:01:38,520
 Two of three oracle keys must also sign.
 
-28
-00:01:48,235 --> 00:01:53,333
+27
+00:01:38,520 --> 00:01:43,320
 Then Hedera executes it, without a separate executor
 transaction.
 
-29
-00:01:53,333 --> 00:01:57,412
+28
+00:01:43,320 --> 00:01:47,160
 This recorded mainnet experiment moved four HBAR.
 
+29
+00:01:47,160 --> 00:01:50,1000
+Controlled signatures, not a real earthquake claim.
+
 30
-00:01:57,412 --> 00:02:02,000
-Those were controlled signatures—not a real earthquake
-claim.
+00:01:51,000 --> 00:01:55,762
+The workflow has spending limits and saved transaction IDs.
 
 31
-00:02:02,000 --> 00:02:07,217
-The workflow is deterministic, with spending limits and
-saved transaction IDs.
-
-32
-00:02:07,217 --> 00:02:12,000
+00:01:55,762 --> 00:02:01,000
 Even all three oracle keys cannot spend without the agent.
 
-33
-00:02:12,000 --> 00:02:17,418
-Here, I'm moving demo-account tokens, not the locked cover
-reserve.
+32
+00:02:01,000 --> 00:02:06,587
+These are demo-account tokens, separate from the locked
+cover reserve.
 
-34
-00:02:17,418 --> 00:02:23,328
+33
+00:02:06,587 --> 00:02:12,683
 Our Hedera Agent Kit Axelar plugin builds the bridge to
 Sepolia.
 
-35
-00:02:23,328 --> 00:02:26,776
+34
+00:02:12,683 --> 00:02:16,238
 Uniswap's Trading API prepares the swap.
 
+35
+00:02:16,238 --> 00:02:19,286
+Review, confirm, inspect the receipts.
+
 36
-00:02:26,776 --> 00:02:30,224
-Review, confirm, and inspect both receipts.
+00:02:19,286 --> 00:02:24,365
+A Hedera-native app reaches EVM liquidity without custom
+Solidity.
 
 37
-00:02:30,224 --> 00:02:36,134
-A Hedera-native app reaches EVM liquidity without its own
-Solidity contracts.
+00:02:24,365 --> 00:02:29,952
+Test tokens and gas are supplied, so judges can try
 
 38
-00:02:36,134 --> 00:02:41,552
-Test tokens and gas are supplied, so a judge can
+00:02:29,952 --> 00:02:32,1000
+it without a wallet extension.
 
 39
-00:02:41,552 --> 00:02:45,000
-try it without a wallet extension.
+00:02:33,000 --> 00:02:38,280
+Uniswap has a real position NFT, fee collection, and
+withdrawal.
 
 40
-00:02:45,000 --> 00:02:50,379
-Uniswap also provides a real position NFT, fee collection,
-and withdrawal.
-
-41
-00:02:50,379 --> 00:02:52,172
+00:02:38,280 --> 00:02:40,200
 That's trading liquidity.
 
+41
+00:02:40,200 --> 00:02:45,000
+Earthquake-cover deposits go into a separate, shared Hedera
+pool.
+
 42
-00:02:52,172 --> 00:02:58,000
-Funding earthquake cover is different: deposits go into one
-shared Hedera pool.
+00:02:45,000 --> 00:02:47,897
+Twenty-five test tokens buy twenty-five ARPS.
 
 43
-00:02:58,000 --> 00:03:01,467
-Here, twenty-five test tokens buy twenty-five ARPS.
+00:02:47,897 --> 00:02:50,793
+ARPS earnings and exits aren't enabled.
 
 44
-00:03:01,467 --> 00:03:04,500
-Earnings and exits aren't enabled yet.
+00:02:50,793 --> 00:02:52,448
+Brokers earn commissions.
 
 45
-00:03:04,500 --> 00:03:06,667
-Brokers earn referral commissions.
+00:02:52,448 --> 00:02:57,000
+Future revenue could come from service fees for insurance
+partners.
 
 46
-00:03:06,667 --> 00:03:11,000
-A future business could charge insurance partners service
-fees.
+00:02:57,000 --> 00:03:02,176
+Here's the part I'd want for myself: less to remember.
 
 47
-00:03:11,000 --> 00:03:16,133
-From Aivy, I can also set a monthly cover budget.
+00:03:02,176 --> 00:03:07,353
+On Aivy Labs, I set a monthly budget for Medellín.
 
 48
-00:03:16,133 --> 00:03:18,933
-The first policy is real.
+00:03:07,353 --> 00:03:12,529
+Ten test tokens, at least eight hundred in conditional
+cover.
 
 49
-00:03:18,933 --> 00:03:25,000
-Future purchases follow saved limits, and I can pause the
-agent anytime.
+00:03:12,529 --> 00:03:15,353
+My first policy is issued.
 
 50
-00:03:25,000 --> 00:03:28,200
-I can ask Quorum what is happening.
+00:03:15,353 --> 00:03:21,000
+I can ask, 'Am I covered?' And pause future purchases
+anytime.
 
 51
-00:03:28,200 --> 00:03:32,600
-It explains policies and networks, links real receipts, and
-has
+00:03:21,000 --> 00:03:23,897
+Quorum answers that question too.
 
 52
-00:03:32,600 --> 00:03:35,000
-no authority to move funds.
+00:03:23,897 --> 00:03:29,207
+It reads Hedera through Mirror Node and links the evidence.
 
 53
-00:03:35,000 --> 00:03:41,194
-Earlier Aivy infrastructure and the Uniswap and Axelar
-plugins already existed.
+00:03:29,207 --> 00:03:35,000
+The AI explains; it cannot sign, spend, or change my policy.
 
 54
-00:03:41,194 --> 00:03:46,871
-Quorum connects guarded policies, paid verification, native
-settlement, cross-chain access,
+00:03:35,000 --> 00:03:39,889
+My earlier Aivy app, Uniswap and Axelar plugins, and Mirror
 
 55
-00:03:46,871 --> 00:03:51,000
-bounded monthly purchasing and a read-only companion.
+00:03:39,889 --> 00:03:42,111
+Node skill are reused.
 
 56
+00:03:42,111 --> 00:03:47,000
+New here: guarded cover, paid verification, native
+settlement, cross-chain access,
+
+57
+00:03:47,000 --> 00:03:51,000
+and the bounded monthly agent with its companion.
+
+58
 00:03:51,000 --> 00:03:55,889
 The goal is simple: less uncertainty when people need help.
 
-57
+59
 00:03:55,889 --> 00:03:59,000
 A promise you can actually verify.

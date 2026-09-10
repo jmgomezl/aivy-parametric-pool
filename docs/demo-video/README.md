@@ -5,24 +5,28 @@ It opens with the small-loss problem and verified Colombia/Venezuela earthquake
 records, then shows the product, onchain evidence, the technology choices and the
 prior-work boundary.
 
-**At 3:11:** a short interaction from [Aivy's new cover canvas](https://aivylabs.xyz/quorum).
-Review a monthly budget, activate, and inspect real Medellín policy #34.
-Future dates are planned attempts; only the first purchase was executed for the
-recording. **At 3:25:** a real typed question to Quorum's companion explains
-Hedera, Axelar and Uniswap with labeled evidence links. Chat has no authority to
-move funds. The 14-chapter script totals 446 words; the edit stays under four minutes.
+**Updated September 10, after the Mirror Node review.** At **2:57**, enter from
+[Aivy Labs](https://aivylabs.xyz/), review the saved monthly budget, type
+“Am I covered?” and open the same real policy in Quorum. This 24-second sequence
+shows existing Medellín policy #34; it does not create another purchase.
+At **3:21**, ask Quorum about that policy. At **3:29**, inspect an actual Mirror
+Node response excerpt. Both companions are read only.
+
+The new 14-chapter script totals **444 words**, with a warmer everyday benefit:
+less to remember, and an answer you can verify. The earlier genuine transaction
+footage remains, clearly separate from this read-only refresh.
 
 **The visual edit is complete; human narration has not been added.** ETHOnline
 requires a human voice. Do not submit the silent MP4 as the final video.
 
 - [Open the video + synchronized script](https://quorum.aivylabs.xyz/demo-video/)
 - [Download the visual edit](aivy-quorum-visual-cut.mp4)
-- [Just the 14-second Aivy interaction](aivy-monthly-cover.mp4)
-- [Just the 10-second Quorum companion interaction](assets/footage/quorum-companion.mp4)
+- [Just the 24-second Aivy → Quorum interaction](aivy-monthly-cover.mp4)
+- [Just the new Aivy companion moment](aivy-cover-companion.mp4)
 - [Read the script](SCRIPT.md) · [plain text](SCRIPT.txt)
-- [Recording evidence](EVIDENCE.md) · [sources and image credits](SOURCES.md)
+- [Recording evidence](EVIDENCE.md) · [sources and image credits](SOURCES.md) · [Current export manifest](refresh-manifest.json)
 - [Monthly-agent architecture](../COVER-AGENT.md) · [Verified first-purchase evidence](cover-agent-evidence.json)
-- [Read-only companion architecture](../COMPANION.md) · [Actual captured answer](companion-evidence.json)
+- [Read-only companion architecture](../COMPANION.md) · [New captured answers](aivy-refresh-evidence.json) · [Mirror response](mirror-refresh-evidence.json)
 
 ## Record your part
 
@@ -58,8 +62,8 @@ The current VTT/SRT files are **draft pacing cues**, not speech-aligned subtitle
 
 ## Rebuild without spending test tokens
 
-`timeline.json` owns the narration and chapter times. `edit.json` describes the
-shots. `production/frames.html` owns typography and visual diagrams. Trimmed real
+`timeline.json` owns the narration and chapter times. `edit.json` owns the
+shots and source clips; rendering consumes it directly. `production/frames.html` owns typography and visual diagrams. Trimmed real
 footage, capture times, sources and font licenses are bundled in `assets/`.
 
 ```sh
@@ -105,3 +109,17 @@ was used after fixing a stale account-setup warning; it shows the same policy #3
 site. It blocks all API writes except the read-only chat endpoint, requires a
 real AI-classified answer and saves the public response. The 10-second source
 clip plays at 1×; no answer was fabricated or substituted.
+
+## Refresh only the current read-only interactions
+
+```sh
+node docs/demo-video/production/refresh-interactions.mjs map
+node docs/demo-video/production/refresh-interactions.mjs aivy
+```
+
+The Aivy capture requires an existing session via `AIVY_MEDIA_SESSION_FILE`.
+Private session files remain outside the repository. The only allowed API POSTs
+are the two read-only companion endpoints; all financial and mandate writes are
+blocked. [Map capture](map-refresh-evidence.json) · [Aivy/Quorum capture](aivy-refresh-evidence.json).
+The original financial-action scripts above remain for provenance, not for
+rerunning transactions just to refresh this edit.

@@ -6,94 +6,94 @@
   "chapters": [
     {
       "start": 0,
-      "end": 20,
+      "end": 16,
       "title": "When a small loss is a big problem",
-      "direction": "Start quietly. Leave a small pause after ‘seconds’. This is a hypothetical shop, not a claim about your personal experience.",
-      "script": "An earthquake lasts seconds. The cost stays with you. Imagine a small shop in Colombia: a cracked window, lost stock, a day without income. The loss can sit below a deductible—and still be more than your savings."
+      "direction": "Quiet and personal. Pause after “seconds.” The shop is a hypothetical example, not an eyewitness story.",
+      "script": "An earthquake lasts seconds. The cost stays with you. Think of a small shop in Colombia: a cracked window, lost stock. A loss below the deductible can still overwhelm a family's savings."
     },
     {
-      "start": 20,
-      "end": 31,
+      "start": 16,
+      "end": 27,
       "title": "A promise made before the earthquake",
       "direction": "Sound curious and personal. Stress ‘before’.",
-      "script": "I built Aivy Quorum around parametric cover: agree on an earthquake trigger and a fixed payout before it happens. Verify the event, not every broken window."
+      "script": "I built Aivy Quorum for parametric cover: agree the trigger and payout in advance. Verify the earthquake, not every broken window."
     },
     {
-      "start": 31,
-      "end": 50,
+      "start": 27,
+      "end": 44,
       "title": "Choose a place",
       "direction": "Conversational, as if showing a friend. Pause while the chart moves.",
-      "script": "Let's try Medellín. Choose the place, review the premium, and see the conditions. The history chart compares premiums for the same eight-hundred-dollar payout. It's a model, not a forecast. Damage alone doesn't trigger payment."
+      "script": "Let's try Medellín. Pick a place and a budget. Drag through history to compare premiums for the same eight-hundred-dollar payout. This is a model. Payment depends on the agreed earthquake conditions."
     },
     {
-      "start": 50,
-      "end": 74,
+      "start": 44,
+      "end": 67,
       "title": "Create real testnet cover",
       "direction": "Let the confirmation breathe. Point with your voice to the NFT, then to the evidence.",
-      "script": "Now I pay with funded test tokens. No wallet extension. This creates a real cover NFT, publishes the terms, and schedules the payout on Hedera. Here's the receipt. The demo tokens have no cash value, but these transactions really happened."
+      "script": "Here, I pay with funded test tokens. No wallet extension. This creates a real cover NFT, publishes the terms, and schedules the payout on Hedera. Here's the receipt. The tokens have no cash value, but these transactions really happened."
     },
     {
-      "start": 74,
-      "end": 96,
+      "start": 67,
+      "end": 87,
       "title": "The agent pays for evidence",
       "direction": "Make the difference between paying for data and approving a claim very clear.",
-      "script": "The agent pays three oracle services through Blocky402 using x402. Each checks the policy's recorded conditions. Here are the payment receipts. These checks found no matching earthquake, so the payout stays locked. Buying data is not buying approval."
+      "script": "The agent pays three oracle services through Blocky402 using x402. Each checks the recorded conditions. Here are the receipts. No matching earthquake was found, so the payout stays locked. Buying data is not buying approval."
     },
     {
-      "start": 96,
-      "end": 122,
+      "start": 87,
+      "end": 111,
       "title": "Why Hedera",
       "direction": "Slow down at ‘two of three’. The displayed mainnet experiment is a separate recording.",
-      "script": "This is why Hedera matters. The agent signs the exact transfer in advance. Two of three oracle keys must also sign. Then Hedera executes it, without a separate executor transaction. This recorded mainnet experiment moved four HBAR. Those were controlled signatures—not a real earthquake claim."
+      "script": "This is why Hedera matters. The agent signs the exact transfer in advance. Two of three oracle keys must also sign. Then Hedera executes it, without a separate executor transaction. This recorded mainnet experiment moved four HBAR. Controlled signatures, not a real earthquake claim."
     },
     {
-      "start": 122,
-      "end": 132,
+      "start": 111,
+      "end": 121,
       "title": "Authority is deliberately limited",
       "direction": "Confident and factual. Do not suggest that separate keys mean independent operators.",
-      "script": "The workflow is deterministic, with spending limits and saved transaction IDs. Even all three oracle keys cannot spend without the agent."
+      "script": "The workflow has spending limits and saved transaction IDs. Even all three oracle keys cannot spend without the agent."
     },
     {
-      "start": 132,
-      "end": 165,
+      "start": 121,
+      "end": 153,
       "title": "Why Axelar and Uniswap",
       "direction": "Three distinct roles. A brief pause between Hedera, Axelar and Uniswap.",
-      "script": "Here, I'm moving demo-account tokens, not the locked cover reserve. Our Hedera Agent Kit Axelar plugin builds the bridge to Sepolia. Uniswap's Trading API prepares the swap. Review, confirm, and inspect both receipts. A Hedera-native app reaches EVM liquidity without its own Solidity contracts. Test tokens and gas are supplied, so a judge can try it without a wallet extension."
+      "script": "These are demo-account tokens, separate from the locked cover reserve. Our Hedera Agent Kit Axelar plugin builds the bridge to Sepolia. Uniswap's Trading API prepares the swap. Review, confirm, inspect the receipts. A Hedera-native app reaches EVM liquidity without custom Solidity. Test tokens and gas are supplied, so judges can try it without a wallet extension."
+    },
+    {
+      "start": 153,
+      "end": 165,
+      "title": "Two pools, two purposes",
+      "direction": "Keep the distinction simple. ARPS is not a Uniswap position.",
+      "script": "Uniswap has a real position NFT, fee collection, and withdrawal. That's trading liquidity. Earthquake-cover deposits go into a separate, shared Hedera pool."
     },
     {
       "start": 165,
-      "end": 178,
-      "title": "Two pools, two purposes",
-      "direction": "Keep the distinction simple. ARPS is not a Uniswap position.",
-      "script": "Uniswap also provides a real position NFT, fee collection, and withdrawal. That's trading liquidity. Funding earthquake cover is different: deposits go into one shared Hedera pool."
-    },
-    {
-      "start": 178,
-      "end": 191,
+      "end": 177,
       "title": "An honest business model",
       "direction": "Explain today's limits clearly; commercial revenue is a proposal.",
-      "script": "Here, twenty-five test tokens buy twenty-five ARPS. Earnings and exits aren't enabled yet. Brokers earn referral commissions. A future business could charge insurance partners service fees."
+      "script": "Twenty-five test tokens buy twenty-five ARPS. ARPS earnings and exits aren't enabled. Brokers earn commissions. Future revenue could come from service fees for insurance partners."
     },
     {
-      "start": 191,
-      "end": 205,
-      "title": "A monthly agent from Aivy",
-      "direction": "Personal and practical. The first policy is confirmed; the next date is a planned attempt, not another receipt.",
-      "script": "From Aivy, I can also set a monthly cover budget. The first policy is real. Future purchases follow saved limits, and I can pause the agent anytime."
+      "start": 177,
+      "end": 201,
+      "title": "A little less to remember",
+      "direction": "Smile slightly: this is the everyday benefit. Let the typed question breathe. One policy is issued; later dates are planned attempts within three saved periods.",
+      "script": "Here's the part I'd want for myself: less to remember. On Aivy Labs, I set a monthly budget for Medellín. Ten test tokens, at least eight hundred in conditional cover. My first policy is issued. I can ask, 'Am I covered?' And pause future purchases anytime."
     },
     {
-      "start": 205,
+      "start": 201,
       "end": 215,
-      "title": "Ask the network, verify the answer",
-      "direction": "Sound natural and curious. The answer is read only; show the small network flow and the labeled receipt links.",
-      "script": "I can ask Quorum what is happening. It explains policies and networks, links real receipts, and has no authority to move funds."
+      "title": "Ask, then verify",
+      "direction": "The same policy appears on both sites. Stress “reads” and “cannot.” The final graphic is an excerpt of an actual Mirror response.",
+      "script": "Quorum answers that question too. It reads Hedera through Mirror Node and links the evidence. The AI explains; it cannot sign, spend, or change my policy."
     },
     {
       "start": 215,
       "end": 231,
       "title": "What I reused, what I added",
-      "direction": "Matter-of-fact. This is a strength: a clear contribution boundary.",
-      "script": "Earlier Aivy infrastructure and the Uniswap and Axelar plugins already existed. Quorum connects guarded policies, paid verification, native settlement, cross-chain access, bounded monthly purchasing and a read-only companion."
+      "direction": "Be direct about reuse. The Mirror Node skill is pre-event development guidance from your open PR #16, not a new runtime dependency.",
+      "script": "My earlier Aivy app, Uniswap and Axelar plugins, and Mirror Node skill are reused. New here: guarded cover, paid verification, native settlement, cross-chain access, and the bounded monthly agent with its companion."
     },
     {
       "start": 231,

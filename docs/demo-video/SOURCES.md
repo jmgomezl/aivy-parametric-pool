@@ -26,7 +26,16 @@ the required signatures arrive**. Earthquake detection, catalogue availability,
 cross-chain transport and end-to-end access to cash are not promised to be instant.
 
 [ETHOnline video rules](https://ethglobal.com/events/ethonline2026/info/details),
-checked September 8, 2026: 2–4 minutes, at least 720p, human narration, no speeding
+rechecked September 10, 2026: 2–4 minutes, at least 720p, human narration, no speeding
 up the video to fit. The delivered 3:59 visual cut needs your recorded voice before
 it can serve as the submission video. Draft subtitle cues are not a replacement
 for narration.
+
+The September 10 refresh adds genuine live captures of the updated map and
+history chart, Aivy's homepage and `/quorum` canvas, and both companions answering
+about existing policy #34. [Recorded answers and allowed requests](aivy-refresh-evidence.json).
+The Mirror Node graphic is an original layout around a real
+[response excerpt](mirror-refresh-evidence.json). These additions make no
+financial or mandate changes and use no synthetic responses. The Mirror Node
+skill is pre-existing development guidance from the founder's open
+[hedera-skills PR #16](https://github.com/hedera-dev/hedera-skills/pull/16).

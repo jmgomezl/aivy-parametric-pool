@@ -1,0 +1,20 @@
+{
+  "capturedAt": "2026-09-10T06:28:46.414442+00:00",
+  "network": "testnet",
+  "source": "https://testnet.mirrornode.hedera.com/api/v1/schedules/0.0.10453186",
+  "method": "GET",
+  "scope": "Current response excerpt, not a fabricated explorer view. Signature count is derived from the actual response.",
+  "response": {
+    "schedule_id": "0.0.10453186",
+    "executed_timestamp": null,
+    "deleted": false,
+    "signatures": [
+      {
+        "consensus_timestamp": "1789013951.682614606",
+        "public_key_prefix": "AzPuAjTegE1h/p463dEJX9kIAsTUmXs6YlKGDU1Z2r9/",
+        "signature": "NAjRtRwKlMwHAV9n+7AIonCghSjA6hqxogZNtnieUnEm4t3FSG6PbDaRNMUEzua6K37wcQPtG1sg\n234sZpvmfA==",
+        "type": "ECDSA_SECP256K1"
+      }
+    ]
+  }
+}

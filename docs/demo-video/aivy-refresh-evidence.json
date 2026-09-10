@@ -1,0 +1,153 @@
+{
+  "capturedAt": "2026-09-10T06:27:40.536Z",
+  "phase": "aivy",
+  "scope": "Read-only refresh of actual UI and existing policy #34; no ledger or mandate change.",
+  "viewport": {
+    "width": 1440,
+    "height": 780
+  },
+  "sourcePlaybackRate": 1,
+  "segments": [
+    {
+      "name": "aivy-entry-current",
+      "start": 3.27,
+      "duration": 3
+    },
+    {
+      "name": "aivy-canvas-current",
+      "start": 7.23,
+      "duration": 5
+    },
+    {
+      "name": "aivy-companion-current",
+      "start": 13.52,
+      "duration": 10
+    },
+    {
+      "name": "aivy-policy-current",
+      "start": 26.74,
+      "duration": 6
+    },
+    {
+      "name": "quorum-status-current",
+      "start": 33.7,
+      "duration": 8
+    }
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "endpoint": "/api/quorum/chat",
+      "allowed": true
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/companion/chat",
+      "allowed": true
+    }
+  ],
+  "answers": [
+    {
+      "site": "https://aivylabs.xyz/quorum",
+      "question": "Am I covered?",
+      "answer": {
+        "ok": true,
+        "network": "testnet",
+        "mode": "read_only",
+        "source": "ai",
+        "message": "Your latest policy, #34, is active. Its conditional payout has not executed. It is waiting for qualifying oracle signatures.",
+        "facts": [
+          {
+            "label": "Policy",
+            "value": "#34",
+            "tone": "neutral"
+          },
+          {
+            "label": "Ledger status",
+            "value": "active",
+            "tone": "mint"
+          },
+          {
+            "label": "Cover ends",
+            "value": "Oct 10, 2026, 4:18 AM UTC",
+            "tone": "neutral"
+          },
+          {
+            "label": "Renewal agent",
+            "value": "scheduled",
+            "tone": "neutral"
+          }
+        ],
+        "links": [
+          {
+            "label": "Policy #34 & NFT",
+            "url": "https://quorum.aivylabs.xyz/policy/34"
+          },
+          {
+            "label": "Scheduled payout",
+            "url": "https://hashscan.io/testnet/schedule/0.0.10453186"
+          }
+        ],
+        "control": false,
+        "topic": "status",
+        "checkedAt": "2026-09-10T06:27:15.124Z",
+        "ledgerCheckedAt": "2026-09-10T06:27:13.315Z"
+      }
+    },
+    {
+      "site": "https://quorum.aivylabs.xyz/policy/34",
+      "question": "Is this policy active?",
+      "answer": {
+        "ok": true,
+        "network": "testnet",
+        "mode": "read_only",
+        "source": "ai",
+        "message": "Policy #34 is active. Its payout has not executed. The agent has signed; 0 of the two required oracle signatures are present.",
+        "facts": [
+          {
+            "label": "Policy state",
+            "value": "active",
+            "tone": "mint"
+          },
+          {
+            "label": "Oracle signatures",
+            "value": "0 / 2",
+            "tone": "neutral"
+          }
+        ],
+        "links": [
+          {
+            "label": "Payout schedule",
+            "url": "https://hashscan.io/testnet/schedule/0.0.10453186",
+            "network": "testnet"
+          },
+          {
+            "label": "Policy page",
+            "url": "/policy/34",
+            "network": "testnet"
+          }
+        ],
+        "flow": [
+          {
+            "label": "Agent",
+            "detail": "Signed"
+          },
+          {
+            "label": "Oracles",
+            "detail": "0 / 2"
+          },
+          {
+            "label": "Payout",
+            "detail": "Not executed"
+          }
+        ],
+        "topic": "status",
+        "scope": "Public policy #34 · testnet",
+        "checkedAt": "2026-09-10T06:27:36.624Z",
+        "ledgerCheckedAt": "2026-09-10T06:27:33.971Z",
+        "recordedAt": null
+      }
+    }
+  ],
+  "errors": []
+}

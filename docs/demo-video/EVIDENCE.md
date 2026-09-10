@@ -19,12 +19,24 @@ in Colombia** (October 10, 04:18:56 UTC), no earlier than this policy's expirati
 The mandate permits up to three purchases and 30 aUSDd total premiums. Later
 renewals were tested with a fake clock, not presented as completed onchain events.
 
-**Added September 10 UTC — Ask Quorum:** an anonymous visitor typed “Why Hedera,
-Axelar and Uniswap?” on the live Quorum homepage. The actual model selected the
-`network` topic; the server returned the displayed explanation and labeled
-testnet/mainnet links. [Captured response](companion-evidence.json).
-This is a real read-only chat interaction, not a transaction or a fresh health
-check of every external network. No account was created or funded for this shot.
+**Refreshed September 10 after the Mirror Node update:** Aivy's companion was
+asked “Am I covered?” using the existing mandate. It reported policy #34 as
+active and awaiting oracle signatures. The same receipt was opened in Quorum,
+where an anonymous visitor asked “Is this policy active?” Both answers came from
+real AI topic selection and current server reads, with ledger check timestamps.
+[Captured questions, answers and endpoint allowlist](aivy-refresh-evidence.json).
+
+The 24-second Aivy sequence starts at **2:57**; Quorum's status question starts
+at **3:21**. The **3:29** graphic is a selected-field excerpt of an actual
+[Mirror Node GET response](mirror-refresh-evidence.json), not a fabricated explorer
+screen. It shows the same schedule, one recorded signature and no execution.
+[Read-path review and skill attribution](../MIRROR-NODE.md).
+
+The map and draggable historical chart were also recaptured from the latest UI.
+[Capture manifest](map-refresh-evidence.json). All financial and mandate writes
+were blocked throughout this refresh. The older question about network roles is
+retained in [companion-evidence.json](companion-evidence.json) as earlier footage
+provenance; it is no longer the question in the current cut.
 
 | Video action | Actual outcome / verify |
 | --- | --- |
@@ -36,7 +48,7 @@ check of every external network. No account was created or funded for this shot.
 | Bridge new test tokens | [Hedera source transaction](https://hashscan.io/testnet/transaction/0.0.10408125-1788901876-614054576): 0.01 aUSDd, built through HAK Axelar plugin 1.0.1. Source confirmed; [Axelar delivery](https://testnet.axelarscan.io/gmp/0x2e3fbf7223d31d24a6a98da8927cd3b550adcdc8f53af3e8f4b54b28118df0e8) was **pending at capture**. The edit does not show or claim a newly delivered destination transaction. |
 | Approve and swap on Uniswap | [Exact approval](https://sepolia.etherscan.io/tx/0xe5b45557742cfbcd8ca71c6b0186f62579d8d4de4560d50c4d5d8b18525de602), [confirmed swap](https://sepolia.etherscan.io/tx/0x2676ea1b5b9ee1b571c94a3e9b0d1ea6996a50fa08a05199c7b0b502145c389c), [raw RPC receipt](assets/swap-receipt.json). Status 1, Sepolia block 11663559. These tokens came from **previously bridged starter inventory**, not the pending source bridge above. |
 | Inspect Uniswap liquidity | Read-only view of the live pool/seed NFT and existing demo-position controls. No new LP mint, collection or withdrawal was submitted for this recording. [Previously verified complete lifecycle](https://github.com/jmgomezl/aivy-parametric-pool/blob/main/docs/evidence/uniswap-liquidity.json). |
-| Ask the network | Actual anonymous question, AI topic classification and trusted server answer. [10-second source](assets/footage/quorum-companion.mp4) · [public response](companion-evidence.json). No ledger writes. |
+| Ask both companions | Existing owner-bound Aivy policy, then the same public policy in Quorum. [Current answers](aivy-refresh-evidence.json) · [24-second Aivy journey](aivy-monthly-cover.mp4). No ledger or mandate writes. |
 
 The three paid checks found **no qualifying event**. They produced **no policy
 signature and no payout**. Blocky402 sponsored their Hedera network fees.
@@ -70,4 +82,5 @@ To recheck the recording without sending transactions:
 ```sh
 node docs/demo-video/production/verify-recording.mjs
 node docs/demo-video/production/verify-cover-agent.mjs
+node scripts/verify-mirror-reads.mjs
 ```

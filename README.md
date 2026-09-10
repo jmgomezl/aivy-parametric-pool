@@ -14,14 +14,15 @@ Transactions are real; test tokens have no cash value.
 pool funding and network roles, with labeled receipt links. AI interprets the
 question; Quorum supplies the facts. **Chat cannot sign or move funds.**
 [How the companion is constrained](docs/COMPANION.md) ·
-[See the actual question and answer](docs/demo-video/assets/footage/quorum-companion.mp4).
+[See the actual question and answer](docs/demo-video/assets/footage/quorum-status-current.mp4).
 
 [Try the demo](https://quorum.aivylabs.xyz) · [Bridge & swap](https://quorum.aivylabs.xyz/swap) · [Watch the mechanism](https://quorum.aivylabs.xyz/story) · [Recording guide](docs/SUBMISSION.md)
 
 [Demo video and narration kit](docs/demo-video/README.md) ·
 [Play the visual edit beside the script](https://quorum.aivylabs.xyz/demo-video/).
-Includes the Aivy Labs monthly canvas and Quorum companion. The 3:59 edit still
-needs the founder's human narration before submission.
+Updated September 10: **Aivy → Quorum at 2:57**, policy questions at 3:21 and
+Mirror Node evidence at 3:29. [Just the 24-second Aivy demo](docs/demo-video/aivy-monthly-cover.mp4).
+The 3:59 edit still needs the founder's human narration before submission.
 
 **Judge shortcuts:** [Hedera](#why-hedera) · [Uniswap](#why-uniswap) · [Aivy Labs](#connected-to-aivy-labs) ·
 [Economics](docs/ECONOMIC-MODEL.md) · [Novelty](#what-is-new) · [Security](#security-by-architecture) · [Evidence](#verify-in-one-minute)

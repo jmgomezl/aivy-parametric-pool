@@ -21,7 +21,7 @@
     },
     {
       "scene": "shop",
-      "duration": 10,
+      "duration": 6,
       "clip": null,
       "start": 10
     },
@@ -29,53 +29,54 @@
       "scene": "intro",
       "duration": 8,
       "clip": null,
-      "start": 20
+      "start": 16
     },
     {
       "scene": "map",
       "duration": 3,
-      "source": "assets/footage/04-map.mp4",
-      "start": 28
+      "source": "assets/footage/map-atlas-current.mp4",
+      "start": 24
     },
     {
       "scene": "map",
-      "duration": 10,
-      "source": "assets/footage/05-map.mp4",
-      "start": 31
+      "duration": 9,
+      "source": "assets/footage/map-search-current.mp4",
+      "start": 27
     },
     {
       "scene": "history",
-      "duration": 9,
+      "duration": 8,
       "rect": [
         1082,
         202,
         616,
         714
       ],
-      "source": "assets/footage/06-map.mp4",
-      "start": 41
+      "source": "assets/footage/map-history-current.mp4",
+      "start": 36,
+      "mediaCrop": "382:446:1030:157"
     },
     {
       "scene": "create",
       "duration": 6,
       "source": "assets/footage/07-cover.mp4",
-      "start": 50
+      "start": 44
     },
     {
       "scene": "create",
       "duration": 5,
       "source": "assets/footage/08-cover.mp4",
-      "start": 56
+      "start": 50
     },
     {
       "scene": "nft",
       "duration": 7,
       "clip": null,
-      "start": 61
+      "start": 55
     },
     {
       "scene": "receipt",
-      "duration": 6,
+      "duration": 5,
       "clip": null,
       "still": "premium-explorer.png",
       "query": "network=HEDERA%20TESTNET&title=Premium%20paid.%20A%20real%20ledger%20record.",
@@ -86,19 +87,19 @@
         1720,
         650
       ],
-      "start": 68
+      "start": 62
     },
     {
       "scene": "oracle",
       "duration": 6,
       "source": "assets/footage/11-oracle.mp4",
-      "start": 74
+      "start": 67
     },
     {
       "scene": "oracle",
-      "duration": 8,
+      "duration": 6,
       "source": "assets/footage/12-oracle.mp4",
-      "start": 80
+      "start": 73
     },
     {
       "scene": "oracle-closeup",
@@ -111,25 +112,25 @@
         850
       ],
       "source": "assets/footage/13-oracle.mp4",
-      "start": 88
+      "start": 79
     },
     {
       "scene": "gate",
-      "duration": 11,
+      "duration": 9,
       "clip": null,
-      "start": 96
+      "start": 87
     },
     {
       "scene": "release",
       "duration": 7,
       "source": "assets/footage/15-story.mp4",
-      "start": 107
+      "start": 96
     },
     {
       "scene": "release",
       "duration": 4,
       "source": "assets/footage/16-story.mp4",
-      "start": 114
+      "start": 103
     },
     {
       "scene": "receipt",
@@ -144,111 +145,130 @@
         1720,
         650
       ],
-      "start": 118
+      "start": 107
     },
     {
       "scene": "guard",
       "duration": 10,
       "source": "assets/footage/18-story.mp4",
-      "start": 122
+      "start": 111
     },
     {
       "scene": "crosschain",
-      "duration": 7,
+      "duration": 6,
       "clip": null,
-      "start": 132
+      "start": 121
     },
     {
       "scene": "bridge",
       "duration": 6,
       "source": "assets/footage/20-bridge.mp4",
-      "start": 139
+      "start": 127
     },
     {
       "scene": "bridge",
       "duration": 5,
       "source": "assets/footage/21-bridge.mp4",
-      "start": 145
+      "start": 133
     },
     {
       "scene": "swap",
       "duration": 6,
       "source": "assets/footage/22-swap.mp4",
-      "start": 150
+      "start": 138
     },
     {
       "scene": "swap",
       "duration": 5,
       "source": "assets/footage/23-swap.mp4",
-      "start": 156
+      "start": 144
     },
     {
       "scene": "swap-proof",
       "duration": 4,
       "clip": null,
-      "start": 161
+      "start": 149
     },
     {
       "scene": "lp",
-      "duration": 8,
+      "duration": 7,
       "source": "assets/footage/25-liquidity.mp4",
-      "start": 165
+      "start": 153
     },
     {
       "scene": "fund",
       "duration": 5,
       "source": "assets/footage/26-fund.mp4",
-      "start": 173
+      "start": 160
     },
     {
       "scene": "fund",
-      "duration": 3,
+      "duration": 2,
       "source": "assets/footage/27-fund.mp4",
-      "start": 178
+      "start": 165
     },
     {
       "scene": "fund",
       "duration": 5,
       "source": "assets/footage/28-fund-position.mp4",
-      "start": 181
+      "start": 167
     },
     {
       "scene": "business",
       "duration": 5,
       "clip": null,
-      "start": 186
+      "start": 172
     },
     {
       "scene": "cover-agent",
-      "duration": 2,
+      "duration": 3,
       "query": "home=1",
-      "source": "assets/footage/30-cover-agent.mp4",
-      "start": 191
+      "source": "assets/footage/aivy-entry-current.mp4",
+      "start": 177
     },
     {
       "scene": "cover-agent",
-      "duration": 6,
-      "source": "assets/footage/31-cover-agent.mp4",
-      "start": 193
+      "duration": 5,
+      "source": "assets/footage/aivy-canvas-current.mp4",
+      "start": 180
     },
     {
-      "scene": "cover-agent",
-      "duration": 6,
-      "source": "assets/footage/32-cover-agent-state.mp4",
-      "start": 199
-    },
-    {
-      "scene": "companion",
+      "scene": "aivy-companion",
       "duration": 10,
-      "mediaCrop": "390:700:1510:284",
+      "source": "assets/footage/aivy-companion-current.mp4",
+      "mediaCrop": "380:635:1036:34",
       "rect": [
         1110,
         140,
-        490,
-        880
+        500,
+        835
       ],
-      "source": "assets/footage/quorum-companion.mp4",
-      "start": 205
+      "start": 185
+    },
+    {
+      "scene": "aivy-policy",
+      "duration": 6,
+      "source": "assets/footage/aivy-policy-current.mp4",
+      "start": 195
+    },
+    {
+      "scene": "companion",
+      "duration": 8,
+      "source": "assets/footage/quorum-status-current.mp4",
+      "mediaCrop": "390:625:1030:59",
+      "rect": [
+        1110,
+        155,
+        510,
+        817
+      ],
+      "start": 201
+    },
+    {
+      "scene": "mirror-proof",
+      "duration": 6,
+      "clip": null,
+      "start": 209
     },
     {
       "scene": "novelty",
@@ -262,5 +282,6 @@
       "clip": null,
       "start": 231
     }
-  ]
+  ],
+  "revision": "September 10 \u00b7 current Aivy and Quorum companions + Mirror Node evidence"
 }
