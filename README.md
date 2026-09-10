@@ -17,8 +17,7 @@ advance, then let verified signatures release that exact transfer on Hedera.
 
 **Real testnet transactions, funded demo accounts, no wallet extension.**
 Demo tokens have no cash value. The mainnet payout is a labeled historical
-experiment. The [3:59 visual edit](docs/demo-video/README.md) still needs the
-founder's human narration before submission.
+experiment.
 
 ## Try the business model
 
