@@ -5,12 +5,15 @@ Approve up to three monthly testnet purchases. The first runs on activation;
 later purchases use the same saved rules. Every completed purchase links to its
 real Hedera policy, NFT and transaction evidence. Pause stops new purchases.
 
-![Live Aivy monthly cover canvas showing real policy 34, its receipt, spending limit and next planned attempt](media/cover-agent.png)
+![Aivy Labs monthly canvas, real companion answer and the same policy opened in Quorum](media/aivy-quorum.gif)
 
 *Actual first purchase: 10 aUSDd → 1,398.89 aUSDd conditional payout.
 [Policy #34](https://quorum.aivylabs.xyz/policy/34) ·
 [Verified receipts and pause/reload checks](demo-video/cover-agent-evidence.json).
 The next date is a planned purchase, not an executed transaction.*
+
+[Full-size canvas](media/cover-agent.png) · [Homepage entry](media/aivy-entry.png)
+· [September 10 capture notes](media/README.md).
 
 ```mermaid
 flowchart LR

@@ -1,0 +1,362 @@
+{
+  "captureRevisions": {
+    "quorum": "a882cae8e1980c47cfb560938e803dc485ce90f2",
+    "aivy": "60c67a4b73438ac1eb93dbc8a978bcc4b07081b0"
+  },
+  "captureMode": "Live UI, existing records, no ledger writes",
+  "gifPlaybackRate": 1,
+  "gifEdits": "Omit loading gaps; no replaced text or fabricated outcomes",
+  "captures": [
+    {
+      "phase": "quorum",
+      "capturedAt": "2026-09-10T05:47:14.526Z",
+      "scope": "Real UI, read-only refresh of existing records. No ledger or mandate changes.",
+      "stills": [
+        "01-atlas.png",
+        "02-quote.png",
+        "08-explore-history.png",
+        "04-policies.png",
+        "quorum-companion.png"
+      ],
+      "segments": [
+        {
+          "name": "World map and animated cursor",
+          "start": 4.252,
+          "end": 7.131
+        },
+        {
+          "name": "Tokyo quote",
+          "start": 10.259,
+          "end": 12.162
+        },
+        {
+          "name": "Drag through premium history",
+          "start": 12.93,
+          "end": 17.271
+        },
+        {
+          "name": "Global cover NFTs",
+          "start": 19.095,
+          "end": 21
+        },
+        {
+          "name": "Actual Tokyo cover NFT",
+          "start": 23.796,
+          "end": 25.702
+        },
+        {
+          "name": "Ask which networks are used",
+          "start": 27.527,
+          "end": 33.755
+        }
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "endpoint": "/api/companion/chat",
+          "allowed": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "phase": "aivy",
+      "capturedAt": "2026-09-10T05:47:03.361Z",
+      "scope": "Real UI, read-only refresh of existing records. No ledger or mandate changes.",
+      "stills": [
+        "aivy-entry.png",
+        "cover-agent.png",
+        "cover-companion.png"
+      ],
+      "segments": [
+        {
+          "name": "Saved monthly mandate and policy #34",
+          "start": 5.184,
+          "end": 7.587
+        },
+        {
+          "name": "Ask the monthly agent",
+          "start": 8.28,
+          "end": 14.579
+        },
+        {
+          "name": "Next planned attempt, not a completed purchase",
+          "start": 14.933,
+          "end": 17.333
+        },
+        {
+          "name": "Open the same policy in Quorum",
+          "start": 19.617,
+          "end": 21.829
+        }
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "endpoint": "/api/quorum/chat",
+          "allowed": true
+        },
+        {
+          "method": "POST",
+          "endpoint": "/api/quorum/chat",
+          "allowed": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "phase": "story",
+      "capturedAt": "2026-09-10T05:47:26.579Z",
+      "scope": "Real UI, read-only refresh of existing records. No ledger or mandate changes.",
+      "stills": [
+        "03-story.png"
+      ],
+      "segments": [
+        {
+          "name": "Recorded mainnet: Choose",
+          "start": 1.942,
+          "end": 3.245
+        },
+        {
+          "name": "Recorded mainnet: Commit",
+          "start": 3.674,
+          "end": 4.977
+        },
+        {
+          "name": "Recorded mainnet: Confirm",
+          "start": 5.406,
+          "end": 6.71
+        },
+        {
+          "name": "Recorded mainnet: Release",
+          "start": 7.176,
+          "end": 8.976
+        },
+        {
+          "name": "Recorded mainnet: Verify",
+          "start": 9.496,
+          "end": 10.799
+        },
+        {
+          "name": "Recorded mainnet: Protect",
+          "start": 11.246,
+          "end": 12.547
+        }
+      ],
+      "requests": [],
+      "errors": []
+    },
+    {
+      "phase": "extra",
+      "capturedAt": "2026-09-10T05:47:12.400Z",
+      "scope": "Real UI, read-only refresh of existing records. No ledger or mandate changes.",
+      "stills": [
+        "10-large-screen-map.png",
+        "05-swap.png",
+        "09-policy-clarity.png",
+        "quorum-companion-mobile.png"
+      ],
+      "segments": [],
+      "requests": [
+        {
+          "method": "POST",
+          "endpoint": "/api/companion/chat",
+          "allowed": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "phase": "funded",
+      "capturedAt": "2026-09-10T05:56:15.476Z",
+      "scope": "Real UI, read-only refresh of existing records. No ledger or mandate changes.",
+      "stills": [
+        "11-funding-economics.png",
+        "07-managed-demo.png",
+        "06-liquidity.png"
+      ],
+      "segments": [],
+      "requests": [],
+      "errors": []
+    }
+  ],
+  "assets": [
+    {
+      "file": "01-atlas.png",
+      "bytes": 455410,
+      "sha256": "6881d1b32da5c3a037894206d6b44dcbeeb829d1fc3ecccf656a148fff517a16",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "file": "02-quote.png",
+      "bytes": 536356,
+      "sha256": "a6be56deed37297b92a20077529130efa9a64d4821523012148fddbfa0b00f65",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "file": "03-story.png",
+      "bytes": 258839,
+      "sha256": "3d0b31f05ed13273153e667e4adbb85f7d4ae885418a6d098365f9a037c7698f",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "file": "04-policies.png",
+      "bytes": 402945,
+      "sha256": "a32f61950a13f2505e0e5a867f2c37e10a38b9ee1bfb9bfaecaae6aa558e1842",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "file": "05-swap.png",
+      "bytes": 144759,
+      "sha256": "51dcc0297d016080e7434c212eaee1e33bf3045769466f06aeb7654579d5afaf",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "file": "06-liquidity.png",
+      "bytes": 165224,
+      "sha256": "393bd0c46281d5c60ac8dd66a732701755eb700fbb1c74c073f60042fd220d98",
+      "dimensions": {
+        "width": 1108,
+        "height": 971
+      }
+    },
+    {
+      "file": "07-managed-demo.png",
+      "bytes": 144655,
+      "sha256": "2fa81271a6708180ea96357f3925c10f4ea5decb382089a7ef049848cccebcd0",
+      "dimensions": {
+        "width": 1440,
+        "height": 1100
+      }
+    },
+    {
+      "file": "08-explore-history.png",
+      "bytes": 459937,
+      "sha256": "c2ae3c01884ee9ef7a2a1b30dff3bc39f796b43fb0b25e98216cc1831b3d0997",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "file": "09-policy-clarity.png",
+      "bytes": 292703,
+      "sha256": "096a6c4558c5084482d21fb17e480803ac5318482741ca9b127a44f138616e43",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "file": "10-large-screen-map.png",
+      "bytes": 347917,
+      "sha256": "1c69078a7805363a02b5db0aea779e3f1e40b6cf052ef7a2ff9bcee9a9c53fab",
+      "dimensions": {
+        "width": 2732,
+        "height": 786
+      }
+    },
+    {
+      "file": "11-funding-economics.png",
+      "bytes": 344504,
+      "sha256": "71eb783f2cc4dbd60e08b1e220b548181b69be3c0bdfca22f3114b86db3b6481",
+      "dimensions": {
+        "width": 1440,
+        "height": 1100
+      }
+    },
+    {
+      "file": "aivy-entry.png",
+      "bytes": 731884,
+      "sha256": "2f6a88534005999630845b6b1031d98e14665424c3890c433d14b37052dc2537",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "file": "aivy-quorum.gif",
+      "bytes": 4446045,
+      "sha256": "f15e4a82336c8b8e4cdaa036d9cc71c7432a15ddf9cf8cfd6ddf75d3d24b933b",
+      "dimensions": {
+        "width": 1280,
+        "height": 720,
+        "nb_frames": "133"
+      },
+      "durationSeconds": 13.3
+    },
+    {
+      "file": "cover-agent.png",
+      "bytes": 491687,
+      "sha256": "af5dd5628400826699482c7f4c829b9cf4819a5de9341b6600104d3eaf9fb23b",
+      "dimensions": {
+        "width": 1920,
+        "height": 1214
+      }
+    },
+    {
+      "file": "cover-companion.png",
+      "bytes": 503995,
+      "sha256": "d56cb87f5b86753909fd95f5832e131899491b414271734986a4578478f55412",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "file": "quorum-companion-mobile.png",
+      "bytes": 77457,
+      "sha256": "6e39f7b1cb7cc576117c5b7733a3a83ae9f1b3fe6503bda07934823c5c84b2e2",
+      "dimensions": {
+        "width": 390,
+        "height": 900
+      }
+    },
+    {
+      "file": "quorum-companion.png",
+      "bytes": 412931,
+      "sha256": "53b39f6f2dad748ef86d7fec73fa24101d73ece186598bacda370fe4436570d1",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "file": "quorum-flow.gif",
+      "bytes": 5375759,
+      "sha256": "0591abb67494cd35263b875dc51d48025727f02427f43c802fd4731f5a580414",
+      "dimensions": {
+        "width": 1280,
+        "height": 720,
+        "nb_frames": "191"
+      },
+      "durationSeconds": 19.1
+    },
+    {
+      "file": "quorum-story.gif",
+      "bytes": 2376330,
+      "sha256": "5bcdbb2bb43d8c7d8ed4f9dafe800baaf2afbc98af4fcf81f44f69e4a8c71f9c",
+      "dimensions": {
+        "width": 1280,
+        "height": 720,
+        "nb_frames": "83"
+      },
+      "durationSeconds": 8.3
+    }
+  ]
+}

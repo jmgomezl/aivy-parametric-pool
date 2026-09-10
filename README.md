@@ -20,15 +20,16 @@ question; Quorum supplies the facts. **Chat cannot sign or move funds.**
 
 [Demo video and narration kit](docs/demo-video/README.md) ·
 [Play the visual edit beside the script](https://quorum.aivylabs.xyz/demo-video/).
-The 3:59 edit still needs the founder's human narration before submission.
+Includes the Aivy Labs monthly canvas and Quorum companion. The 3:59 edit still
+needs the founder's human narration before submission.
 
-**Judge shortcuts:** [Hedera](#why-hedera) · [Uniswap](#why-uniswap) · [Monthly cover agent](docs/COVER-AGENT.md) ·
+**Judge shortcuts:** [Hedera](#why-hedera) · [Uniswap](#why-uniswap) · [Aivy Labs](#connected-to-aivy-labs) ·
 [Economics](docs/ECONOMIC-MODEL.md) · [Novelty](#what-is-new) · [Security](#security-by-architecture) · [Evidence](#verify-in-one-minute)
 
-![Current app: explore the world map, price Tokyo cover, drag through premium history and inspect existing geographic cover NFTs](docs/media/quorum-flow.gif)
+![Live Quorum: world map, Tokyo quote, draggable premium history, global NFTs and a real network question to the companion](docs/media/quorum-flow.gif)
 
-*Current UI · September 8, 2026. Choose a place → explore its premium history →
-inspect existing testnet cover NFTs. [Screenshot and recording notes](docs/media/README.md).*
+*Current UI · September 10, 2026. Place → premium history → NFT → ask the network.
+Real read-only captures. [Full-size images and capture notes](docs/media/README.md).*
 
 > Public cover is a **funded testnet demo**. `aUSDd` has no cash value; dollars are
 > model outputs. Request event checks from a policy page. Mainnet settlement is a
@@ -47,17 +48,41 @@ inspect existing testnet cover NFTs. [Screenshot and recording notes](docs/media
 
 [Verified business flows](docs/qa/PLATFORM-QA.md) · [Current QA and judge review](docs/qa/JUDGE-REVIEW.md) · [UX review](docs/qa/READINESS-REVIEW.md).
 
-**From intent to a bounded agent:** Aivy's dedicated canvas connects a monthly
-budget to Quorum's existing guarded issuer. A persistent deterministic worker
-checks due dates; it cannot choose another recipient, exceed the approved budget,
-or buy below the minimum payout. Uncertain transactions pause for review.
-Future dates are planned attempts, not completed transactions. This path uses
-Quorum's service-managed testnet custody, not Aivy's older LLM/KMS/vault runtime.
-**Ask the animated companion:** policy status, next renewal, budget and receipt
-links. AI interprets the question; authenticated Quorum records and Hedera supply
-the answer. Chat is read only and cannot sign or change the plan.
-[Visual architecture, limits and recovery](docs/COVER-AGENT.md).
-[Live first-purchase and restart checks](docs/qa/AIVY-COVER-AGENT.md).
+## Connected to Aivy Labs
+
+**[Set monthly rules in Aivy Labs](https://aivylabs.xyz/quorum). Verify the resulting
+policy in Quorum.** The Aivy homepage and agent office link directly to the canvas.
+
+> Medellín · up to 10 aUSDd per month · at least 800 aUSDd conditional payout.
+
+![Aivy Labs integration: saved monthly rules, actual policy 34, a live companion answer, next planned renewal and the same NFT in Quorum](docs/media/aivy-quorum.gif)
+
+*Existing policy #34: 10 aUSDd premium → 1,398.89 aUSDd conditional payout.
+The next date is a planned attempt. This capture creates no new purchase.*
+
+```mermaid
+flowchart LR
+  A["Aivy Labs<br/>review + approve rules"] --> G["Quorum worker<br/>due date + spending limits"]
+  G --> H["Hedera testnet<br/>premium · terms · NFT · payout schedule"]
+  H --> R["Both sites<br/>receipts + read-only companion"]
+```
+
+| Where | What you can do |
+| --- | --- |
+| **Aivy Labs canvas** | Approve up to three monthly purchases; see spending, the next attempt and pause controls. Ask about your own saved plan. |
+| **Quorum app** | Inspect the policy/NFT, request earthquake checks, fund the pool or bridge to Uniswap. Ask about policies, balances and network evidence. |
+| **Both companions** | AI selects the question topic; trusted code supplies facts and links. **Chat cannot sign, buy or change the plan.** |
+
+The purchase worker is deterministic and uses Quorum's service-managed testnet
+custody. It pauses if the minimum payout or other guards fail, and stops uncertain
+transactions for review. It runs separately from Aivy's older LLM/KMS/vault runtime.
+Browser access stays separate between the two sites; opening a public policy
+does not transfer the Aivy session or prove ownership.
+
+[Architecture and limits](docs/COVER-AGENT.md) · [Aivy frontend source](https://github.com/jmgomezl/aivy/blob/main/src/components/QuorumCanvas.tsx) ·
+[First-purchase evidence](docs/qa/AIVY-COVER-AGENT.md) · [Companion guardrails](docs/COMPANION.md).
+
+## Business and UX boundaries
 
 **Made for a quick visual demo:** on large screens, the world map sits beside the
 introduction, then beside the selected quote and history. Labels stay readable
@@ -219,7 +244,7 @@ mainnet bridge, automatic swap, or return bridge UI.
 
 ### Two pools, two purposes
 
-![Uniswap's active seed position and demo liquidity controls, showing a previously withdrawn position and its confirmed receipt](docs/media/06-liquidity.png)
+![Actual Uniswap seed position NFT, live pool balances and funded demo liquidity controls](docs/media/06-liquidity.png)
 
 | | Fund cover | Provide swap liquidity |
 | --- | --- | --- |
@@ -279,6 +304,8 @@ NFT receipts or multisignatures.
 | **Hazard-priced issuance with durable guards** | Turns a map location into explicit terms while checking budgets, capacity and retry safety before ledger writes. |
 | **Policy-bound, x402-paid oracle services** | Connects paid catalogue access with constrained signing; payment itself never authorizes a claim. |
 | **Verifiable, geographic cover UX** | Makes location, payout, funding risk and chain evidence understandable through maps, receipts and signature diagrams. |
+| **Aivy Labs monthly-cover integration** | Connects explicit spending rules to a persistent, guarded purchase worker; every completed cycle produces a policy receipt. |
+| **Read-only companions on both sites** | Turns a question into scoped ledger facts and labeled evidence, while keeping AI outside transaction authority. |
 
 The Uniswap and Axelar plugins predate this event; their guarded quote, bridge
 and swap integration here is new. Earlier Aivy work also used HTS pools and scheduling. The detailed
@@ -499,7 +526,7 @@ intended interface and `TRUST_PROXY=1` only behind a trusted reverse proxy.
 
 ## Pricing and capacity
 
-![Current Armenia quote: a four-dollar modeled premium, conditional payout, testnet amount and pricing controls beside the map](docs/media/02-quote.png)
+![Current Tokyo quote: modeled premium, conditional payout, testnet amount and pricing controls beside the map](docs/media/02-quote.png)
 
 *Armenia, Quindío: the panel pairs the modeled premium with its conditional
 30-day payout and testnet token amount. Pricing comes from the USGS catalogue
@@ -566,7 +593,9 @@ The UI's frozen mainnet record is not replaced automatically.
 
 </details>
 
-Latest [QA and judge review](docs/qa/JUDGE-REVIEW.md): 111 passing tests, reproducible installs, payer-signature preflight, reliable API errors, responsive flows and fresh testnet receipts.
+Latest [companion release checks](docs/qa/QUORUM-COMPANION.md): 156 passing backend
+tests and live desktop, ultrawide and mobile checks. [Earlier judge review](docs/qa/JUDGE-REVIEW.md)
+covers issuance, payment evidence and the underlying transaction flows.
 
 ## Prior work boundary (CONTINUITY track)
 
@@ -583,10 +612,14 @@ new event work.
 
 What existed before the event, and does **not** count as new work:
 
-- **[aivy-studio](https://github.com/jmgomezl/aivy-studio)** — the multi-agent
-  orchestration canvas this project is built to run on. Existing HCS-10 transport,
-  HTS escrow, workflow schema, canvas rendering.
-- **[jmgomezl/aivy](https://github.com/jmgomezl/aivy)** — earlier APEX-hackathon app.
+- **[aivy-studio](https://github.com/jmgomezl/aivy-studio)** — earlier multi-agent
+  orchestration infrastructure: HCS-10 transport, HTS escrow, workflow schema and
+  canvas rendering. The new monthly-cover route uses the dedicated Aivy Labs
+  frontend and Quorum worker described above.
+- **[jmgomezl/aivy](https://github.com/jmgomezl/aivy)** — earlier APEX-hackathon app,
+  brand and office robot art. Its new `/quorum` canvas, homepage/office links and
+  companion integration were added for this event; its older agent runtime is
+  not reused for monthly cover purchases.
 - **hak-saucerswap-plugin, hak-pyth-plugin** — endorsed third-party plugins in the
   Hedera Agent Kit docs.
 - **hak-uniswap-plugin** — Uniswap Trading API plugin with allowance handling and a
@@ -627,6 +660,12 @@ What is **new**, built during this event:
    connects the existing plugins to Quorum's funded demo wallets and real Sepolia
    swaps. [Adapter](src/settlement/axelarPlugin.js) ·
    [Tests](tests/axelar-plugin.test.js) · [Delivery evidence](docs/evidence/hak-axelar-plugin.json).
+7. **Aivy Labs monthly-cover canvas and worker** — explicit three-period mandates,
+   fresh-quote checks, persistent scheduling, duplicate prevention and recoverable
+   testnet issuance. [Source and boundaries](docs/COVER-AGENT.md).
+8. **Read-only Aivy and Quorum companions** — constrained topic interpretation,
+   owner-bound account reads, public policy context and visual evidence links.
+   Existing sprite art is reused. [Architecture](docs/COMPANION.md).
 
 </details>
 
@@ -642,6 +681,8 @@ What is **new**, built during this event:
 - `src/guards.js`, `src/http-safety.js`: durable admission budgets and public input validation.
 - `docs/AGENT-SECURITY.md`, `docs/evidence/`: trust boundaries and verifiable snapshots.
 - `src/ledger.js`: shared policy status from actual signer identities.
+- `src/cover-agent/`: monthly mandates, deterministic worker and shared companion limits.
+- `src/companion/`: Quorum's read-only policy and network answers.
 - `ui/`: map, quotes, policies and recorded demonstration.
 - `deploy/`: oracle deployment configuration.
 - `research/`: model rationale and historical integration notes.

@@ -1,36 +1,51 @@
-# Current app media
+# Current app media · September 10, 2026
 
-Captured from [quorum.aivylabs.xyz](https://quorum.aivylabs.xyz) on **September 8,
-2026**, running UI revision [`bda5962`](https://github.com/jmgomezl/aivy-parametric-pool/commit/bda5962f5df0a4c01803a58c6d470e9949783d09).
-Screenshots preserve the app's real content. GIFs condense browser navigation;
-loading between scenes is omitted. No transactions were submitted for this refresh.
+**Actual captures from [Quorum](https://quorum.aivylabs.xyz) and
+[Aivy Labs](https://aivylabs.xyz/quorum).** Both companions used real responses.
+No purchases, deposits, swaps, plan changes or ledger signatures were submitted.
 
-| Media | Current view |
+| Animation | What it shows |
 | --- | --- |
-| `quorum-flow.gif` | Map cursor → Tokyo quote → interactive premium history → existing global cover receipts → Tokyo NFT |
-| `quorum-story.gif`, `03-story.png` | Six-scene **recorded mainnet** demonstration; the still shows the transfer after quorum |
-| `01-atlas.png`, `10-large-screen-map.png` | Landing atlas at desktop and 2732 × 786 ultrawide sizes |
-| `02-quote.png`, `08-explore-history.png` | Armenia quote and history; the chart holds the modeled payout at $800 |
-| `04-policies.png` | Existing Tokyo, San Francisco and Mexico City cover NFTs |
-| `09-policy-clarity.png` | Tokyo's **funding estimate**, with shared-pool action and oracle results |
-| `05-swap.png` | New visitor's wallet-free Hedera → Axelar → Uniswap flow |
-| `07-managed-demo.png` | Dedicated demo wallet with its earlier confirmed Sepolia swap receipt |
-| `06-liquidity.png` | Active operator seed NFT and the demo wallet's previously withdrawn Uniswap position |
+| [Quorum flow](quorum-flow.gif) | World map and cursor → Tokyo quote → draggable premium history → geographic cover NFTs → typed network question. |
+| [Aivy Labs → Quorum](aivy-quorum.gif) | Saved monthly rules → actual status answer for policy #34 → next planned renewal → the same policy opened in Quorum. |
+| [Mainnet story](quorum-story.gif) | The current six-scene interface replaying the separate September 4 controlled experiment. |
 
-Testnet tokens have no cash value. Quotes, balances and block numbers are capture-time
-snapshots. Per-policy funding estimates are previews; the mainnet story replays
-controlled experiments from September 4, 2026.
+GIFs are 1280 × 720 at 10 fps. Page-loading gaps are cut; retained interaction
+plays at 1×. UI text, values and outcomes are not replaced or mocked. These are
+short visual tours, not recordings of new transactions.
 
-### Funding economics · September 8 follow-up
+| Full-size still | Scope |
+| --- | --- |
+| [Atlas](01-atlas.png) · [Ultrawide map](10-large-screen-map.png) | Current landing page and companion launcher; ultrawide capture is 2732 × 786. |
+| [Tokyo quote](02-quote.png) · [Premium history](08-explore-history.png) | Current controls and chart. History compares premiums for a fixed modeled **$800 payout**. |
+| [Global NFTs](04-policies.png) · [Funding estimate](09-policy-clarity.png) | Existing cover NFTs and the separate, unminted per-policy funding preview. |
+| [Swap entry](05-swap.png) · [Existing demo wallet](07-managed-demo.png) | Wallet-free onboarding and an existing confirmed Sepolia swap; no new swap here. |
+| [Uniswap liquidity](06-liquidity.png) | Actual operator seed NFT, current pool balances and demo liquidity controls. |
+| [ARPS position](11-funding-economics.png) | Existing 26 ARPS holding, share percentage and current shared-pool commitments. No new deposit. |
+| [Recorded mainnet release](03-story.png) | UI replay of the 4 HBAR transfer; no new mainnet operation. |
+| [Aivy homepage link](aivy-entry.png) · [Monthly canvas](cover-agent.png) | Entry from Aivy Labs and existing policy #34 with saved limits and next attempt. |
+| [Aivy companion](cover-companion.png) | Actual AI-interpreted policy-status question, authenticated Quorum records and Mirror Node state. |
+| [Quorum companion](quorum-companion.png) · [Mobile](quorum-companion-mobile.png) | Actual network explanation and a public policy-status answer, with labeled evidence. |
 
-`11-funding-economics.png` captures the public app after asset-specific capacity
-accounting: actual ARPS holdings, one shared-pool deposit and corrected aUSDd
-commitments. Read-only authenticated session; no deposit was submitted for the
-screenshot. [Economic model and evidence](../ECONOMIC-MODEL.md).
+**Capture revisions:** Quorum [`a882cae`](https://github.com/jmgomezl/aivy-parametric-pool/commit/a882cae8e1980c47cfb560938e803dc485ce90f2)
+and Aivy [`60c67a4`](https://github.com/jmgomezl/aivy/commit/60c67a4b73438ac1eb93dbc8a978bcc4b07081b0).
+[Capture manifest](capture-manifest.json) records timestamps, selected scenes,
+file hashes and read-only request checks. Quotes, balances and ledger states are
+capture-time snapshots, not guarantees about later conditions.
 
-### Cover companion · September 10
+`09-blocky402.png` deliberately retains its **September 8 transaction-evidence**
+scope; the underlying payment was not repeated to update a screenshot.
+[Blocky402 receipts](../BLOCKY402.md) · [First monthly purchase](../demo-video/cover-agent-evidence.json).
 
-`cover-companion.png` shows the deployed Aivy canvas with its animated companion
-reading existing policy #34. The typed question used the actual AI classifier;
-policy facts came from Quorum and Hedera Mirror Node. No purchase or plan change
-was submitted. [Verification and clip](../qa/COVER-COMPANION.md).
+## Refresh from real UI
+
+[Capture script](../../scripts/refresh-readme-media.mjs): Playwright/Chrome and
+FFmpeg, with raw video outside Git. Set `PLAYWRIGHT_MODULE` if needed and
+`QUORUM_MEDIA_WORK` to an output directory. Run `quorum`, `aivy`, `story`, `extra`
+and `funded` phases, then `render` to build the GIFs.
+
+The `aivy` and `funded` phases require existing, private recording-session files
+via `AIVY_MEDIA_SESSION_FILE` and `QUORUM_MEDIA_STATE_FILE`. They never create an
+account or activate a plan. All API writes are blocked except the two read-only
+chat endpoints. Private capabilities and browser storage are excluded from the
+manifest, screenshots and repository.

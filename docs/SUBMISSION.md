@@ -11,13 +11,32 @@ Reusable plugin: https://github.com/jmgomezl/hak-scheduled-settlement
 **Prepared video kit:** [3:59 visual edit, timed script and rehearsal page](demo-video/README.md).
 It includes newly recorded testnet issuance, Blocky402 checks, a deposit and a
 confirmed Uniswap swap, plus a short [Aivy monthly-agent interaction](COVER-AGENT.md)
-with real policy #34. **Human narration is still required** before submitting
+with real policy #34, and a typed question to the Quorum companion. The monthly
+canvas appears at **3:11**, and the companion at **3:25**. **Human narration is still required** before submitting
 the edit. Its new bridge source is confirmed but delivery was pending at capture;
 the swap uses previously bridged starter tokens. [Recording receipts](demo-video/EVIDENCE.md).
 
 Latest [QA and judge review](qa/JUDGE-REVIEW.md); earlier [security review](qa/SECURITY-FINAL.md) and [UX review](qa/READINESS-REVIEW.md). Keep the recording focused
 on one complete cover journey and the Hedera → Uniswap path; technical evidence
 is one disclosure away. No extension or faucet setup is needed in the public app.
+
+## Aivy Labs integration · show the complete loop
+
+**[Aivy Labs](https://aivylabs.xyz/quorum) sets the rules. Quorum creates the policy.
+Both sites help the user verify it.**
+
+![Saved monthly mandate, companion answer and actual policy in Quorum](media/aivy-quorum.gif)
+
+The new canvas supports a place, monthly premium limit and minimum payout, with
+explicit approval for up to three periods. Its deterministic Quorum worker runs
+when the browser is closed. The first testnet purchase is real; later dates remain
+planned attempts. The companion answers policy questions and links evidence,
+without signing or changing the plan.
+
+**Novelty boundary:** Aivy's earlier app and robot art are prior work. The dedicated
+canvas, Quorum scheduling adapter, guards and read-only companions are event work.
+This flow uses Quorum's demo custody, not Aivy's older KMS/vault runtime.
+[Architecture](COVER-AGENT.md) · [Companion](COMPANION.md) · [Capture notes](media/README.md).
 
 ## Alternative 3-minute 15-second live walkthrough
 
