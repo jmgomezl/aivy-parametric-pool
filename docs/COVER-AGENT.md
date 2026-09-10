@@ -83,6 +83,12 @@ The model uses [strict Structured Outputs](https://developers.openai.com/api/doc
 for intent classification. This is a constrained policy companion, not a
 general-purpose adviser or a language model controlling the renewal worker.
 
+![Live cover companion reading policy 34 from Quorum and Hedera beside the monthly canvas](media/cover-companion.png)
+
+[Watch the live interaction](https://quorum.aivylabs.xyz/demo-video/aivy-cover-companion.mp4) ·
+[Verified checks](qa/COVER-COMPANION.md). This capture asks about an existing policy;
+it does not purchase or modify cover.
+
 ## Calendar and custody
 
 - Calendar months preserve the original UTC day, clamping short months: January 31 → February 28 → March 31. Policy terms are 28–31 days accordingly.

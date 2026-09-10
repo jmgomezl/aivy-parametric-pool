@@ -1,0 +1,157 @@
+{
+  "checkedAt": "2026-09-10T05:01:58.419Z",
+  "site": "https://aivylabs.xyz/quorum",
+  "network": "testnet",
+  "policy": "34",
+  "source": "Live API and Hedera Mirror Node",
+  "answers": [
+    {
+      "ok": true,
+      "network": "testnet",
+      "mode": "read_only",
+      "source": "ai",
+      "message": "Your latest policy, #34, is active. Its conditional payout has not executed. It is waiting for qualifying oracle signatures.",
+      "facts": [
+        {
+          "label": "Policy",
+          "value": "#34",
+          "tone": "neutral"
+        },
+        {
+          "label": "Ledger status",
+          "value": "active",
+          "tone": "mint"
+        },
+        {
+          "label": "Cover ends",
+          "value": "Oct 10, 2026, 4:18 AM UTC",
+          "tone": "neutral"
+        },
+        {
+          "label": "Renewal agent",
+          "value": "scheduled",
+          "tone": "neutral"
+        }
+      ],
+      "links": [
+        {
+          "label": "Policy #34 & NFT",
+          "url": "https://quorum.aivylabs.xyz/policy/34"
+        },
+        {
+          "label": "Scheduled payout",
+          "url": "https://hashscan.io/testnet/schedule/0.0.10453186"
+        }
+      ],
+      "control": false,
+      "topic": "status",
+      "checkedAt": "2026-09-10T05:01:56.290Z",
+      "ledgerCheckedAt": "2026-09-10T05:01:53.931Z"
+    },
+    {
+      "ok": true,
+      "network": "testnet",
+      "mode": "read_only",
+      "source": "quick",
+      "message": "Your agent is scheduled. It will check a fresh quote at the next eligible date and buy only if your approved limits still hold. That future purchase has not happened yet.",
+      "facts": [
+        {
+          "label": "Next planned attempt",
+          "value": "Oct 10, 2026, 4:18 AM UTC",
+          "tone": "neutral"
+        },
+        {
+          "label": "Confirmed policies",
+          "value": "1 / 3",
+          "tone": "neutral"
+        }
+      ],
+      "links": [],
+      "control": true,
+      "topic": "renewal",
+      "checkedAt": "2026-09-10T05:01:56.396Z",
+      "ledgerCheckedAt": "2026-09-10T05:01:53.931Z"
+    },
+    {
+      "ok": true,
+      "network": "testnet",
+      "mode": "read_only",
+      "source": "quick",
+      "message": "Your monthly premium is capped. A changing quote must still meet your minimum payout; otherwise the agent pauses.",
+      "facts": [
+        {
+          "label": "Monthly limit",
+          "value": "10 aUSDd",
+          "tone": "neutral"
+        },
+        {
+          "label": "Confirmed premiums",
+          "value": "10 aUSDd",
+          "tone": "neutral"
+        },
+        {
+          "label": "Total premium limit",
+          "value": "30 aUSDd",
+          "tone": "neutral"
+        },
+        {
+          "label": "Minimum payout",
+          "value": "800 aUSDd",
+          "tone": "neutral"
+        }
+      ],
+      "links": [],
+      "control": false,
+      "topic": "budget",
+      "checkedAt": "2026-09-10T05:01:56.478Z",
+      "ledgerCheckedAt": "2026-09-10T05:01:53.931Z"
+    },
+    {
+      "ok": true,
+      "network": "testnet",
+      "mode": "read_only",
+      "source": "ai",
+      "message": "I can explain your cover, but chat cannot buy, pause, transfer or change your rules. Use the controls on your canvas to review and confirm changes.",
+      "facts": [],
+      "links": [],
+      "control": true,
+      "topic": "action",
+      "checkedAt": "2026-09-10T05:01:57.725Z",
+      "ledgerCheckedAt": "2026-09-10T05:01:53.931Z"
+    },
+    {
+      "ok": true,
+      "network": "testnet",
+      "mode": "read_only",
+      "source": "quick",
+      "message": "Here is the public trail for your latest policy: its NFT, premium transfer and conditional payout schedule. The next monthly purchase is a plan, not an onchain receipt.",
+      "facts": [],
+      "links": [
+        {
+          "label": "Policy #34 & NFT",
+          "url": "https://quorum.aivylabs.xyz/policy/34"
+        },
+        {
+          "label": "Scheduled payout",
+          "url": "https://hashscan.io/testnet/schedule/0.0.10453186"
+        },
+        {
+          "label": "Premium transfer",
+          "url": "https://hashscan.io/testnet/transaction/0.0.7231440-1789013941-231286735"
+        }
+      ],
+      "control": false,
+      "topic": "evidence",
+      "checkedAt": "2026-09-10T05:01:57.887Z",
+      "ledgerCheckedAt": "2026-09-10T05:01:53.931Z"
+    }
+  ],
+  "checks": {
+    "typedQuestionsUseActualAI": true,
+    "ownerPolicyAndReceiptMatch": true,
+    "anonymousNoPolicyLeak": true,
+    "clientPolicyInjectionRejected": true,
+    "actionRequestsReadOnly": true,
+    "mandateUnchanged": true
+  }
+}

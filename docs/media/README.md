@@ -27,3 +27,10 @@ controlled experiments from September 4, 2026.
 accounting: actual ARPS holdings, one shared-pool deposit and corrected aUSDd
 commitments. Read-only authenticated session; no deposit was submitted for the
 screenshot. [Economic model and evidence](../ECONOMIC-MODEL.md).
+
+### Cover companion · September 10
+
+`cover-companion.png` shows the deployed Aivy canvas with its animated companion
+reading existing policy #34. The typed question used the actual AI classifier;
+policy facts came from Quorum and Hedera Mirror Node. No purchase or plan change
+was submitted. [Verification and clip](../qa/COVER-COMPANION.md).
