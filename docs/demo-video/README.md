@@ -30,6 +30,14 @@ requires a human voice. Do not submit the silent MP4 as the final video.
 
 ## Record your part
 
+**Recommended: [Take Studio](https://quorum.aivylabs.xyz/demo-video/studio/).**
+Record the 14 chapters separately, choose your best takes, trim pauses and export
+a combined video. Optional MacBook/iPhone camera, local background removal and a
+presenter overlay are included. Your takes save in this browser; download a
+backup before moving devices. [Studio guide](studio/README.md).
+
+The original page also supports one continuous voice take:
+
 1. Open the rehearsal page on a computer. Read once with **Rehearse**.
 2. Open **Record or preview your voice**, then **Record my voice**. A three-second
    countdown starts the video and local microphone recording together.

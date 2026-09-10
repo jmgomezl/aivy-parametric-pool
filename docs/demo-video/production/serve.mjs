@@ -1,7 +1,7 @@
 // Local rehearsal server with byte-range support for reliable video seeking.
 import http from 'node:http';import fs from 'node:fs';import fsp from 'node:fs/promises';import path from 'node:path';import {fileURLToPath} from 'node:url';
 const root=path.dirname(path.dirname(fileURLToPath(import.meta.url))),port=Number(process.env.QUORUM_STUDIO_PORT||5180);
-const types={'.html':'text/html','.css':'text/css','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.mp4':'video/mp4','.vtt':'text/vtt','.md':'text/plain','.txt':'text/plain','.png':'image/png','.jpg':'image/jpeg','.woff2':'font/woff2'};
+const types={'.html':'text/html','.css':'text/css','.js':'text/javascript','.mjs':'text/javascript','.wasm':'application/wasm','.json':'application/json','.mp4':'video/mp4','.vtt':'text/vtt','.md':'text/plain','.txt':'text/plain','.png':'image/png','.jpg':'image/jpeg','.woff2':'font/woff2'};
 http.createServer(async(req,res)=>{try{
  if(!['GET','HEAD'].includes(req.method)){res.writeHead(405);return res.end();}
  const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);const file=path.resolve(root,'.'+(pathname==='/'?'/index.html':pathname));
