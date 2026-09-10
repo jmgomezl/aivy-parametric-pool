@@ -14,6 +14,8 @@ try{
   assert.equal(await p.locator('video').evaluate(v=>v.duration),239);assert.equal(await p.locator('video').evaluate(v=>v.videoWidth),1920);
   for(const [index,start] of [[3,53],[4,77],[7,139],[10,201],[11,215],[12,231]]){
    await p.locator('#chapters button').nth(index).click();assert.equal(await p.locator('video').evaluate(v=>Math.round(v.currentTime)),start);assert.equal(await p.locator('#cue-count').innerText(),`${index+1} / 13`);
+   if(index===10)assert.equal(await p.locator('#chapter-proof a').last().getAttribute('href'),'https://quorum.aivylabs.xyz/policy/34');
+   if(index===11)assert.match(await p.locator('#chapter-proof').innerText(),/Prior-work disclosure/);
   }
   await p.locator('#rehearse').click();await p.waitForTimeout(1500);assert.equal(await p.locator('video').evaluate(v=>v.paused),false);assert.equal(await p.locator('#cue-count').innerText(),'1 / 13');await p.locator('video').evaluate(v=>v.pause());
   await p.locator('.full-script summary').click();assert.equal(await p.locator('#script-table tr').count(),13);await p.locator('.full-script summary').click();
