@@ -13,7 +13,8 @@ Transactions are real; test tokens have no cash value.
 **Ask Quorum:** the animated companion explains the current policy, balances,
 pool funding and network roles, with labeled receipt links. AI interprets the
 question; Quorum supplies the facts. **Chat cannot sign or move funds.**
-[How the companion is constrained](docs/COMPANION.md).
+[How the companion is constrained](docs/COMPANION.md) ·
+[See the actual question and answer](docs/demo-video/assets/footage/quorum-companion.mp4).
 
 [Try the demo](https://quorum.aivylabs.xyz) · [Bridge & swap](https://quorum.aivylabs.xyz/swap) · [Watch the mechanism](https://quorum.aivylabs.xyz/story) · [Recording guide](docs/SUBMISSION.md)
 

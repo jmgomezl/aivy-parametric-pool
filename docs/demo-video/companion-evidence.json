@@ -1,0 +1,82 @@
+{
+  "capturedAt": "2026-09-10T05:33:52.053Z",
+  "site": "https://quorum.aivylabs.xyz/",
+  "scope": "Actual anonymous read-only chat, not a transaction or a fresh health check of all networks.",
+  "question": "Why Hedera, Axelar and Uniswap?",
+  "answer": {
+    "ok": true,
+    "network": "testnet",
+    "mode": "read_only",
+    "source": "ai",
+    "message": "Hedera commits cover and executes the signed payout. Axelar moves demo-account tokens to Sepolia; Uniswap supplies trading liquidity there. The mainnet story is a separate controlled recording.",
+    "facts": [
+      {
+        "label": "Live app",
+        "value": "testnet",
+        "tone": "neutral"
+      },
+      {
+        "label": "Mainnet record",
+        "value": "4 HBAR · Sep 4, 2026",
+        "tone": "neutral"
+      }
+    ],
+    "links": [
+      {
+        "label": "Hedera pool",
+        "url": "https://hashscan.io/testnet/account/0.0.10373722",
+        "network": "testnet"
+      },
+      {
+        "label": "Mainnet transfer",
+        "url": "https://hashscan.io/mainnet/transaction/1788563478.715401105",
+        "network": "mainnet"
+      },
+      {
+        "label": "Bridge & swap",
+        "url": "/swap",
+        "network": "Sepolia"
+      }
+    ],
+    "flow": [
+      {
+        "label": "Hedera",
+        "detail": "Testnet · cover"
+      },
+      {
+        "label": "Axelar",
+        "detail": "Testnet · bridge"
+      },
+      {
+        "label": "Uniswap",
+        "detail": "Sepolia · swap"
+      }
+    ],
+    "topic": "network",
+    "scope": "Network roles · live + recorded",
+    "checkedAt": "2026-09-10T05:33:40.431Z",
+    "ledgerCheckedAt": null,
+    "recordedAt": null
+  },
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "panel": {
+    "x": 1510,
+    "y": 284,
+    "width": 390,
+    "height": 700
+  },
+  "sourcePlaybackRate": 1,
+  "chatStart": 3.986,
+  "clipStart": 3.75,
+  "clipDuration": 10,
+  "requests": [
+    {
+      "method": "POST",
+      "endpoint": "/api/companion/chat"
+    }
+  ],
+  "errors": []
+}

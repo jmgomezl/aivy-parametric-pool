@@ -4,6 +4,11 @@
 The small animated companion stays on the right. Its shortcuts follow the page;
 open a policy to ask about that policy's status, signatures, payout or NFT.
 
+![Actual typed question on the deployed Quorum site](demo-video/assets/quorum-companion.png)
+
+[10-second interaction](demo-video/assets/footage/quorum-companion.mp4) ·
+[Captured answer](demo-video/companion-evidence.json) · [Release checks](qa/QUORUM-COMPANION.md).
+
 | Ask | Source and boundary |
 | --- | --- |
 | “What is this policy's status?” | Current Hedera schedule signatures and execution state. Unavailable reads stay unverified. |

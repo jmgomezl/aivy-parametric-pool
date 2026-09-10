@@ -13,80 +13,87 @@
     },
     {
       "start": 20,
-      "end": 34,
+      "end": 31,
       "title": "A promise made before the earthquake",
       "direction": "Sound curious and personal. Stress ‘before’.",
       "script": "I built Aivy Quorum around parametric cover: agree on an earthquake trigger and a fixed payout before it happens. Verify the event, not every broken window."
     },
     {
-      "start": 34,
-      "end": 53,
+      "start": 31,
+      "end": 50,
       "title": "Choose a place",
       "direction": "Conversational, as if showing a friend. Pause while the chart moves.",
       "script": "Let's try Medellín. Choose the place, review the premium, and see the conditions. The history chart compares premiums for the same eight-hundred-dollar payout. It's a model, not a forecast. Damage alone doesn't trigger payment."
     },
     {
-      "start": 53,
-      "end": 77,
+      "start": 50,
+      "end": 74,
       "title": "Create real testnet cover",
       "direction": "Let the confirmation breathe. Point with your voice to the NFT, then to the evidence.",
       "script": "Now I pay with funded test tokens. No wallet extension. This creates a real cover NFT, publishes the terms, and schedules the payout on Hedera. Here's the receipt. The demo tokens have no cash value, but these transactions really happened."
     },
     {
-      "start": 77,
-      "end": 99,
+      "start": 74,
+      "end": 96,
       "title": "The agent pays for evidence",
       "direction": "Make the difference between paying for data and approving a claim very clear.",
       "script": "The agent pays three oracle services through Blocky402 using x402. Each checks the policy's recorded conditions. Here are the payment receipts. These checks found no matching earthquake, so the payout stays locked. Buying data is not buying approval."
     },
     {
-      "start": 99,
-      "end": 125,
+      "start": 96,
+      "end": 122,
       "title": "Why Hedera",
       "direction": "Slow down at ‘two of three’. The displayed mainnet experiment is a separate recording.",
       "script": "This is why Hedera matters. The agent signs the exact transfer in advance. Two of three oracle keys must also sign. Then Hedera executes it, without a separate executor transaction. This recorded mainnet experiment moved four HBAR. Those were controlled signatures—not a real earthquake claim."
     },
     {
-      "start": 125,
-      "end": 139,
+      "start": 122,
+      "end": 132,
       "title": "Authority is deliberately limited",
       "direction": "Confident and factual. Do not suggest that separate keys mean independent operators.",
-      "script": "An AI model cannot authorize a payout. The workflow is deterministic, with spending limits and saved transaction IDs. In this control, even all three oracle keys could not spend without the agent."
+      "script": "The workflow is deterministic, with spending limits and saved transaction IDs. Even all three oracle keys cannot spend without the agent."
     },
     {
-      "start": 139,
-      "end": 172,
+      "start": 132,
+      "end": 165,
       "title": "Why Axelar and Uniswap",
       "direction": "Three distinct roles. A brief pause between Hedera, Axelar and Uniswap.",
       "script": "Here, I'm moving demo-account tokens, not the locked cover reserve. Our Hedera Agent Kit Axelar plugin builds the bridge to Sepolia. Uniswap's Trading API prepares the swap. Review, confirm, and inspect both receipts. A Hedera-native app reaches EVM liquidity without its own Solidity contracts. Test tokens and gas are supplied, so a judge can try it without a wallet extension."
     },
     {
-      "start": 172,
-      "end": 185,
+      "start": 165,
+      "end": 178,
       "title": "Two pools, two purposes",
       "direction": "Keep the distinction simple. ARPS is not a Uniswap position.",
       "script": "Uniswap also provides a real position NFT, fee collection, and withdrawal. That's trading liquidity. Funding earthquake cover is different: deposits go into one shared Hedera pool."
     },
     {
-      "start": 185,
-      "end": 201,
+      "start": 178,
+      "end": 191,
       "title": "An honest business model",
       "direction": "Explain today's limits clearly; commercial revenue is a proposal.",
-      "script": "Here, twenty-five test tokens buy twenty-five ARPS. ARPS earnings and exits aren't enabled yet. Brokers can earn referral commissions. Long term, Quorum could earn service fees from insurance partners."
+      "script": "Here, twenty-five test tokens buy twenty-five ARPS. Earnings and exits aren't enabled yet. Brokers earn referral commissions. A future business could charge insurance partners service fees."
     },
     {
-      "start": 201,
-      "end": 215,
+      "start": 191,
+      "end": 205,
       "title": "A monthly agent from Aivy",
       "direction": "Personal and practical. The first policy is confirmed; the next date is a planned attempt, not another receipt.",
       "script": "From Aivy, I can also set a monthly cover budget. The first policy is real. Future purchases follow saved limits, and I can pause the agent anytime."
+    },
+    {
+      "start": 205,
+      "end": 215,
+      "title": "Ask the network, verify the answer",
+      "direction": "Sound natural and curious. The answer is read only; show the small network flow and the labeled receipt links.",
+      "script": "I can ask Quorum what is happening. It explains policies and networks, links real receipts, and has no authority to move funds."
     },
     {
       "start": 215,
       "end": 231,
       "title": "What I reused, what I added",
       "direction": "Matter-of-fact. This is a strength: a clear contribution boundary.",
-      "script": "Earlier Aivy infrastructure and the Uniswap and Axelar plugins already existed. The new work connects guarded policies, paid verification, native settlement, cross-chain access, and now bounded monthly purchasing."
+      "script": "Earlier Aivy infrastructure and the Uniswap and Axelar plugins already existed. Quorum connects guarded policies, paid verification, native settlement, cross-chain access, bounded monthly purchasing and a read-only companion."
     },
     {
       "start": 231,

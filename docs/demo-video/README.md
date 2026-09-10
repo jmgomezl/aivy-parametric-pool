@@ -5,10 +5,12 @@ It opens with the small-loss problem and verified Colombia/Venezuela earthquake
 records, then shows the product, onchain evidence, the technology choices and the
 prior-work boundary.
 
-**Added at 3:21:** a short interaction from [Aivy's new cover canvas](https://aivylabs.xyz/quorum).
+**At 3:11:** a short interaction from [Aivy's new cover canvas](https://aivylabs.xyz/quorum).
 Review a monthly budget, activate, and inspect real Medellín policy #34.
 Future dates are planned attempts; only the first purchase was executed for the
-recording. The updated script totals 438 words and the edit remains under four minutes.
+recording. **At 3:25:** a real typed question to Quorum's companion explains
+Hedera, Axelar and Uniswap with labeled evidence links. Chat has no authority to
+move funds. The 14-chapter script totals 446 words; the edit stays under four minutes.
 
 **The visual edit is complete; human narration has not been added.** ETHOnline
 requires a human voice. Do not submit the silent MP4 as the final video.
@@ -16,9 +18,11 @@ requires a human voice. Do not submit the silent MP4 as the final video.
 - [Open the video + synchronized script](https://quorum.aivylabs.xyz/demo-video/)
 - [Download the visual edit](aivy-quorum-visual-cut.mp4)
 - [Just the 14-second Aivy interaction](aivy-monthly-cover.mp4)
+- [Just the 10-second Quorum companion interaction](assets/footage/quorum-companion.mp4)
 - [Read the script](SCRIPT.md) · [plain text](SCRIPT.txt)
 - [Recording evidence](EVIDENCE.md) · [sources and image credits](SOURCES.md)
 - [Monthly-agent architecture](../COVER-AGENT.md) · [Verified first-purchase evidence](cover-agent-evidence.json)
+- [Read-only companion architecture](../COMPANION.md) · [Actual captured answer](companion-evidence.json)
 
 ## Record your part
 
@@ -82,6 +86,8 @@ the recording work directory; they are not part of this kit.
 - Public app = manually requested deterministic workflow, not autonomous AI claim approval.
 - The Aivy purchase worker is automatic only within a saved, three-period
   testnet mandate. It does not monitor earthquakes or authorize claims.
+- The companion interprets questions into allowed topics. Server code supplies
+  facts and receipt links; it cannot sign or execute a transaction.
 - New source bridge and confirmed swap are distinct operations; swap uses previously
   bridged starter inventory. Cross-chain delivery is not presented as instantaneous.
 - Shared-pool ARPS and actual Uniswap V3 position NFTs are explicitly separate.
@@ -94,3 +100,8 @@ No security control was bypassed to obtain this footage.
 `capture-cover-agent-state.mjs` can refresh the existing-state footage with all
 writes blocked. Do not repeat activation to improve the edit. The latter capture
 was used after fixing a stale account-setup warning; it shows the same policy #34.
+
+`production/capture-companion.mjs` records an anonymous question against the live
+site. It blocks all API writes except the read-only chat endpoint, requires a
+real AI-classified answer and saves the public response. The 10-second source
+clip plays at 1×; no answer was fabricated or substituted.

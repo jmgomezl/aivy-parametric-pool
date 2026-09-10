@@ -33,7 +33,7 @@
     },
     {
       "scene": "map",
-      "duration": 6,
+      "duration": 3,
       "source": "assets/footage/04-map.mp4",
       "start": 28
     },
@@ -41,7 +41,7 @@
       "scene": "map",
       "duration": 10,
       "source": "assets/footage/05-map.mp4",
-      "start": 34
+      "start": 31
     },
     {
       "scene": "history",
@@ -53,25 +53,25 @@
         714
       ],
       "source": "assets/footage/06-map.mp4",
-      "start": 44
+      "start": 41
     },
     {
       "scene": "create",
       "duration": 6,
       "source": "assets/footage/07-cover.mp4",
-      "start": 53
+      "start": 50
     },
     {
       "scene": "create",
       "duration": 5,
       "source": "assets/footage/08-cover.mp4",
-      "start": 59
+      "start": 56
     },
     {
       "scene": "nft",
       "duration": 7,
       "clip": null,
-      "start": 64
+      "start": 61
     },
     {
       "scene": "receipt",
@@ -86,19 +86,19 @@
         1720,
         650
       ],
-      "start": 71
+      "start": 68
     },
     {
       "scene": "oracle",
       "duration": 6,
       "source": "assets/footage/11-oracle.mp4",
-      "start": 77
+      "start": 74
     },
     {
       "scene": "oracle",
       "duration": 8,
       "source": "assets/footage/12-oracle.mp4",
-      "start": 83
+      "start": 80
     },
     {
       "scene": "oracle-closeup",
@@ -111,25 +111,25 @@
         850
       ],
       "source": "assets/footage/13-oracle.mp4",
-      "start": 91
+      "start": 88
     },
     {
       "scene": "gate",
       "duration": 11,
       "clip": null,
-      "start": 99
+      "start": 96
     },
     {
       "scene": "release",
       "duration": 7,
       "source": "assets/footage/15-story.mp4",
-      "start": 110
+      "start": 107
     },
     {
       "scene": "release",
       "duration": 4,
       "source": "assets/footage/16-story.mp4",
-      "start": 117
+      "start": 114
     },
     {
       "scene": "receipt",
@@ -144,98 +144,111 @@
         1720,
         650
       ],
-      "start": 121
+      "start": 118
     },
     {
       "scene": "guard",
-      "duration": 14,
+      "duration": 10,
       "source": "assets/footage/18-story.mp4",
-      "start": 125
+      "start": 122
     },
     {
       "scene": "crosschain",
       "duration": 7,
       "clip": null,
-      "start": 139
+      "start": 132
     },
     {
       "scene": "bridge",
       "duration": 6,
       "source": "assets/footage/20-bridge.mp4",
-      "start": 146
+      "start": 139
     },
     {
       "scene": "bridge",
       "duration": 5,
       "source": "assets/footage/21-bridge.mp4",
-      "start": 152
+      "start": 145
     },
     {
       "scene": "swap",
       "duration": 6,
       "source": "assets/footage/22-swap.mp4",
-      "start": 157
+      "start": 150
     },
     {
       "scene": "swap",
       "duration": 5,
       "source": "assets/footage/23-swap.mp4",
-      "start": 163
+      "start": 156
     },
     {
       "scene": "swap-proof",
       "duration": 4,
       "clip": null,
-      "start": 168
+      "start": 161
     },
     {
       "scene": "lp",
       "duration": 8,
       "source": "assets/footage/25-liquidity.mp4",
-      "start": 172
+      "start": 165
     },
     {
       "scene": "fund",
       "duration": 5,
       "source": "assets/footage/26-fund.mp4",
-      "start": 180
+      "start": 173
     },
     {
       "scene": "fund",
       "duration": 3,
       "source": "assets/footage/27-fund.mp4",
-      "start": 185
+      "start": 178
     },
     {
       "scene": "fund",
       "duration": 5,
       "source": "assets/footage/28-fund-position.mp4",
-      "start": 188
+      "start": 181
     },
     {
       "scene": "business",
-      "duration": 8,
+      "duration": 5,
       "clip": null,
-      "start": 193
+      "start": 186
     },
     {
       "scene": "cover-agent",
       "duration": 2,
       "query": "home=1",
       "source": "assets/footage/30-cover-agent.mp4",
-      "start": 201
+      "start": 191
     },
     {
       "scene": "cover-agent",
       "duration": 6,
       "source": "assets/footage/31-cover-agent.mp4",
-      "start": 203
+      "start": 193
     },
     {
       "scene": "cover-agent",
       "duration": 6,
       "source": "assets/footage/32-cover-agent-state.mp4",
-      "start": 209
+      "start": 199
+    },
+    {
+      "scene": "companion",
+      "duration": 10,
+      "mediaCrop": "390:700:1510:284",
+      "rect": [
+        1110,
+        140,
+        490,
+        880
+      ],
+      "source": "assets/footage/quorum-companion.mp4",
+      "start": 205
     },
     {
       "scene": "novelty",

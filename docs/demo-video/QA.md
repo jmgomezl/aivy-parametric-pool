@@ -1,4 +1,4 @@
-# Video kit checks · September 9, 2026 (Colombia)
+# Video kit checks · September 10, 2026
 
 | Check | Result |
 | --- | --- |
@@ -9,10 +9,11 @@
 | Audio export | Rechecked with a temporary WebM test tone: the merge produced a 3:59 H.264/AAC file without changing video speed. Duration-less MediaRecorder input was also covered in the original kit checks. QA audio/export remain outside this repository. |
 | Evidence | Eight new Hedera receipts independently confirmed; three oracle checks returned no match. Sepolia swap receipt has status 1. New Axelar destination delivery was pending at capture and is labeled accordingly. |
 | Privacy | Browser/session recovery files and credentials remain outside the kit. Public evidence contains transaction IDs and public account addresses only. |
-| Aivy addition | 14-second genuine canvas interaction at 3:21. One real testnet policy (#34), four independently confirmed premium/NFT receipts, published HCS terms and an agent-signed scheduled payout. Future purchases remain planned. |
+| Aivy addition | 14-second genuine canvas interaction at 3:11. One real testnet policy (#34), four independently confirmed premium/NFT receipts, published HCS terms and an agent-signed scheduled payout. Future purchases remain planned. |
+| Quorum companion | 10 seconds at 3:25: actual typed network question, real AI topic selection, server-rendered answer and labeled receipts. Anonymous capture; only the read-only chat POST was allowed. No page errors. |
 | Renewal controls | Explicit consent, no duplicate on manual check, pause persisted through reload, resume created no duplicate, and the real mandate survived a VPS worker restart. Same first policy and next date retained. |
 | Current canvas | Frontend build plus fixture checks at 1440, 1024, 768, 390 and 320 px passed, including clearance of transient setup warnings and no legacy wallet bundle. Live checks at 1440, 390 and 320 px passed. |
-| Backend | All 134 Quorum tests passed. Twelve dedicated tests cover calendar boundaries, limits, duplicate requests, payer changes, pause and recovery. Future months use a fake clock, not fabricated onchain evidence. |
+| Backend | All 156 Quorum tests passed, including 14 platform-companion tests. Coverage includes account scope, schema attacks, network labels, unavailable ledger data, shared limits and renewal recovery. Future months use a fake clock, not fabricated onchain evidence. |
 
 Recheck the rehearsal page with `node docs/demo-video/production/check-studio.mjs`.
 Set `QUORUM_STUDIO_URL` for the deployed page, or run `production/serve.mjs`

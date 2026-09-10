@@ -10,15 +10,16 @@ try{
  for(const width of [1600,1024,768,390,320]){
   const ctx=await browser.newContext({viewport:{width,height:1000},permissions:['microphone']});const p=await ctx.newPage(),errors=[],failed=[];
   p.on('pageerror',e=>errors.push(e.message));p.on('response',r=>{if(r.status()>=400&&r.url().startsWith(base))failed.push({url:r.url(),status:r.status()});});
-  await p.goto(base);await p.locator('#chapters button').nth(12).waitFor();await p.locator('video').evaluate(v=>new Promise(resolve=>{if(v.readyState>=1)return resolve();v.addEventListener('loadedmetadata',resolve,{once:true});}));
+  await p.goto(base);await p.locator('#chapters button').nth(13).waitFor();await p.locator('video').evaluate(v=>new Promise(resolve=>{if(v.readyState>=1)return resolve();v.addEventListener('loadedmetadata',resolve,{once:true});}));
   assert.equal(await p.locator('video').evaluate(v=>v.duration),239);assert.equal(await p.locator('video').evaluate(v=>v.videoWidth),1920);
-  for(const [index,start] of [[3,53],[4,77],[7,139],[10,201],[11,215],[12,231]]){
-   await p.locator('#chapters button').nth(index).click();assert.equal(await p.locator('video').evaluate(v=>Math.round(v.currentTime)),start);assert.equal(await p.locator('#cue-count').innerText(),`${index+1} / 13`);
+  for(const [index,start] of [[3,50],[4,74],[7,132],[10,191],[11,205],[12,215],[13,231]]){
+   await p.locator('#chapters button').nth(index).click();assert.equal(await p.locator('video').evaluate(v=>Math.round(v.currentTime)),start);assert.equal(await p.locator('#cue-count').innerText(),`${index+1} / 14`);
    if(index===10)assert.equal(await p.locator('#chapter-proof a').last().getAttribute('href'),'https://quorum.aivylabs.xyz/policy/34');
-   if(index===11)assert.match(await p.locator('#chapter-proof').innerText(),/Prior-work disclosure/);
+   if(index===11)assert.match(await p.locator('#chapter-proof').innerText(),/Read-only architecture/);
+   if(index===12)assert.match(await p.locator('#chapter-proof').innerText(),/Prior-work disclosure/);
   }
-  await p.locator('#rehearse').click();await p.waitForTimeout(1500);assert.equal(await p.locator('video').evaluate(v=>v.paused),false);assert.equal(await p.locator('#cue-count').innerText(),'1 / 13');await p.locator('video').evaluate(v=>v.pause());
-  await p.locator('.full-script summary').click();assert.equal(await p.locator('#script-table tr').count(),13);await p.locator('.full-script summary').click();
+  await p.locator('#rehearse').click();await p.waitForTimeout(1500);assert.equal(await p.locator('video').evaluate(v=>v.paused),false);assert.equal(await p.locator('#cue-count').innerText(),'1 / 14');await p.locator('video').evaluate(v=>v.pause());
+  await p.locator('.full-script summary').click();assert.equal(await p.locator('#script-table tr').count(),14);await p.locator('.full-script summary').click();
   assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   await p.screenshot({path:`${out}/studio-${width}.png`,fullPage:true});
   if(width===1600){
