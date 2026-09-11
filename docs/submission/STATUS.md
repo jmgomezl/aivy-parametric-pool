@@ -12,15 +12,15 @@ Checked in the signed-in ETHGlobal dashboard on September 10, 2026.
 | Tech stack and AI attribution | **Saved and verified after a fresh page load**, including SDKs, plugins, network boundaries, JSON journals, code-based design and generated artwork attribution |
 | Partner prizes | Hedera and Uniswap Foundation checked and explanations, code links and technical feedback prepared in the open form. **Not yet saved**: Top 10 + partner prizes is selected with founder authorization; ETHGlobal requires personal ease-of-use ratings before saving |
 | Submission type | Founder explicitly chose **Top 10 Finalist & Partner Prizes**. Selected in the open form; video requirements acknowledged. Save attempt is blocked by the two required partner ratings |
-| Uniswap feedback | [Technical answers prepared](uniswap-feedback.md) in the external form; not submitted. Requires founder contact details, integration time, ratings and terms acceptance |
+| Uniswap feedback | **Submitted.** The external form displayed “Thanks for sharing your feedback” on September 10, 2026, at 11:25 p.m. Bogotá (September 11, 04:25 UTC). [Prepared technical copy](uniswap-feedback.md); personal entries are not reproduced in this repository |
 | Video | Intentionally left empty pending the human-narrated export |
 | Future opportunities | Optional section saved with no grant/accelerator opt-ins selected |
 | Final submission | **Not submitted** |
 
 **The final checklist is incomplete as a readiness signal:** it currently lists
 only the missing video, even though the prize application is not saved. A passing
-repository check does not mean partner prizes or the external feedback form are
-complete.
+repository check does not mean partner prizes are complete. The separate
+Uniswap feedback form is now confirmed submitted.
 
 The final declaration still conflicts with the selected Continuity track; see
 below. It remains unchecked.
@@ -35,17 +35,11 @@ projects that advance. The finalist video acknowledgment is checked.
    the prepared **Hedera** and **Uniswap Foundation** prize application. The
    dashboard offers partners, not individual prize checkboxes; keep Continuity
    selected and do not claim eligibility for another track solely from this UI.
-2. Finish the [Uniswap feedback form](https://developers.uniswap.org/hackathon-feedback)
-   using the public [FEEDBACK.md URL](https://github.com/jmgomezl/aivy-parametric-pool/blob/main/FEEDBACK.md).
-   Technical answers are prepared. Personal email, Telegram handle, actual
-   integration time, documentation/support ratings (1–5) and terms acceptance
-   remain unanswered. No personal response has been invented.
-   Record its success confirmation before marking this complete.
-3. Resolve the declaration mismatch below, then add the narrated video. Verify
+2. Resolve the declaration mismatch below, then add the narrated video. Verify
    2–4 minutes, at least 720p, human narration and no sped-up footage. Include
    the paid Blocky402 request and the new work, including the settlement package;
    distinguish prior npm plugins and skills from the event's implementation.
-4. Review all saved fields and submit before
+3. Review all saved fields and submit before
    **September 13, 2026 at 11:00 a.m. Bogotá / noon EDT**.
 
 ## Read-only application checks

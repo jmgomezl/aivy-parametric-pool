@@ -2,9 +2,11 @@
 
 Destination: https://developers.uniswap.org/hackathon-feedback
 
-The technical fields below are prepared. Contact details, the founder's ratings,
-integration time and terms acceptance must be supplied before submission.
-This file does not claim the external form has been submitted.
+**Submission confirmed:** the form displayed “Thanks for sharing your feedback”
+on September 10, 2026, at 11:25 p.m. Bogotá (September 11, 04:25 UTC).
+The technical copy prepared for the form is preserved below. Personal contact
+details and ratings are not reproduced here; the confirmation page does not
+provide a readback of every submitted answer.
 
 **Event:** ETHOnline 2026 — Continuity Track  
 **Completed project:** Yes  
