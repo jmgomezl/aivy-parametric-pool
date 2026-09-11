@@ -13,8 +13,13 @@ agents. Publishing it on npm makes this integration reusable beyond Quorum:
 Hedera agent applications can reach EVM liquidity through familiar JavaScript
 tools. [Source, package reach and exact Quorum use](docs/HAK-UNISWAP.md).
 
-The plugin predates this event. Quorum reuses its quote tool and adds guarded
-Axelar bridging, Sepolia execution, funded demo wallets and a V3 LP lifecycle.
+The published npm **0.1.0 swap plugin** predates this event. On September 5,
+GitHub **0.2.0** added `uniswap_quote`: request a quote and unsigned transaction
+without a signing key, token approvals or broadcast.
+[Exact event diff](https://github.com/jmgomezl/hak-uniswap-plugin/compare/77e001e588b524930369f1eab30858a3c81d5d49...05bdc45ec1dbe6b142132dd1e81d6cec8457a58e).
+Quorum consumes that GitHub revision and adds guarded Axelar bridging, Sepolia
+execution, funded demo wallets and a V3 LP lifecycle. The npm release remains
+0.1.0; the new quote tool is not claimed as published to npm.
 
 ## What helped
 
