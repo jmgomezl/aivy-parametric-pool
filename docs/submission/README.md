@@ -112,11 +112,20 @@ Figma workflow or custom Solidity contract is claimed.
 ## Prize rationale
 
 The founder chose **Top 10 Finalist & Partner Prizes**. Continuity, Hedera and
-Uniswap remain selected. The form requires both personal ease-of-use ratings
-before this step can be saved; they remain unanswered.
+Uniswap are saved, with both required personal ease-of-use ratings verified
+after a fresh page load.
 See [exact saved/pending state](STATUS.md).
 
 ### Hedera · Continuity
+
+**Positioning:** a Continuity project with new agentic x402 payments. The hosted
+Blocky402 service and recorded paid requests address the AI & Agentic Payments
+prize's core implementation requirements; the final video must show a paid
+request executing. Hedera lists a separate Continuity prize, and the published
+rules do not clearly confirm that a Continuity entry can also compete for its
+AI prize. Keep the new payment flow prominent without claiming eligibility for
+both awards. [Hedera prize requirements](https://ethglobal.com/events/ethonline2026/prizes/hedera)
+· [Event track rules](https://ethglobal.com/events/ethonline2026/info/details).
 
 Hedera is the commitment and authorization layer, not merely a payment logo. Native Scheduled Transactions fix the payout before an event, while an agent AND 2-of-3 oracle key policy gates execution. HTS supplies cover receipts and demo assets; HCS records terms; Mirror Node makes the result independently inspectable. Blocky402 settles exact policy-bound oracle payments on testnet.
 
