@@ -50,9 +50,9 @@ The workflow has spending limits and saved transaction IDs. Even all three oracl
 
 ## 2:01–2:33 · Why Axelar and Uniswap
 
-*Three distinct roles. A brief pause between Hedera, Axelar and Uniswap.*
+*Emphasize 'my npm-published plugin' as reusable developer tooling. Quorum's execution adapters are separate new work. Let the real receipts speak for themselves.*
 
-These are demo-account tokens, separate from the locked cover reserve. Our Hedera Agent Kit Axelar plugin builds the bridge to Sepolia. Uniswap's Trading API prepares the swap. Review, confirm, inspect the receipts. A Hedera-native app reaches EVM liquidity without custom Solidity. Test tokens and gas are supplied, so judges can try it without a wallet extension.
+My npm-published Uniswap plugin lets Hedera Agent Kit developers access EVM liquidity. Here, Quorum adds guarded execution: my Axelar plugin builds the bridge, and Uniswap's Trading API prepares the Sepolia swap. These demo-account tokens are separate from the locked cover reserve. Review, confirm, inspect the receipts. Funded test wallets make it easy to try, without a wallet extension or custom swap contract.
 
 ## 2:33–2:45 · Two pools, two purposes
 
@@ -80,9 +80,9 @@ Quorum answers that question too. It reads Hedera through Mirror Node and links 
 
 ## 3:35–3:51 · What I reused, what I added
 
-*Be direct about reuse. The Mirror Node skill is pre-event development guidance from your open PR #16, not a new runtime dependency.*
+*Be clear about the boundary: the published npm plugins and Mirror Node skill predate the event. The quote-only Uniswap extension and reusable settlement plugin are new event work.*
 
-My earlier Aivy app, Uniswap and Axelar plugins, and Mirror Node skill are reused. New here: guarded cover, paid verification, native settlement, cross-chain access, and the bounded monthly agent with its companion.
+Earlier Aivy, my published Uniswap and Axelar plugins, and Mirror Node skill are reused. New here: quote-only Uniswap tooling, a reusable settlement plugin, guarded cover, paid oracles, and monthly agents.
 
 ## 3:51–3:59 · Ready before it happens
 

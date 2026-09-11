@@ -1,12 +1,12 @@
 {
-  "updatedAt": "2026-09-10",
+  "updatedAt": "2026-09-11",
   "durationSeconds": 239,
   "resolution": [
     1920,
     1080
   ],
   "fps": 30,
-  "narrationWords": 444,
+  "narrationWords": 448,
   "sourcePlaybackRate": 1,
   "humanNarrationIncluded": false,
   "businessWritesDuringRefresh": 0,
@@ -24,8 +24,8 @@
   },
   "files": {
     "aivy-quorum-visual-cut.mp4": {
-      "bytes": 7965540,
-      "sha256": "1e24ce7e8d871c0d0d9f09fdc286aa0720d4f0b3e6d1efed1bad697b961038ed"
+      "bytes": 7178449,
+      "sha256": "77cac975ab709e6b07489951e292ebc2eb858335caa756e9a40ebddaeae37287"
     },
     "aivy-monthly-cover.mp4": {
       "bytes": 1479038,
@@ -36,28 +36,28 @@
       "sha256": "5f82e736afaf300a2ceaed30046aed186a11f5e7f16ff989ea4cf20facd8310d"
     },
     "timeline.json": {
-      "bytes": 6108,
-      "sha256": "b9049857c81e334de7aec16e87895b0f84dfbdcb8c91ee5349ca228e7dc2026a"
+      "bytes": 6325,
+      "sha256": "56f8872a7f7e4a6f13fc6d4146d18c5c0eb5f9b655c9e38ca27c70de4499928d"
     },
     "SCRIPT.md": {
-      "bytes": 5238,
-      "sha256": "267a8b67b0ec7e0621a4c9b7c3413af859d8b377f1ca161f6931c4433243d315"
+      "bytes": 5415,
+      "sha256": "86c578903d4abf4c1615a6b391fd6c78a2b7bb71a25e01baf7c3347b1a545fd6"
     },
     "SCRIPT.txt": {
-      "bytes": 3021,
-      "sha256": "bd436aedc9e37e44c32a27d703e697b4e240c292248536996d8843c78c80a6f7"
+      "bytes": 3060,
+      "sha256": "9176d70df4f1bd523de96d8c73237b5be5602933c0694b3b976747323c017d87"
     },
     "narration.vtt": {
-      "bytes": 4731,
-      "sha256": "d2428ea7b32f2f9f1a0f364a8162e4e3f9dabf96eac0af8d8b77429d15b12b58"
+      "bytes": 4769,
+      "sha256": "db5ffcb648632cd4b9689333f4fd9fa10f2b13852475dc16baa22e82bf109d79"
     },
     "narration.srt": {
-      "bytes": 4811,
-      "sha256": "e46ac25728310a6781877e9eb1b50281e8227441bda8aab7af5b5cdc8beff40e"
+      "bytes": 4849,
+      "sha256": "089ae524ee9afe3ba65f348e9daa1baa94e1245f2d7e8296a37505c59b6423a4"
     },
     "edit.json": {
-      "bytes": 5665,
-      "sha256": "245b82ac23d7500c728e1a0ba5ab96c19f1e3c1ce33a55434ebbf47b8971f61a"
+      "bytes": 5697,
+      "sha256": "200e9e4bdf3c58767f2e5d4fe5dd3347a6c695922b03d5007ad60a38939b9eb0"
     },
     "aivy-refresh-evidence.json": {
       "bytes": 3823,
@@ -70,6 +70,14 @@
     "mirror-refresh-evidence.json": {
       "bytes": 739,
       "sha256": "050f200b5a1a7998af26159cc6cf7a735a476d59d79a224b38b6a84541b5736e"
+    },
+    "assets/poster.jpg": {
+      "bytes": 121436,
+      "sha256": "71489312833bbbd3867702dff3ea7413fb0bc6d16761ab39a4351d5edc8e1a7f"
+    },
+    "assets/quorum-mark-0ceecc.png": {
+      "bytes": 461661,
+      "sha256": "0ceeccde8b38e96c6e4a0ee933635cb1a28ba76f84dd60ce9599d9bbd342dde3"
     }
   },
   "sourceSites": {
@@ -81,5 +89,18 @@
       "url": "https://aivylabs.xyz/quorum",
       "revision": "a79095df448b27d6a5e853d3eed29d6ebcd99e50"
     }
+  },
+  "revision": "20260911-contributions",
+  "financialFootageChanged": false,
+  "changedNarrationChapters": [
+    8,
+    13
+  ],
+  "sourceSitesNote": "Revisions identify the original September 10 read-only source captures; this update changes editorial graphics and narration only.",
+  "editorialRefresh": {
+    "baseRevision": "189262e988946f2b141f822ee07e9deeabc15bbc",
+    "graphicsCapturedWith": "CUA browser screenshots of bundled frames.html at 1920 \u00d7 1080",
+    "logo": "assets/quorum-mark-0ceecc.png",
+    "retainedChapterTiming": true
   }
 }

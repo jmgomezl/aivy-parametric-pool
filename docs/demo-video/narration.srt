@@ -130,35 +130,35 @@ The workflow has spending limits and saved transaction IDs.
 Even all three oracle keys cannot spend without the agent.
 
 32
-00:02:01,000 --> 00:02:06,587
-These are demo-account tokens, separate from the locked
-cover reserve.
+00:02:01,000 --> 00:02:07,029
+My npm-published Uniswap plugin lets Hedera Agent Kit
+developers access EVM liquidity.
 
 33
-00:02:06,587 --> 00:02:12,683
-Our Hedera Agent Kit Axelar plugin builds the bridge to
-Sepolia.
+00:02:07,029 --> 00:02:12,130
+Here, Quorum adds guarded execution: my Axelar plugin builds
+the
 
 34
-00:02:12,683 --> 00:02:16,238
-Uniswap's Trading API prepares the swap.
+00:02:12,130 --> 00:02:16,768
+bridge, and Uniswap's Trading API prepares the Sepolia swap.
 
 35
-00:02:16,238 --> 00:02:19,286
-Review, confirm, inspect the receipts.
+00:02:16,768 --> 00:02:21,870
+These demo-account tokens are separate from the locked cover
+reserve.
 
 36
-00:02:19,286 --> 00:02:24,365
-A Hedera-native app reaches EVM liquidity without custom
-Solidity.
+00:02:21,870 --> 00:02:24,652
+Review, confirm, inspect the receipts.
 
 37
-00:02:24,365 --> 00:02:29,952
-Test tokens and gas are supplied, so judges can try
+00:02:24,652 --> 00:02:29,754
+Funded test wallets make it easy to try, without a
 
 38
-00:02:29,952 --> 00:02:32,1000
-it without a wallet extension.
+00:02:29,754 --> 00:02:33,000
+wallet extension or custom swap contract.
 
 39
 00:02:33,000 --> 00:02:38,280
@@ -226,21 +226,22 @@ It reads Hedera through Mirror Node and links the evidence.
 The AI explains; it cannot sign, spend, or change my policy.
 
 54
-00:03:35,000 --> 00:03:39,889
-My earlier Aivy app, Uniswap and Axelar plugins, and Mirror
+00:03:35,000 --> 00:03:40,176
+Earlier Aivy, my published Uniswap and Axelar plugins, and
+Mirror
 
 55
-00:03:39,889 --> 00:03:42,111
+00:03:40,176 --> 00:03:42,529
 Node skill are reused.
 
 56
-00:03:42,111 --> 00:03:47,000
-New here: guarded cover, paid verification, native
-settlement, cross-chain access,
+00:03:42,529 --> 00:03:47,706
+New here: quote-only Uniswap tooling, a reusable settlement
+plugin, guarded
 
 57
-00:03:47,000 --> 00:03:51,000
-and the bounded monthly agent with its companion.
+00:03:47,706 --> 00:03:51,000
+cover, paid oracles, and monthly agents.
 
 58
 00:03:51,000 --> 00:03:55,889

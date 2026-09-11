@@ -4,7 +4,6 @@ import {spawn} from 'node:child_process';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-const {chromium}=await import(process.env.PLAYWRIGHT_MODULE||'playwright');
 const here=path.dirname(fileURLToPath(import.meta.url)),root=path.dirname(here);
 const work=process.env.QUORUM_VIDEO_WORK||'/tmp/quorum-video';
 const build=path.join(work,'render');await fs.mkdir(build,{recursive:true});await fs.mkdir(path.join(root,'assets/footage'),{recursive:true});
@@ -15,15 +14,35 @@ const duration=JSON.parse(await fs.readFile(path.join(root,'timeline.json'),'utf
 if(edit.sourcePlaybackRate!==1||shots.reduce((n,s)=>n+s.duration,0)!==duration)throw Error('Shots do not match the narration timeline at normal speed.');
 let elapsed=0;
 for(const shot of shots){if(shot.start!==elapsed)throw Error('Non-contiguous shot timeline.');elapsed+=shot.duration;}
-const browser=await chromium.launch({channel:'chrome',headless:true});
-const page=await browser.newPage({viewport:{width:1920,height:1080},deviceScaleFactor:1});
-const browserErrors=[];page.on('pageerror',e=>browserErrors.push(e.message));
+// A browser capture session can supply reviewed graphics without launching a
+// second browser. The manifest binds each PNG to its scene and query.
+const captureDirectory=process.env.QUORUM_VIDEO_FRAMES;
+const captures=captureDirectory?JSON.parse(await fs.readFile(path.join(captureDirectory,'manifest.json'),'utf8')):null;
+if(captures&&(captures.width!==1920||captures.height!==1080))throw Error('Graphics must be captured at 1920 × 1080.');
+let browser,page;
+const browserErrors=[];
+if(!captures){
+ const {chromium}=await import(process.env.PLAYWRIGHT_MODULE||'playwright');
+ browser=await chromium.launch({channel:'chrome',headless:true});
+ page=await browser.newPage({viewport:{width:1920,height:1080},deviceScaleFactor:1});
+ page.on('pageerror',e=>browserErrors.push(e.message));
+}
 const frames=new Map();
 try{
 for(let i=0;i<shots.length;i++){
  const shot=shots[i],id=String(i).padStart(2,'0');console.log(`Rendering ${id}: ${shot.scene}`);
  const key=shot.scene+(shot.query||'');let frame=frames.get(key);
- if(!frame){frame=path.join(build,`frame-${id}.png`);await page.goto(`file://${here}/frames.html?scene=${shot.scene}&${shot.query||''}`);await page.evaluate(()=>window.ready);if(browserErrors.length)throw Error(browserErrors.join('\n'));if(!(await page.locator('#content').innerText()).trim())throw Error('Blank graphics frame: '+shot.scene);const bad=await page.locator('img').evaluateAll(images=>images.filter(i=>!i.complete||!i.naturalWidth).map(i=>i.src));if(bad.length)throw Error('Missing image: '+bad.join(', '));await page.screenshot({path:frame});frames.set(key,frame);}
+ if(!frame){
+  if(captures){
+   const entry=captures.frames.find(f=>f.scene===shot.scene&&f.query===(shot.query||''));
+   if(!entry||path.basename(entry.file)!==entry.file)throw Error('Missing or invalid captured graphic: '+key);
+   frame=path.join(captureDirectory,entry.file);
+   if(!(await fs.stat(frame)).isFile())throw Error('Missing captured PNG: '+frame);
+  }else{
+   frame=path.join(build,`frame-${id}.png`);await page.goto(`file://${here}/frames.html?scene=${shot.scene}&${shot.query||''}`);await page.evaluate(()=>window.ready);if(browserErrors.length)throw Error(browserErrors.join('\n'));if(!(await page.locator('#content').innerText()).trim())throw Error('Blank graphics frame: '+shot.scene);const bad=await page.locator('img').evaluateAll(images=>images.filter(i=>!i.complete||!i.naturalWidth).map(i=>i.src));if(bad.length)throw Error('Missing image: '+bad.join(', '));await page.screenshot({path:frame});
+  }
+  frames.set(key,frame);
+ }
  const [x,y,w,h]=shot.rect||[160,160,1600,867];
  const output=path.join(build,`${id}.mp4`);
  if(shot.source){
@@ -38,7 +57,7 @@ for(let i=0;i<shots.length;i++){
  }
  shot.start=shots.slice(0,i).reduce((n,s)=>n+s.duration,0);
 }
-}finally{await browser.close();}
+}finally{await browser?.close();}
 // edit.json remains the source of truth; rendering does not rewrite editorial choices.
 await fs.writeFile(path.join(build,'concat.txt'),shots.map((_,i)=>`file '${String(i).padStart(2,'0')}.mp4'`).join('\n'));
 await run(['-f','concat','-safe','0','-i',path.join(build,'concat.txt'),'-c','copy','-movflags','+faststart',path.join(root,'aivy-quorum-visual-cut.mp4')]);

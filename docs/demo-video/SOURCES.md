@@ -39,3 +39,8 @@ The Mirror Node graphic is an original layout around a real
 financial or mandate changes and use no synthetic responses. The Mirror Node
 skill is pre-existing development guidance from the founder's open
 [hedera-skills PR #16](https://github.com/hedera-dev/hedera-skills/pull/16).
+
+The September 11 editorial refresh uses the founder-approved transparent Quorum
+logo from [submission assets](../submission/ASSETS.md), copied unchanged into the
+video kit. Its origin is disclosed there. Graphic typography and contribution
+credits were revised; the original financial recordings were retained.

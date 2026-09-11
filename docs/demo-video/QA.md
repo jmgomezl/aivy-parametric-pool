@@ -1,4 +1,4 @@
-# Video kit checks · September 10, 2026
+# Video kit checks · September 11, 2026
 
 | Check | Result |
 | --- | --- |
@@ -26,8 +26,20 @@ The remaining editorial check is the complete **human-narrated** export:
 listen for natural pacing, align subtitle cues to the actual take and watch it
 from start to finish before submission.
 
-The refreshed narration has 444 words across 14 chapters. Full-resolution frames
+The refreshed narration has 448 words across 14 chapters. Full-resolution frames
 from the history, canvas, both companion interactions, Mirror response and
 prior-work disclosure were inspected. The complete export decodes successfully.
 The original financial footage remains separately dated in `EVIDENCE.md`; this
 refresh does not imply a second issuance, payment, deposit or swap.
+
+## September 11 editorial refresh
+
+- Approved transparent logo used in graphic mastheads, title and closing scenes; poster refreshed.
+- Chapters 8 and 13 now name the published HAK Uniswap plugin and new quote-only / settlement tooling.
+- All 14 chapter boundaries and all 38 shot durations match the previous edit.
+- Original financial source clips and stills are byte-for-byte unchanged. No financial requests were made.
+- Thirty graphics were captured through the browser at 1920 × 1080 with fonts and images loaded.
+- FFprobe confirms H.264, 30 fps, 7,170 frames and exactly 239 seconds; the complete film decodes without errors.
+- Take Studio's sample update preserves custom text, recording selections, settings, imported videos and chapter times. Eight unit tests pass, including three migration regressions.
+
+The current export hashes are in [refresh-manifest.json](refresh-manifest.json).

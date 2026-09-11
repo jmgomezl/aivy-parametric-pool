@@ -20,7 +20,7 @@ This is why Hedera matters. The agent signs the exact transfer in advance. Two o
 The workflow has spending limits and saved transaction IDs. Even all three oracle keys cannot spend without the agent.
 
 [2:01–2:33]
-These are demo-account tokens, separate from the locked cover reserve. Our Hedera Agent Kit Axelar plugin builds the bridge to Sepolia. Uniswap's Trading API prepares the swap. Review, confirm, inspect the receipts. A Hedera-native app reaches EVM liquidity without custom Solidity. Test tokens and gas are supplied, so judges can try it without a wallet extension.
+My npm-published Uniswap plugin lets Hedera Agent Kit developers access EVM liquidity. Here, Quorum adds guarded execution: my Axelar plugin builds the bridge, and Uniswap's Trading API prepares the Sepolia swap. These demo-account tokens are separate from the locked cover reserve. Review, confirm, inspect the receipts. Funded test wallets make it easy to try, without a wallet extension or custom swap contract.
 
 [2:33–2:45]
 Uniswap has a real position NFT, fee collection, and withdrawal. That's trading liquidity. Earthquake-cover deposits go into a separate, shared Hedera pool.
@@ -35,7 +35,7 @@ Here's the part I'd want for myself: less to remember. On Aivy Labs, I set a mon
 Quorum answers that question too. It reads Hedera through Mirror Node and links the evidence. The AI explains; it cannot sign, spend, or change my policy.
 
 [3:35–3:51]
-My earlier Aivy app, Uniswap and Axelar plugins, and Mirror Node skill are reused. New here: guarded cover, paid verification, native settlement, cross-chain access, and the bounded monthly agent with its companion.
+Earlier Aivy, my published Uniswap and Axelar plugins, and Mirror Node skill are reused. New here: quote-only Uniswap tooling, a reusable settlement plugin, guarded cover, paid oracles, and monthly agents.
 
 [3:51–3:59]
 The goal is simple: less uncertainty when people need help. A promise you can actually verify.

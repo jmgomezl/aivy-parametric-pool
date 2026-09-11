@@ -5,14 +5,18 @@ It opens with the small-loss problem and verified Colombia/Venezuela earthquake
 records, then shows the product, onchain evidence, the technology choices and the
 prior-work boundary.
 
-**Updated September 10, after the Mirror Node review.** At **2:57**, enter from
+**Updated September 11:** approved Quorum logo, clearer HAK Uniswap plugin
+credits and an explicit boundary between prior contributions and new event work.
+Chapter times and original transaction footage are unchanged.
+
+The September 10 product refresh remains: at **2:57**, enter from
 [Aivy Labs](https://aivylabs.xyz/), review the saved monthly budget, type
 “Am I covered?” and open the same real policy in Quorum. This 24-second sequence
 shows existing Medellín policy #34; it does not create another purchase.
 At **3:21**, ask Quorum about that policy. At **3:29**, inspect an actual Mirror
 Node response excerpt. Both companions are read only.
 
-The new 14-chapter script totals **444 words**, with a warmer everyday benefit:
+The new 14-chapter script totals **448 words**, with a warmer everyday benefit:
 less to remember, and an answer you can verify. The earlier genuine transaction
 footage remains, clearly separate from this read-only refresh.
 
@@ -36,6 +40,9 @@ a combined video. Optional MacBook/iPhone camera, local background removal and a
 presenter overlay are included. Your takes save in this browser; download a
 backup before moving devices. [Separate repository and studio guide](https://github.com/jmgomezl/aivy-take-studio).
 Take Studio is independently deployed; the existing URL keeps browser-saved takes accessible.
+Its bundled sample is updated too. Existing takes and custom wording are preserved;
+if you already recorded, review **chapters 8 and 13** for the revised wording.
+The other 12 narration chapters are unchanged.
 
 The original page also supports one continuous voice take:
 
@@ -82,6 +89,11 @@ node docs/demo-video/production/render.mjs
 
 The renderer needs Playwright with Chrome and FFmpeg. If Playwright is supplied
 outside the project, set `PLAYWRIGHT_MODULE` to its absolute module path.
+For graphics already captured by a browser, set `QUORUM_VIDEO_FRAMES` to a
+directory containing 1920 × 1080 PNGs and `manifest.json` with `width`, `height`
+and `frames: [{scene, query, file}]`. This mode uses FFmpeg without launching
+Playwright; `query` is an empty string when absent.
+
 Rendering the bundled footage makes **no ledger writes**. Runtime frames and
 intermediates go to `/tmp/quorum-video/render` by default, outside Git.
 
