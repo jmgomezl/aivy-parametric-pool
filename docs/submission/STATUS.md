@@ -10,8 +10,8 @@ Checked in the signed-in ETHGlobal dashboard on September 10, 2026.
 | Project narrative | [Checked copy](README.md) saved, with direct contribution/disclosure links and precise plugin reuse wording |
 | Repositories | Personal **jmgomezl/aivy-parametric-pool** remains primary; **jmgomezl/hak-scheduled-settlement**, **jmgomezl/aivy** and **jmgomezl/hak-uniswap-plugin** are attached. All four are public and MIT-licensed; the Uniswap repository includes the September 5 quote-tool extension and its before/after diff. The original three passed ETHGlobal's automated repository checks; the fourth was added in this review |
 | Tech stack and AI attribution | **Saved and verified after a fresh page load**, including SDKs, plugins, network boundaries, JSON journals, code-based design and generated artwork attribution |
-| Partner prizes | Hedera and Uniswap Foundation checked and explanations, code links and technical feedback prepared in the open form. **Not yet saved**: submission type awaits founder choice; personal ease-of-use ratings are unanswered |
-| Submission type | Founder asked to choose Top 10 + partner prizes (live judging if selected) or partner prizes only. No choice assumed |
+| Partner prizes | Hedera and Uniswap Foundation checked and explanations, code links and technical feedback prepared in the open form. **Not yet saved**: Top 10 + partner prizes is selected with founder authorization; ETHGlobal requires personal ease-of-use ratings before saving |
+| Submission type | Founder explicitly chose **Top 10 Finalist & Partner Prizes**. Selected in the open form; video requirements acknowledged. Save attempt is blocked by the two required partner ratings |
 | Uniswap feedback | [Technical answers prepared](uniswap-feedback.md) in the external form; not submitted. Requires founder contact details, integration time, ratings and terms acceptance |
 | Video | Intentionally left empty pending the human-narrated export |
 | Future opportunities | Optional section saved with no grant/accelerator opt-ins selected |
@@ -27,24 +27,25 @@ below. It remains unchecked.
 
 ## Resume in this order
 
-1. Answer the submission-type choice. The form offers live finalist judging on
-   **Monday, September 14, 2026, 11 a.m. Bogotá / noon EDT**, if selected; do not
-   assume availability or eligibility merely from the presence of that option.
-2. Supply personal ease-of-use ratings for Hedera and Uniswap (1–10), then save
+The founder has chosen **Top 10 Finalist & Partner Prizes**. The form lists live
+finalist judging on **Monday, September 14, 2026, 11 a.m. Bogotá / noon EDT**, for
+projects that advance. The finalist video acknowledgment is checked.
+
+1. Supply personal ease-of-use ratings for Hedera and Uniswap (1–10), then save
    the prepared **Hedera** and **Uniswap Foundation** prize application. The
    dashboard offers partners, not individual prize checkboxes; keep Continuity
    selected and do not claim eligibility for another track solely from this UI.
-3. Finish the [Uniswap feedback form](https://developers.uniswap.org/hackathon-feedback)
+2. Finish the [Uniswap feedback form](https://developers.uniswap.org/hackathon-feedback)
    using the public [FEEDBACK.md URL](https://github.com/jmgomezl/aivy-parametric-pool/blob/main/FEEDBACK.md).
    Technical answers are prepared. Personal email, Telegram handle, actual
    integration time, documentation/support ratings (1–5) and terms acceptance
    remain unanswered. No personal response has been invented.
    Record its success confirmation before marking this complete.
-4. Resolve the declaration mismatch below, then add the narrated video. Verify
+3. Resolve the declaration mismatch below, then add the narrated video. Verify
    2–4 minutes, at least 720p, human narration and no sped-up footage. Include
    the paid Blocky402 request and the new work, including the settlement package;
    distinguish prior npm plugins and skills from the event's implementation.
-5. Review all saved fields and submit before
+4. Review all saved fields and submit before
    **September 13, 2026 at 11:00 a.m. Bogotá / noon EDT**.
 
 ## Read-only application checks

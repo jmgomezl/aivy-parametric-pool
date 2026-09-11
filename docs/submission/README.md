@@ -111,8 +111,9 @@ Figma workflow or custom Solidity contract is claimed.
 
 ## Prize rationale
 
-The two partners and explanations are prepared in the form; saving still requires
-the founder's submission-type choice. Personal ratings remain unanswered.
+The founder chose **Top 10 Finalist & Partner Prizes**. Continuity, Hedera and
+Uniswap remain selected. The form requires both personal ease-of-use ratings
+before this step can be saved; they remain unanswered.
 See [exact saved/pending state](STATUS.md).
 
 ### Hedera · Continuity
