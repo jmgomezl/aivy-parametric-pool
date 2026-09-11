@@ -21,6 +21,12 @@ Extra captures: [global map](media/01-atlas.jpg), [Tokyo quote](media/02-quote.j
 Earlier `logo.png` / `logo.svg` and the general `docs/media/` gallery remain as
 historical assets; they are not the new submission selections.
 
+The website now uses this same transparent Q in its header, NFT presentations,
+recorded receipt walkthrough, demo-video page and browser icon. The web asset
+[`quorum-mark-0ceecc.png`](../../ui/public/brand/quorum-mark-0ceecc.png) is an
+unchanged copy of the approved logo. Existing onchain NFT metadata and recorded
+screenshots retain their original artwork.
+
 ## Screenshot provenance
 
 Screenshots came directly from the deployed Quorum and Aivy websites through
