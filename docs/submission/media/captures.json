@@ -1,0 +1,59 @@
+{
+  "method": "CUA browser screenshots at the existing 1720×1267 viewport. Blocky402 uses a direct browser clip. No resizing, compositing or alteration of application content.",
+  "captures": [
+    {
+      "file": "01-atlas.jpg",
+      "url": "https://quorum.aivylabs.xyz/",
+      "at": "2026-09-11T03:03:40.957Z",
+      "scope": "Live landing page; no transaction"
+    },
+    {
+      "file": "02-quote.jpg",
+      "url": "https://quorum.aivylabs.xyz/?at=35.68%2C139.69&place=Tokyo",
+      "at": "2026-09-11T03:04:15.944Z",
+      "scope": "Current Tokyo quote; no purchase"
+    },
+    {
+      "file": "03-cover-nfts.jpg",
+      "url": "https://quorum.aivylabs.xyz/policies",
+      "at": "2026-09-11T03:04:41.956Z",
+      "scope": "Existing testnet cover NFTs; no mint"
+    },
+    {
+      "file": "04-mainnet-settlement.jpg",
+      "url": "https://quorum.aivylabs.xyz/story#4",
+      "at": "2026-09-11T03:05:04.745Z",
+      "scope": "UI replay of September 4 controlled 4 HBAR transfer; not a new claim"
+    },
+    {
+      "file": "05-blocky402-receipts.jpg",
+      "url": "https://quorum.aivylabs.xyz/story#4",
+      "at": "2026-09-11T03:05:57.717Z",
+      "scope": "Direct screenshot crop of existing Blocky402 receipts and no-payout-proof disclosure",
+      "clip": {
+        "x": 450,
+        "y": 124,
+        "width": 830,
+        "height": 540
+      }
+    },
+    {
+      "file": "06-uniswap-swap.jpg",
+      "url": "https://quorum.aivylabs.xyz/swap?step=swap",
+      "at": "2026-09-11T03:06:46.690Z",
+      "scope": "Swap entry and labeled recorded cross-chain receipts; no new swap or wallet allocation"
+    },
+    {
+      "file": "07-uniswap-liquidity.jpg",
+      "url": "https://quorum.aivylabs.xyz/swap?step=swap",
+      "at": "2026-09-11T03:17:25.664Z",
+      "scope": "Current Uniswap V3 pool balances and operator seed position 231745, with demo liquidity controls expanded. No new position or ledger transaction was created."
+    },
+    {
+      "file": "08-monthly-companion.jpg",
+      "url": "https://aivylabs.xyz/quorum",
+      "at": "2026-09-11T03:16:11.618Z",
+      "scope": "Existing monthly mandate and policy 35; read-only companion status query. No renewal or purchase triggered."
+    }
+  ]
+}

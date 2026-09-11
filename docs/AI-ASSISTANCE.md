@@ -40,6 +40,12 @@ For the work represented in this task, Codex assistance includes:
   The September 10 submission review condensed the judge overview, preserved
   detailed disclosures, added CI and fixed SDK-entity handling in the pool balance
   reader with a regression test.
+- `docs/submission/logo-quorum.png` and `cover-quorum.png`: generated with Codex's
+  built-in image-generation tool on September 10 (Bogotá), following the founder's
+  request for submission branding. The abstract topographic cover is artwork,
+  not hazard data. [Exact prompts and asset provenance](submission/ASSETS.md).
+  The accompanying `docs/submission/media/*.jpg` files are direct browser
+  screenshots of the deployed apps, with no AI-generated UI or transaction data.
 - `docs/demo-video/`: AI-assisted narration draft, original SVG/HTML visual
   composition, capture/edit scripts, a browser rehearsal and voice-recording page,
   and the silent visual edit. The founder directed the emotional problem framing,

@@ -54,18 +54,21 @@ Prior plugins remain linked in the implementation story and [contribution map](.
 
 ## Images
 
-| Form slot | Existing source | What it shows |
+| Form slot | Uploaded asset | What it shows |
 | --- | --- | --- |
-| Logo | [logo.png](logo.png), from [SVG](logo.svg) | Existing Quorum ring/dot favicon motif, adapted to a square submission icon |
-| Cover | [01-atlas.png](../media/01-atlas.png) | Global earthquake cover and the Hedera → Axelar → Uniswap path |
-| Screenshot 1 | [04-policies.png](../media/04-policies.png) | Actual geographic cover NFT receipts |
-| Screenshot 2 | [03-story.png](../media/03-story.png) | Labeled controlled mainnet settlement |
-| Screenshot 3 | [09-blocky402.png](../media/09-blocky402.png) | Paid testnet oracle receipts |
-| Screenshot 4 | [07-managed-demo.png](../media/07-managed-demo.png) | Funded demo wallet and confirmed Uniswap swap |
-| Screenshot 5 | [06-liquidity.png](../media/06-liquidity.png) | Separate real Uniswap V3 position and liquidity controls |
-| Screenshot 6 | [cover-companion.png](../media/cover-companion.png) | Monthly-cover canvas, issued policy and read-only companion |
+| Logo | [logo-quorum.png](logo-quorum.png) | Mint quorum arcs around a gold epicenter |
+| Cover | [cover-quorum.png](cover-quorum.png) | Aivy Quorum title, abstract topographic art and integration names |
+| Screenshot 1 | [03-cover-nfts.jpg](media/03-cover-nfts.jpg) | Actual geographic cover NFT receipts |
+| Screenshot 2 | [04-mainnet-settlement.jpg](media/04-mainnet-settlement.jpg) | Labeled controlled mainnet settlement |
+| Screenshot 3 | [05-blocky402-receipts.jpg](media/05-blocky402-receipts.jpg) | Paid testnet oracle receipts |
+| Screenshot 4 | [06-uniswap-swap.jpg](media/06-uniswap-swap.jpg) | Wallet-free swap entry and recorded cross-chain evidence |
+| Screenshot 5 | [07-uniswap-liquidity.jpg](media/07-uniswap-liquidity.jpg) | Real Uniswap V3 pool, operator position and liquidity controls |
+| Screenshot 6 | [08-monthly-companion.jpg](media/08-monthly-companion.jpg) | Monthly-cover canvas, issued policy and read-only companion |
 
-Screenshots are existing unmodified application captures. [Capture provenance](../media/README.md).
+Saved in the ETHGlobal draft on September 10, 2026 (Bogotá). The logo and cover
+are AI-generated artwork. Screenshots are fresh, unaltered application captures;
+no new blockchain transaction was executed for these captures.
+[Asset previews, generation prompts and capture provenance](ASSETS.md).
 
 ## AI assistance
 
