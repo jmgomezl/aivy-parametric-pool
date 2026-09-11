@@ -24,9 +24,9 @@ Judges can try the complete product without installing a wallet: buy testnet cov
 
 A separate Hedera → Axelar → Uniswap journey connects the product to EVM liquidity. Funded demo wallets support real Sepolia swaps and Uniswap V3 positions, including fee collection and withdrawals. Insurance-pool shares (ARPS) remain distinct from Uniswap liquidity positions.
 
-At aivylabs.xyz/quorum, a user can authorize a bounded monthly-cover agent for Medellín or another city. It checks fresh terms before each purchase. Read-only companions explain policy and network status with evidence links.
+At https://aivylabs.xyz/quorum, a user can authorize a bounded monthly-cover agent for Medellín or another city. It checks fresh terms before each purchase. Read-only companions explain policy and network status with evidence links.
 
-The contribution goes beyond the interface: a new reusable HAK settlement plugin builds on my previously published Uniswap and Axelar plugins. My Mirror Node developer skill informed the verification layer, and an account-key limitation led to an upstream HAK improvement proposal. The README links each contribution and distinguishes new work, reuse and open PRs.
+The contribution goes beyond the interface: I extracted a new reusable HAK settlement plugin, and the product also integrates my previously published Uniswap and Axelar plugins. My Mirror Node developer skill informed the verification layer, and an account-key limitation led to an upstream HAK improvement proposal. The README links each contribution and distinguishes new work, reuse and open PRs.
 
 This is a Continuity submission. Public interactive transactions use test tokens with no cash value. The mainnet settlement is a labeled, controlled 4 HBAR experiment, not a real earthquake claim. Oracle keys currently share an operator; checks are user-triggered. ARPS earnings and redemption are not implemented. Commercial deployment would require insurance partners, risk calibration and legal review.
 
@@ -43,6 +43,10 @@ My existing hak-uniswap-plugin, published on npm, gives other Hedera Agent Kit d
 Signing is deterministic and constrained by network, token, recipient, amount, allowance, slippage, expiry and budget checks. Transactions are journaled before broadcast; uncertain outcomes are reconciled rather than blindly retried. AI companions only select from a strict read-only topic set; trusted code fetches and renders facts. They cannot spend, sign or alter a mandate. My pre-existing Mirror Node skill proposal (hedera-skills PR #16) informed concrete read-path fixes. The separate Accounts & Keys skill and wider plugin portfolio are linked as related contributions, not claimed as runtime dependencies.
 
 New event work includes the earthquake product, guarded cross-chain execution, paid oracles, settlement package, monthly-cover worker, companions and evidence-focused UI. Earlier Aivy projects, plugins and art are disclosed in docs/PRIOR-WORK.md; docs/CONTRIBUTIONS.md maps their exact use. Codex and Claude assisted implementation, tests, design and documentation; docs/AI-ASSISTANCE.md attributes the work and assets. The public repo includes setup, security boundaries, integration code links, onchain receipts and Uniswap FEEDBACK.md.
+
+Contribution map: https://github.com/jmgomezl/aivy-parametric-pool/blob/main/docs/CONTRIBUTIONS.md
+New versus reused work: https://github.com/jmgomezl/aivy-parametric-pool/blob/main/docs/PRIOR-WORK.md
+Aivy integration event diff: https://github.com/jmgomezl/aivy/compare/6ddc263...e95e50f
 
 ### Repositories
 
@@ -72,23 +76,30 @@ no new blockchain transaction was executed for these captures.
 
 ## AI assistance
 
-OpenAI Codex and Anthropic Claude assisted with implementation, security review, tests, UI design, documentation, deployment and demo preparation. I defined the product, architecture goals and scope, reviewed outputs and tested the flows. The companions use constrained AI topic interpretation; trusted code retrieves facts and no LLM authorizes spending. File areas and image/asset attribution: https://github.com/jmgomezl/aivy-parametric-pool/blob/main/docs/AI-ASSISTANCE.md. The final demo narration will be human.
+OpenAI Codex and Anthropic Claude assisted with implementation, security review, tests, UI design, documentation, deployment and demo preparation. I defined the product, architecture goals and scope, reviewed outputs and tested the flows. The companions use constrained AI topic interpretation; trusted code retrieves facts and no LLM authorizes spending. Codex image generation created the submission logo and abstract cover; screenshots are direct captures of the deployed apps. File areas and image/asset attribution: https://github.com/jmgomezl/aivy-parametric-pool/blob/main/docs/AI-ASSISTANCE.md. The final demo narration will be human.
 
 ## Tech stack selections
 
-Select the closest available labels in the dashboard; do not add unused technologies.
+Saved and read back in the dashboard on September 10. The available database and
+design-tool presets were set to **None**: the custom-tools field explicitly lists
+persistent JSON journals, SVG/Canvas and the AI topic classifier. No SQL database,
+Figma workflow or custom Solidity contract is claimed.
 
 | Field | Actual stack |
 | --- | --- |
 | Ethereum developer tools | ethers.js; Uniswap Trading / LP APIs |
 | Networks | Hedera, Ethereum Sepolia; Base and Unichain for quote-only previews |
-| Languages | JavaScript, TypeScript, HTML, CSS; no custom Solidity contract |
+| Languages | JavaScript, TypeScript, HTML/CSS, Node.js, Bash/Shell; no custom Solidity contract |
 | Web frameworks | React, Vite, Tailwind CSS, Node.js |
 | Databases | Local persistent JSON files and transaction journals; no SQL database |
 | Design tools | Code-based SVG/CSS/Canvas and browser inspection; no Figma file |
 | Other | Hedera SDK, Hedera Agent Kit, HCS, HTS, Mirror Node, Blocky402/x402, Axelar ITS, hak-scheduled-settlement, hak-uniswap-plugin, hak-axelar-plugin, TopoJSON/world-atlas |
 
 ## Prize rationale
+
+The two partners and explanations are prepared in the form; saving still requires
+the founder's submission-type choice. Personal ratings remain unanswered.
+See [exact saved/pending state](STATUS.md).
 
 ### Hedera · Continuity
 
@@ -101,6 +112,10 @@ New/reused disclosure: https://github.com/jmgomezl/aivy-parametric-pool/blob/mai
 Blocky402 flow and receipts: https://github.com/jmgomezl/aivy-parametric-pool/blob/main/docs/BLOCKY402.md
 Reusable contributions: https://github.com/jmgomezl/aivy-parametric-pool/blob/main/docs/CONTRIBUTIONS.md
 
+**Form code link:** https://github.com/jmgomezl/aivy-parametric-pool/blob/main/src/x402/blocky.js#L18
+
+**Technical feedback:** Nested signer policies and native scheduling fit conditional payments. HAK account creation could better support multi-signer account setup; this build produced issue #1087 and open PR #1088 for flat thresholds. More examples for nested keys, Mirror Node reconciliation and x402 retry recovery would improve the developer experience. Quorum's nested policy comes from its separate settlement package.
+
 ### Uniswap Foundation · Best Uniswap Stack Contribution · Continuity
 
 I built and published hak-uniswap-plugin on npm so Hedera Agent Kit developers can give their agents access to EVM swaps. Quorum shows a concrete new use: native Hedera cover with a guarded path to Uniswap liquidity. The plugin is prior work; the product integration, service-managed testnet execution and V3 position lifecycle are event work.
@@ -111,7 +126,15 @@ Package and exact integration: https://github.com/jmgomezl/aivy-parametric-pool/
 Contracts, code entry points and receipts: https://github.com/jmgomezl/aivy-parametric-pool#why-uniswap
 Feedback: https://github.com/jmgomezl/aivy-parametric-pool/blob/main/FEEDBACK.md
 
+**Form code link:** https://github.com/jmgomezl/aivy-parametric-pool/blob/main/src/settlement/crossAsset.js#L65
+
+**Technical feedback:** A custom bridged-token Sepolia reference flow would help developers combine liquidity seeding, quotes, Permit2, exact approvals and receipt verification. A consolidated calldata-validation guide and examples for stale quotes, interrupted requests and uncertain transaction reconciliation would make agent integrations safer to build.
+
 ## Future direction
+
+This is the product roadmap, not an accelerator or grant application. The
+dashboard's optional opportunity section was saved without selecting either
+opt-in; no grant/accelerator preference was assumed.
 
 Continue toward a scoped pilot with a broker or cooperative and a licensed insurance/risk partner. First validate demand and pricing, separate oracle operators, strengthen custody and capital accounting, and measure renewal and settlement reliability. Proposed revenue is a partner subscription plus a per-policy service fee; no commercial traction or platform fee is claimed today. Keep the reusable plugins and skills available for other developers.
 

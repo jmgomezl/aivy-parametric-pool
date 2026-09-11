@@ -140,7 +140,7 @@ How this business works**, labeled **Beyond the demo · proposed**.
 | New vs. reused work and AI assistance | [Prior-work disclosure](PRIOR-WORK.md), linked history/diff and [AI attribution](AI-ASSISTANCE.md) are included. |
 | Final narrated video | The prepared cut is 3:59 at 1080p. Human narration/export and the uploaded submission video have **not been verified**. |
 | Uniswap feedback submission | [FEEDBACK.md](../FEEDBACK.md) is present. Completion of the external feedback form has **not been verified**. |
-| Event track, partner choices and final submit | Continuity registration, saved project details and the personal jmgomezl main repository were verified in the dashboard on September 10. New artwork and six fresh screenshots are saved. Tech-stack and partner selection remain incomplete; the final submission has not been sent. [Exact state](submission/STATUS.md). |
+| Event track, partner choices and final submit | Continuity, project details, three personal jmgomezl repositories, images, tech stack and AI attribution are saved and verified. Sponsor explanations are prepared but await the founder's submission-type choice and ratings before saving. External feedback, narrated video and the Continuity declaration remain open; final submission has not been sent. [Exact state](submission/STATUS.md). |
 
 Rechecked September 10, 2026 against the [official event rules](https://ethglobal.com/events/ethonline2026/info/details):
 video must be 2–4 minutes, at least 720p, with human
@@ -155,7 +155,7 @@ not certify registration or organizer acceptance.
 | Prize | Current fit / remaining action |
 | --- | --- |
 | **Uniswap Stack Contribution · Continuity** | Our [npm-published HAK Uniswap plugin](HAK-UNISWAP.md) gives Hedera Agent Kit developers reusable access to EVM swaps. Quorum builds on that prior contribution with a guarded Hedera-origin asset journey, Trading API swaps and V3 positions. [FEEDBACK.md](../FEEDBACK.md) is prepared; **submit the [developer feedback form](https://developers.uniswap.org/hackathon-feedback)** with the [public FEEDBACK.md link](https://github.com/jmgomezl/aivy-parametric-pool/blob/main/FEEDBACK.md). Form submission has not been verified. |
-| **Hedera Continuity** | Continuity registration is verified and Hedera appears among its offered partners. The disclosed prior project and substantive new scheduling, paid-oracle and cross-chain work support this application. Save the partner selection after completing the tech-stack section. |
+| **Hedera Continuity** | Continuity registration is verified and Hedera appears among its offered partners. The disclosed prior project and substantive new scheduling, paid-oracle and cross-chain work support this application. The explanation is prepared; save the partner selection after the founder supplies the submission type and ratings. |
 | **Hedera AI & Agentic Payments** | Hosted Blocky402 integration is live, with [three independently verified testnet payments](evidence/blocky402-testnet.json). Show the paid request and receipt in the video; confirm the dashboard offers this prize for your selected track. |
 
 The Hedera tokenization prize requires Asset Tokenization Studio; the Harness
