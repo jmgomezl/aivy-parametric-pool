@@ -8,7 +8,7 @@ Uploaded to the signed-in ETHOnline draft for **Aivy Quorum**, with the personal
 
 | Asset | File | Scope |
 | --- | --- | --- |
-| Logo | [Square PNG](logo-quorum.png) | Flowing mint map contours form a Q around a gold epicenter on an opaque dark tile |
+| Logo | [Square PNG](logo-quorum.png) | Flowing mint map contours form a Q around a gold epicenter; transparent PNG |
 | Cover | [Wide PNG](cover-quorum.png) | Abstract topographic artwork, product name and integration names |
 | Screenshot 1 | [Cover NFTs](media/03-cover-nfts.jpg) | Existing testnet geographic receipts |
 | Screenshot 2 | [Mainnet settlement](media/04-mainnet-settlement.jpg) | Labeled replay of the controlled September 4 experiment |
@@ -38,14 +38,17 @@ for this capture session. Previously recorded receipts retain their UI labels.
 
 ## Generated artwork provenance
 
-**Mode:** Codex built-in `image_gen.imagegen`, two new-image generations and two
-referenced-image edits of the logo. No CLI fallback or external image source.
+**Mode:** Codex built-in `image_gen.imagegen`, two new-image generations and five
+referenced-image edit attempts of the logo (three retained revisions). No CLI fallback or external image source.
 The logo and cover are AI-generated artwork; they are separate from the real
 screenshots. The topographic cover is illustrative, not a geographic risk map.
-The first logo edit removed transparency and the dark halo after reviewing its
-appearance against the submission form's white background. At the founder's
-request, the final refinement replaced the segmented ring with a softer Q made
-from cartographic contours. The previous versions remain in Git history.
+An earlier edit used an opaque tile; the next refinement replaced the segmented
+ring with a softer Q made from cartographic contours. The final selected edit
+removes the dark background and preserves the generated alpha channel. Two
+transparency attempts painted a checkerboard and were rejected. The accepted
+PNG was inspected in the browser on white and near-black backgrounds at 32, 64,
+128 and 600 CSS pixels, and its RGBA channel was checked directly. The previous
+versions remain in Git history.
 
 ### Logo generation prompt
 
@@ -59,10 +62,16 @@ Use case: logo-brand. Create a finished square 1024x1024 icon for Aivy Quorum, a
 Edit this existing Aivy Quorum logo for a hackathon project icon. Preserve its exact mint segmented Q geometry, centered gold epicenter dot, size and placement. Make the entire square canvas a completely opaque, solid near-black background #090c0c, edge to edge, including every corner, and make the inside of the Q the same opaque black. This is a black square app tile, not a transparent cutout. Remove the blurry black/gray halo and any bright glow; use clean, flat mint and gold edges. Absolutely no transparency, no alpha cutout, no white background, no text, no added objects. The final image must look like a crisp mint-and-gold Q printed on a solid black square.
 ```
 
-### Final contour-Q refinement prompt
+### Contour-Q refinement prompt
 
 ```text
 Use case: logo-brand. Redesign the attached Aivy Quorum icon into a beautiful, distinctive, premium product logo. The reference is ONLY a palette and conceptual reference; replace its chunky segmented-ring geometry completely. Design one elegant abstract Q monogram inspired by cartographic contour lines protecting an earthquake epicenter. The Q is a softly squared circular contour, with a confident continuous curved diagonal tail at lower right. Two beautifully balanced, precisely spaced contour bands flow around a tiny warm-gold central epicenter dot: a substantial mint outer band and a finer mint inner contour, with generous dark negative space. Graceful curves, optically balanced spacing, clean softened terminals, memorable simple silhouette. The mark should feel calm, refined, warm and trustworthy, like a top-tier independent design studio's identity for a modern earth-observation fintech product. Use restrained mint #45CEA0 and warm gold #E8B448 on a COMPLETELY OPAQUE solid near-black #090C0C square background edge to edge, including every corner. Strong legibility at 32px, logo occupies about 60 percent of canvas width with generous safe margins. Flat vector-like artwork, precise smooth edges, no gradients, no glow, no texture, no shadows, no 3D. Avoid radiation-symbol wedges, target crosshairs, gaming logos, shields, globes, leaves, generic network nodes, extra dots, thin decorative lines, and multiple proposals. No words, no labels, no slogan, no watermark, no transparency. Deliver one finished square logo tile only.
+```
+
+### Selected transparent-background edit prompt
+
+```text
+Remove the black background from this logo. Return an isolated transparent-background PNG cutout with actual alpha transparency, not a picture of transparency. Keep the mint Q and yellow dot unchanged. All space outside and inside the logo should have alpha zero. Clean smooth edges, no dark fringe. Do not draw any backdrop or checkerboard pattern.
 ```
 
 ### Cover generation prompt

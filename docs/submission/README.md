@@ -60,7 +60,7 @@ Prior plugins remain linked in the implementation story and [contribution map](.
 
 | Form slot | Uploaded asset | What it shows |
 | --- | --- | --- |
-| Logo | [logo-quorum.png](logo-quorum.png) | Flowing mint map contours form a Q around a gold epicenter |
+| Logo | [logo-quorum.png](logo-quorum.png) | Flowing mint map contours form a Q around a gold epicenter; transparent PNG |
 | Cover | [cover-quorum.png](cover-quorum.png) | Aivy Quorum title, abstract topographic art and integration names |
 | Screenshot 1 | [03-cover-nfts.jpg](media/03-cover-nfts.jpg) | Actual geographic cover NFT receipts |
 | Screenshot 2 | [04-mainnet-settlement.jpg](media/04-mainnet-settlement.jpg) | Labeled controlled mainnet settlement |
