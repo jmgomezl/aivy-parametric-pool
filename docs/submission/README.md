@@ -38,7 +38,7 @@ I extracted the conditional-settlement helpers into hak-scheduled-settlement dur
 
 The oracle services expose policy-bound x402 endpoints. The consuming agent validates published terms and exact payment requirements; hosted Blocky402 verifies and settles the testnet payment and sponsors network fees. Recorded payments to USGS, EMSC and GEOFON checks returned no match: a paid request is not a payout approval.
 
-My existing hak-uniswap-plugin, published on npm, gives other Hedera Agent Kit developers reusable access to Uniswap's EVM swap tooling. Quorum consumes the pinned GitHub 0.2.0 quote tool for Base/Unichain. New project-specific Sepolia adapters use the Uniswap Trading API for executable swaps and V3 position operations. My existing hak-axelar-plugin builds Hedera ITS transfers; Quorum adds validation, journaling and matched delivery evidence. Axelar moves the asset; Uniswap supplies liquidity. No custom Solidity swap contract was added. Sponsored starter tokens were bridged previously; a new pending bridge is shown separately.
+My existing hak-uniswap-plugin, published on npm, gives other Hedera Agent Kit developers reusable access to Uniswap's EVM swap tooling. During this event I added the quote-only uniswap_quote tool (GitHub 0.2.0, September 5), which Quorum consumes for Base/Unichain without an EVM signing key, token approvals or broadcast. The npm swap release remains 0.1.0 and is prior work. New project-specific Sepolia adapters use the Uniswap Trading API for executable swaps and V3 position operations. My existing hak-axelar-plugin builds Hedera ITS transfers; Quorum adds validation, journaling and matched delivery evidence. Axelar moves the asset; Uniswap supplies liquidity. No custom Solidity swap contract was added. Sponsored starter tokens were bridged previously; a new pending bridge is shown separately.
 
 Signing is deterministic and constrained by network, token, recipient, amount, allowance, slippage, expiry and budget checks. Transactions are journaled before broadcast; uncertain outcomes are reconciled rather than blindly retried. AI companions only select from a strict read-only topic set; trusted code fetches and renders facts. They cannot spend, sign or alter a mandate. My pre-existing Mirror Node skill proposal (hedera-skills PR #16) informed concrete read-path fixes. The separate Accounts & Keys skill and wider plugin portfolio are linked as related contributions, not claimed as runtime dependencies.
 
@@ -47,14 +47,28 @@ New event work includes the earthquake product, guarded cross-chain execution, p
 Contribution map: https://github.com/jmgomezl/aivy-parametric-pool/blob/main/docs/CONTRIBUTIONS.md
 New versus reused work: https://github.com/jmgomezl/aivy-parametric-pool/blob/main/docs/PRIOR-WORK.md
 Aivy integration event diff: https://github.com/jmgomezl/aivy/compare/6ddc263...e95e50f
+Uniswap plugin event diff: https://github.com/jmgomezl/hak-uniswap-plugin/compare/77e001e588b524930369f1eab30858a3c81d5d49...05bdc45ec1dbe6b142132dd1e81d6cec8457a58e
+Earlier Studio/Kickoff foundation (prior work): https://github.com/jmgomezl/aivy-studio
+Axelar plugin (prior work, reused at 1.0.1): https://github.com/jmgomezl/hak-axelar-plugin
 
 ### Repositories
 
 - Main application: https://github.com/jmgomezl/aivy-parametric-pool
 - New settlement package: https://github.com/jmgomezl/hak-scheduled-settlement
 - Aivy integration: https://github.com/jmgomezl/aivy — [new canvas/companion diff](https://github.com/jmgomezl/aivy/compare/6ddc263...e95e50f)
+- Uniswap plugin extension: https://github.com/jmgomezl/hak-uniswap-plugin — [new quote-only tool diff](https://github.com/jmgomezl/hak-uniswap-plugin/compare/77e001e588b524930369f1eab30858a3c81d5d49...05bdc45ec1dbe6b142132dd1e81d6cec8457a58e)
 
-Prior plugins remain linked in the implementation story and [contribution map](../CONTRIBUTIONS.md); listing them does not claim their earlier development as event work.
+Keep these **four** repositories attached: each contains code developed for and
+used by this submission. Quorum stays primary. The existing Aivy app and Uniswap
+plugin retain their full history; only their linked event changes are claimed as new.
+
+Link **Aivy Studio/Kickoff** and **hak-axelar-plugin** in the Continuity explanation
+as prior foundations/dependencies. Link skills and upstream PRs through the
+[contribution map](../CONTRIBUTIONS.md). Earlier unrelated plugins, Aivy Checkout
+and Take Studio are not additional submission repositories.
+
+[Official Continuity rules](https://ethglobal.com/events/ethonline2026/info/details) ·
+[Hedera before/after requirement](https://ethglobal.com/events/ethonline2026/prizes/hedera).
 
 ## Images
 
@@ -118,10 +132,11 @@ Reusable contributions: https://github.com/jmgomezl/aivy-parametric-pool/blob/ma
 
 ### Uniswap Foundation · Best Uniswap Stack Contribution · Continuity
 
-I built and published hak-uniswap-plugin on npm so Hedera Agent Kit developers can give their agents access to EVM swaps. Quorum shows a concrete new use: native Hedera cover with a guarded path to Uniswap liquidity. The plugin is prior work; the product integration, service-managed testnet execution and V3 position lifecycle are event work.
+I built and published hak-uniswap-plugin on npm so Hedera Agent Kit developers can give their agents access to EVM swaps. Quorum shows a concrete new use: native Hedera cover with a guarded path to Uniswap liquidity. The npm 0.1.0 swap plugin is prior work; I added the quote-only tool in GitHub 0.2.0 during this event. The product integration, service-managed testnet execution and V3 position lifecycle are also event work.
 
 Quorum uses the plugin's pinned quote tool for Base/Unichain and new Sepolia adapters for Trading API swaps and V3 create/increase/collect/remove operations. My HAK Axelar plugin supplies the separate Hedera ITS transfer builder. Every real approval, bridge, swap and position operation has an inspectable receipt; no custom Solidity swap contract is required. Insurance-pool ARPS shares are not the Uniswap LP asset.
 
+Plugin event diff: https://github.com/jmgomezl/hak-uniswap-plugin/compare/77e001e588b524930369f1eab30858a3c81d5d49...05bdc45ec1dbe6b142132dd1e81d6cec8457a58e
 Package and exact integration: https://github.com/jmgomezl/aivy-parametric-pool/blob/main/docs/HAK-UNISWAP.md
 Contracts, code entry points and receipts: https://github.com/jmgomezl/aivy-parametric-pool#why-uniswap
 Feedback: https://github.com/jmgomezl/aivy-parametric-pool/blob/main/FEEDBACK.md

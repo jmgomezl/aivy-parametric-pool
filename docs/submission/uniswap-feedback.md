@@ -15,7 +15,7 @@ This file does not claim the external form has been submitted.
 
 ## What did you build?
 
-Aivy Quorum: parametric earthquake cover on Hedera, with a guarded Axelar ITS → Sepolia → Uniswap journey. Judges can execute real testnet swaps and create, increase, collect fees from and remove Uniswap V3 positions using funded demo wallets. I authored the pre-existing npm-published hak-uniswap-plugin so other Hedera Agent Kit developers can access EVM swap tooling. Quorum consumes its quote tool and adds guarded execution adapters during this event.
+Aivy Quorum: parametric earthquake cover on Hedera, with a guarded Axelar ITS → Sepolia → Uniswap journey. Judges can execute real testnet swaps and create, increase, collect fees from and remove Uniswap V3 positions using funded demo wallets. I authored the pre-existing npm-published hak-uniswap-plugin so other Hedera Agent Kit developers can access EVM swap tooling. During this event I added the quote-only uniswap_quote tool in GitHub 0.2.0. Quorum consumes it and adds guarded execution adapters. The npm swap release remains 0.1.0 (prior work).
 
 Live: https://quorum.aivylabs.xyz/  
 Repo: https://github.com/jmgomezl/aivy-parametric-pool
@@ -40,4 +40,6 @@ Reusable contribution: https://www.npmjs.com/package/hak-uniswap-plugin
 
 Exact package/version reuse and integration evidence: https://github.com/jmgomezl/aivy-parametric-pool/blob/main/docs/HAK-UNISWAP.md
 
-The published plugin predates this event. New Quorum work connects it to a guarded Hedera-origin asset journey, executable Trading API swaps and V3 position operations. Axelar supplies the bridge; Uniswap supplies EVM liquidity.
+The published npm 0.1.0 swap plugin predates this event. GitHub 0.2.0 adds the quote-only tool during the event: https://github.com/jmgomezl/hak-uniswap-plugin/compare/77e001e588b524930369f1eab30858a3c81d5d49...05bdc45ec1dbe6b142132dd1e81d6cec8457a58e
+
+New Quorum work connects it to a guarded Hedera-origin asset journey, executable Trading API swaps and V3 position operations. Axelar supplies the bridge; Uniswap supplies EVM liquidity.

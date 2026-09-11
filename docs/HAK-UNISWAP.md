@@ -46,6 +46,14 @@ The npm 0.1.0 release and Quorum's locked GitHub 0.2.0 dependency are distinct.
 Quorum's public execution flow uses its guarded adapters; it does not invoke the
 plugin's general-purpose swap signer. Mainnet previews remain quote-only.
 
-**Contribution boundary:** the published plugin is prior work. This event adds
-Quorum's guarded cross-chain product integration, funded judge flows and
-verifiable swap/LP receipts. [Prior work](PRIOR-WORK.md) · [Uniswap evidence](../README.md#why-uniswap).
+**Contribution boundary:** npm 0.1.0 and its `uniswap_swap` tool are prior work.
+On **September 5, 2026**, commit `05bdc45` added the **`uniswap_quote` tool** in
+GitHub 0.2.0: request a price and unsigned transaction without an EVM private key,
+token approval or broadcast. It also added transient API retries and quote-tool
+tests. [Exact event diff](https://github.com/jmgomezl/hak-uniswap-plugin/compare/77e001e588b524930369f1eab30858a3c81d5d49...05bdc45ec1dbe6b142132dd1e81d6cec8457a58e).
+
+This quote-only entry point lets a Hedera agent inspect EVM liquidity before
+requesting execution. Quorum consumes that exact revision, then adds its own
+guarded cross-chain adapters, funded judge flows and verifiable swap/LP receipts.
+**The new 0.2.0 code is consumed from GitHub; the published npm release remains 0.1.0.**
+[Commit dates, changed files and dependency verification](evidence/uniswap-continuity.json). [Prior work](PRIOR-WORK.md) · [Uniswap evidence](../README.md#why-uniswap).

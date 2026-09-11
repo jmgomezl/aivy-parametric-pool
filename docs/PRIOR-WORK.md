@@ -23,8 +23,10 @@ What existed before the event, and does **not** count as new work:
   Gomez's reusable Uniswap integration for Hedera Agent Kit, [published on npm](https://www.npmjs.com/package/hak-uniswap-plugin)
   before the event. It gives HAK developers an EVM swap tool with allowance handling
   and an optional Ledger threshold gate. Quorum consumes the GitHub 0.2.0 version's
-  quote tool for Base and Unichain; the published npm release is 0.1.0. Sepolia
-  execution adapters are project-specific event work. [Package, reach and exact use](HAK-UNISWAP.md).
+  quote tool for Base and Unichain; the published npm release is 0.1.0. The
+  **quote-only tool was added September 5 during this event** ([diff](https://github.com/jmgomezl/hak-uniswap-plugin/compare/77e001e588b524930369f1eab30858a3c81d5d49...05bdc45ec1dbe6b142132dd1e81d6cec8457a58e));
+  the earlier swap plugin remains prior work. Sepolia execution adapters are
+  project-specific event work. [Package, reach and exact use](HAK-UNISWAP.md).
 - **[hak-axelar-plugin](https://github.com/jmgomezl/hak-axelar-plugin)** — Juanma
   Gomez's pre-existing cross-chain plugin for Hedera Agent Kit, reused at **1.0.1**.
   Its **`axelar_send_token`** builder prepares the Hedera ITS transfer to Sepolia.
@@ -75,7 +77,11 @@ What is **new**, built during this event:
 7. **Aivy Labs monthly-cover canvas and worker** — explicit three-period mandates,
    fresh-quote checks, persistent scheduling, duplicate prevention and recoverable
    testnet issuance. [Source and boundaries](COVER-AGENT.md).
-8. **Read-only Aivy and Quorum companions** — constrained topic interpretation,
+8. **Reusable Uniswap quote tool** — `hak-uniswap-plugin` GitHub 0.2.0 adds
+   `uniswap_quote` without an EVM signing key, approvals or broadcasting, plus
+   transient API retries and quote-tool tests. The original npm 0.1.0 swap tool
+   predates the event. [September 5 diff](https://github.com/jmgomezl/hak-uniswap-plugin/compare/77e001e588b524930369f1eab30858a3c81d5d49...05bdc45ec1dbe6b142132dd1e81d6cec8457a58e).
+9. **Read-only Aivy and Quorum companions** — constrained topic interpretation,
    owner-bound account reads, public policy context and visual evidence links.
    Existing sprite art is reused. [Architecture](COMPANION.md).
 
@@ -84,6 +90,7 @@ What is **new**, built during this event:
 
 - [Quorum history](https://github.com/jmgomezl/aivy-parametric-pool/commits/main/): starts September 4, 2026.
 - [Reusable settlement plugin](https://github.com/jmgomezl/hak-scheduled-settlement): consumed by this application.
+- [Uniswap plugin event diff](https://github.com/jmgomezl/hak-uniswap-plugin/compare/77e001e588b524930369f1eab30858a3c81d5d49...05bdc45ec1dbe6b142132dd1e81d6cec8457a58e): September 5 quote-tool extension to the existing plugin.
 - [Aivy integration diff](https://github.com/jmgomezl/aivy/compare/6ddc263...e95e50f): see the separate repository history for the canvas and companion.
 
 Take Studio is a [separate creator utility](https://github.com/jmgomezl/aivy-take-studio),

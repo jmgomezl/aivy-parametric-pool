@@ -1,0 +1,34 @@
+{
+  "checkedAt": "2026-09-11T04:09:37.818796+00:00",
+  "repository": "https://github.com/jmgomezl/hak-uniswap-plugin",
+  "baseline": {
+    "sha": "77e001e588b524930369f1eab30858a3c81d5d49",
+    "commitDate": "2026-08-03T03:55:53Z",
+    "scope": "Existing npm 0.1.0 swap plugin and pre-event tests"
+  },
+  "eventChange": {
+    "sha": "05bdc45ec1dbe6b142132dd1e81d6cec8457a58e",
+    "authorDate": "2026-09-05T05:38:16Z",
+    "committerDate": "2026-09-05T05:38:16Z",
+    "compareUrl": "https://github.com/jmgomezl/hak-uniswap-plugin/compare/77e001e588b524930369f1eab30858a3c81d5d49...05bdc45ec1dbe6b142132dd1e81d6cec8457a58e",
+    "files": [
+      "README.md",
+      "package-lock.json",
+      "package.json",
+      "src/index.js",
+      "tests/plugin.test.js"
+    ],
+    "scope": [
+      "uniswap_quote returns a quote and unsigned transaction without a signing key, approvals or broadcast",
+      "Transient API retries",
+      "Native-output decimal fallback",
+      "Quote-tool tests and GitHub package version 0.2.0"
+    ]
+  },
+  "consumedByQuorum": {
+    "resolved": "git+ssh://git@github.com/jmgomezl/hak-uniswap-plugin.git#05bdc45ec1dbe6b142132dd1e81d6cec8457a58e",
+    "adapter": "src/settlement/crossAsset.js",
+    "scope": "Base/Unichain quotes; execution remains in separate Quorum adapters"
+  },
+  "publicationBoundary": "npm 0.1.0 is prior work; the 0.2.0 extension is consumed from GitHub, not claimed as published to npm."
+}

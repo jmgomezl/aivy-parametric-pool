@@ -8,7 +8,7 @@ Checked in the signed-in ETHGlobal dashboard on September 10, 2026.
 | Project draft | **Aivy Quorum**, DeFi, 🛡️ created |
 | Images | New logo, wide cover and six fresh screenshots uploaded and saved; returning to Images shows the saved assets. [Files and provenance](ASSETS.md) |
 | Project narrative | [Checked copy](README.md) saved, with direct contribution/disclosure links and precise plugin reuse wording |
-| Repositories | Personal **jmgomezl/aivy-parametric-pool** remains primary; **jmgomezl/hak-scheduled-settlement** and **jmgomezl/aivy** are attached. All three are public, MIT-licensed and passed ETHGlobal's automated repository checks |
+| Repositories | Personal **jmgomezl/aivy-parametric-pool** remains primary; **jmgomezl/hak-scheduled-settlement**, **jmgomezl/aivy** and **jmgomezl/hak-uniswap-plugin** are attached. All four are public and MIT-licensed; the Uniswap repository includes the September 5 quote-tool extension and its before/after diff. The original three passed ETHGlobal's automated repository checks; the fourth was added in this review |
 | Tech stack and AI attribution | **Saved and verified after a fresh page load**, including SDKs, plugins, network boundaries, JSON journals, code-based design and generated artwork attribution |
 | Partner prizes | Hedera and Uniswap Foundation checked and explanations, code links and technical feedback prepared in the open form. **Not yet saved**: submission type awaits founder choice; personal ease-of-use ratings are unanswered |
 | Submission type | Founder asked to choose Top 10 + partner prizes (live judging if selected) or partner prizes only. No choice assumed |
@@ -58,7 +58,7 @@ headroom was **180,869.359986 test aUSDd**; the rolling issuance budget had used
 new transaction rehearsal or a guarantee of future upstream availability.
 
 Local links in the main README and key contribution, prior-work, Uniswap,
-Blocky402, feedback and security documents resolve. All three submission
+Blocky402, feedback and security documents resolve. All four submission
 repositories are public and have an MIT license. No funds were spent for this
 review.
 

@@ -27,7 +27,7 @@ Quorum connects these contributions in a working product other builders can insp
 | Contribution | Value for other builders | Quorum / event status |
 | --- | --- | --- |
 | **[HAK scheduled settlement](https://github.com/jmgomezl/hak-scheduled-settlement)** | Reuse a committer + oracle-quorum settlement pattern. | **New this event** · key builders consumed here |
-| **[HAK Uniswap plugin](docs/HAK-UNISWAP.md)** | Give Hedera agents access to Uniswap's EVM liquidity. | Published on npm · prior work reused for quotes |
+| **[HAK Uniswap plugin](docs/HAK-UNISWAP.md)** | Give Hedera agents access to Uniswap's EVM liquidity. | npm swap tool: prior work · **quote-only tool added this event** |
 | **[HAK Axelar plugin](https://github.com/jmgomezl/hak-axelar-plugin)** | Add token transfers and cross-chain messages to HAK agents. | Published on npm · ITS transfer builder used here |
 | **[Hedera developer skills](docs/CONTRIBUTIONS.md#developer-skills)** | Teach reliable Mirror Node reads and account/key handling. | Mirror Node skill applied · Accounts & Keys skill credited separately |
 | **[HAK core proposal #1088](https://github.com/hashgraph/hedera-agent-kit-js/pull/1088)** | Add flat threshold/key-list account creation to shared tooling. | **New this event** · PR open, not merged |
